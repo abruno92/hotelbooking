@@ -31,7 +31,6 @@ app.post('/register', (req, res) => {
 app.get('/login', (req, res) => {
 
     const {email, password} = req.body
-    res.setHeader('content-type', 'application/json');
 
     db.query("SELECT * FROM Customer WHERE Email = ? AND Password = ?", 
     [email, password],

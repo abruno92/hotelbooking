@@ -4,13 +4,18 @@ import Axios from "axios";
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loginStatus, setLoginStatus] = useState('');
 
     const login = () => {
         Axios.post('http://localhost:5000/login', {
             email: email, 
             password: password
         }).then((response) => {
-            console.log(response);
+            if (response.data.message) {
+                setLoginStatus(response.data.message)
+            } else {
+                setLoginStatus(response.data[0].email)
+            }
         })
     };
 
@@ -29,7 +34,6 @@ const Login = () => {
                         onClick = {(e)=>{
                             setEmail(e.target.value);
                         }}
-                        required
                     />
                 </div>
                 <div className="password">
@@ -42,7 +46,6 @@ const Login = () => {
                         onClick = {(e)=>{
                             setPassword(e.target.value);
                         }}
-                        required
                     />
                 </div>
                 <div className="login">

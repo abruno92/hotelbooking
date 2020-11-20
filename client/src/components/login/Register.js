@@ -14,7 +14,7 @@ const Register = () => {
             email: emailReg, 
             password: passwordReg
         }).then((response) => {
-            console.log(response);
+            console.log(response.data);
         })
     };
 

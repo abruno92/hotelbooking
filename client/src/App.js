@@ -1,13 +1,17 @@
 import './App.css';
-import Login from './components/login/Login.js';
-import Register from './components/login/Register.js';
+import NavBar from './components/layout/Navbar';
+import { Router } from "react-router-dom";
+import history from "./services/history";
+import Routes from './routes/Routes';
 
 
 function App() {
   return (
     <div className="App">
-      {/* <Register /> */}
-      <Login /> 
+      <NavBar />
+      <Router history={history}>
+        <Routes />
+      </Router>
     </div>
   );
 }
