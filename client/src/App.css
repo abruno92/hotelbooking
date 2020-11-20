@@ -10,6 +10,9 @@ body {
   font-family: 'Roboto';
 }
 
+
+/* Login */
+
 .wrapper {
   height: 100vh;
   width: 100%;
@@ -129,6 +132,38 @@ button {
 .createAccount button:hover {
   color: white;
   background: linear-gradient(120deg, #2980b9, #8e44ad);
+}
+
+
+/* Navbar */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 2rem;
+  z-index: 1;
+  width: 100%;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.navbar ul {
+  display: flex;
+}
+
+.navbar a {
+  color: #fff;
+  padding: 0.45rem;
+  margin: 0 0.25rem;
+}
+
+.navbar a:hover {
+  color: var(--light-color);
+}
+
+.navbar .welcome span {
+  margin-right: 0.6rem;
 }
 
 
