@@ -1,8 +1,6 @@
 /**
- * This file contains the dictionary object of authenticated users,
- * as well as helper methods related to authentication.
+ * This file contains helper methods related to authentication.
  */
-const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
 /**
@@ -31,17 +29,8 @@ function confirmPassword(password, hash) {
     return bcrypt.compareSync(password, hash);
 }
 
-/**
- * Generates a 30 bytes random string as hexadecimal values.
- * @returns {string} the random hex string
- */
-function generateAuthToken() {
-    return crypto.randomBytes(30).toString('hex');
-}
-
 module.exports = {
     jwtExpirySeconds: jwtExpirySeconds,
     getHashedPassword: getHashedPassword,
-    confirmPassword: confirmPassword,
-    generateAuthToken: generateAuthToken
+    confirmPassword: confirmPassword
 };

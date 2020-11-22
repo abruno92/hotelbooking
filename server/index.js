@@ -1,51 +1,27 @@
+/**
+ * This file contains the configuration and entry point for the Node.js server.
+ */
 const express = require("express");
-const mysql = require("mysql");
 const cors = require("cors");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const authRoute = require("./routes/auth");
+const bookingRoute = require('./routes/booking');
+const roomRoute = require('./routes/room');
+const {parseJwtToken} = require("./middleware");
 
 const app = express();
 
 const port = process.env.PORT || 5000;
 
+app.use(logger('dev'));
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
+app.use(parseJwtToken);
 
-const db = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    user: 'test',
-    database: 'hotel'
-});
-
-app.post('/register', (req, res) => {
-
-    const {firstName, lastName, email, password} = req.body
-
-    db.query("INSERT INTO Customer (FirstName, LastName, Email, Password) VALUES (?,?,?,?)", 
-    [firstName, lastName, email, password],
-    (err, result) => {
-        console.log(err);
-        console.log(result);
-    });
-});
-
-app.get('/login', (req, res) => {
-
-    const {email, password} = req.body
-
-    db.query("SELECT * FROM Customer WHERE Email = ? AND Password = ?", 
-    [email, password],
-    (err, result) => {
-        if(err) {
-            res.send({err: err})
-        }
-
-        if (result) {
-            res.send(result);
-        } else {
-            res.send({message: "Oops wrong email or password!"});
-        }         
-    }
-    );
-});
+app.use('/auth', authRoute);
+app.use('/booking', bookingRoute);
+app.use('/room', roomRoute);
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
