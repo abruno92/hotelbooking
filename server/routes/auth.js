@@ -97,7 +97,7 @@ router.get('/refresh', function (req, res) {
             }
         });
     } else {
-        res.status(400).send("Missing JWT Token");
+        res.status(403).send("Missing JWT Token");
     }
 });
 
