@@ -1,25 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useState}  from 'react';
+import { MenuItems } from "./MenuItems";
 
-const Navbar = ({title, icon}) => {
+
+const Navbar = () => {
 
     return (
-        <nav className='navbar'>
-            <h1>
-                <i className={icon} /> {title}
-            </h1>
+        <nav className="navbar">
+            <h1 className="navbar-logo">Hotel Security<i className="far fa-hotel"></i></h1>
+            <div className="menu-icon">
+                <ul>
+                    {MenuItems.map((item, index) => {
+                        return (
+                            <li key={index}>
+                                <a className={item.cName} href={item.url}>
+                                   {item.title}
+                                </a>
+                            </li>
+                        )
+                    })}
+                </ul>
+            </div>
         </nav>
     )
 };    
-
-Navbar.defaultProps = {
-    title: 'Bookings Hotel',
-    icon: 'fab fa-hotel'    
-}
-
-Navbar.prototype = {
-    title: PropTypes.string.isRequired,
-    icon: PropTypes.string.isRequired    
-}
 
 export default Navbar;
