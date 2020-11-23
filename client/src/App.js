@@ -8,7 +8,6 @@ import Routes from './routes/Routes';
 function App() {
   return (
     <div className="App">
-      <NavBar />
       <Router history={history}>
         <Routes />
       </Router>
