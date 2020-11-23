@@ -1,18 +1,19 @@
 import './App.css';
+import React from 'react';
 import NavBar from './components/layout/Navbar';
-import { Router } from "react-router-dom";
-import history from "./services/history";
+import {BrowserRouter} from "react-router-dom";
 import Routes from './routes/Routes';
 
 
 function App() {
-  return (
-    <div className="App">
-      <Router history={history}>
-        <Routes />
-      </Router>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <NavBar/>
+                <Routes/>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
