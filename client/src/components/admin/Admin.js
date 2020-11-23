@@ -1,9 +1,12 @@
 import React from 'react'
 
+const Bookings = ['Booking nr 1', ' Booking nr 2']
 const Admin = () => {
     return (
         <div>
-            <h1>Hello Admin</h1>
+            <div>
+                <h1>Admin Page</h1>
+            </div>                
         </div>
     )
 }
