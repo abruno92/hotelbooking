@@ -80,7 +80,7 @@ const Register = () => {
                 </div> 
                 <small>Already have an account?</small>
                 <div className="createAccount">
-                    <button type="submit">Login</button>
+                    <button type="submit" to="/login">Login</button>
                 </div>
                 </form>
             </div>
