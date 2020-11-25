@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/auth");
 const bookingRoute = require('./routes/booking');
 const roomRoute = require('./routes/room');
+const reviewRoute = require('./routes/review');
 const {parseJwtToken} = require("./middleware");
 
 const app = express();
@@ -23,5 +24,6 @@ app.use(parseJwtToken);
 app.use('/auth', authRoute);
 app.use('/booking', bookingRoute);
 app.use('/room', roomRoute);
+app.use('/review', reviewRoute);
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
