@@ -12,13 +12,12 @@ module.exports.MongoDatabase = class MongoDatabase {
         this._collectionName = collectionName;
     }
 
-    async create(object) {
+    async create(item) {
         const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
 
         try {
-            const collection = client.db(config.databaseName).collection(this._collectionName);
-
-            const writeResult = await collection.insertOne(object);
+            const writeResult = await collection.insertOne(item);
             return writeResult.insertedId;
         } catch (err) {
             console.log(err);
