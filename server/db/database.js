@@ -44,4 +44,21 @@ module.exports.MongoDatabase = class MongoDatabase {
             await client.close();
         }
     }
+
+    async getAll() {
+        const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
+
+        const cursor = collection.find();
+
+        try {
+            return await cursor.toArray();
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+            await cursor.close();
+        }
+    }
 }

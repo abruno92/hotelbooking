@@ -32,6 +32,7 @@ router.get('/:id',
     readHandler(db, "id"));
 
 // read all
+router.get('/', readHandler(db));
 // router.get('/',
 //     ,
 //     (req, res) => {

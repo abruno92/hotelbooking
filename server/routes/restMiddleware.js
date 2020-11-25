@@ -66,7 +66,6 @@ function readHandler(db, readOne) {
             if (readOne) {
                 result = await db.getOne(req.params.id);
             } else {
-                return res.sendStatus(501);
                 result = await db.getAll();
             }
         } catch (e) {
@@ -77,6 +76,8 @@ function readHandler(db, readOne) {
         }
 
         if (!result) {
+            return res.sendStatus(404);
+        } else if (result.length === 0) {
             return res.sendStatus(404);
         }
 
