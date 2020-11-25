@@ -3,32 +3,25 @@
  * for the '/review' route.
  */
 const express = require("express");
-const {inputValidator, createHandler, readHandler, updateHandler, deleteHandler} = require("./restMiddleware");
+const {createHandler, readHandler, updateHandler, deleteHandler, inputValidator, getParamIdValidation} = require("../restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
-const {body, param, ValidationChain} = require("express-validator");
+const {body} = require("express-validator");
 const router = express.Router();
 
 const db = new MongoDatabase(reviewCol);
-
-/**
- * Function that returns a {@link ValidationChain} used to
- * validate the structure of the 'id' parameter in the request URL.
- * @returns {function} - ValidationChain object
- */
-function getParamIdValidation() {
-    return param('id')
-        // ensure 'id' is provided
-        .exists().withMessage("must be provided").bail()
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string");
-}
 
 // create
 router.post('/',
     // 'userId' body attribute
     body('userId')
         // ensure 'userId' is provided
+        .exists().withMessage("must be provided").bail()
+        // check if is a valid ObjectId string
+        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    // 'roomId' body attribute
+    body('userId')
+        // ensure 'roomId' is provided
         .exists().withMessage("must be provided").bail()
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
@@ -41,7 +34,7 @@ router.post('/',
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(db, "userId", "content"));
+    createHandler(db, "userId", "roomId", "content"));
 
 // read
 router.get('/:id',
@@ -67,6 +60,12 @@ router.patch('/:id',
         .if(body('userId').exists())
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    // 'roomId' body attribute
+    body('roomId')
+        // only run validation if 'roomId' is provided
+        .if(body('roomId').exists())
+        // check if is a valid ObjectId string
+        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
     // 'content' body attribute
     body('content')
         // only run validation if 'content' is provided
@@ -76,7 +75,7 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(db, "userId", "content"));
+    updateHandler(db, "userId", "roomId", "content"));
 
 // delete
 router.delete('/:id',

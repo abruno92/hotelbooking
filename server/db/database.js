@@ -4,7 +4,7 @@
 const config = require("./config");
 const {MongoClient, ObjectId} = require('mongodb');
 
-module.exports.MongoDatabase = class MongoDatabase {
+class MongoDatabase {
     _collectionName;
 
     constructor(collectionName) {
@@ -159,3 +159,5 @@ module.exports.MongoDatabase = class MongoDatabase {
         }
     }
 }
+
+module.exports.MongoDatabase = MongoDatabase;

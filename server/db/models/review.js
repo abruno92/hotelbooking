@@ -4,6 +4,7 @@
 class Review {
     _id;
     userId;
+    roomId;
     content;
 }
 

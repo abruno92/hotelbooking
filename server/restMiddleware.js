@@ -1,7 +1,20 @@
 /**
  * This file contains various middleware functions related to RESTful APIs.
  */
-const {validationResult} = require('express-validator');
+const {validationResult, param, ValidationChain} = require('express-validator');
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * validate the structure of the 'id' parameter in the request URL.
+ * @returns {function} - ValidationChain object
+ */
+function getParamIdValidation() {
+    return param('id')
+        // ensure 'id' is provided
+        .exists().withMessage("must be provided").bail()
+        // check if is a valid ObjectId string
+        .isMongoId().withMessage("must be a valid MongoDB ObjectId string");
+}
 
 /**
  * Router-level middleware function that check for input validation
@@ -72,15 +85,17 @@ function createHandler(db, ...bodyAttributes) {
  */
 function readHandler(db, readOne) {
     return async (req, res) => {
+        const id = req.params.id;
+
         let result
         try {
             if (readOne) {
-                result = await db.getOne(req.params.id);
+                result = await db.getOne(id);
             } else {
                 result = await db.getAll();
             }
         } catch (e) {
-            const message = "unable to retrieve item" + itemId ? "" : "s";
+            const message = "unable to retrieve item" + id ? "" : "s";
             console.log(message);
             console.log(e);
             return res.status(500).json({error: message});
@@ -191,9 +206,10 @@ function deleteHandler(db) {
 }
 
 module.exports = {
-    inputValidator: inputValidator,
     createHandler: createHandler,
     readHandler: readHandler,
     updateHandler: updateHandler,
     deleteHandler: deleteHandler,
+    inputValidator: inputValidator,
+    getParamIdValidation: getParamIdValidation,
 }
