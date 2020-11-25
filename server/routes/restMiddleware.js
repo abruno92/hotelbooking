@@ -81,7 +81,47 @@ function readHandler(db, readOne) {
             return res.sendStatus(404);
         }
 
-        res.status(200).json(result);
+        res.json(result);
+    };
+}
+
+/** Function that returns a handler for a PATCH request
+ * related to updating one or more fields of an item in a database.
+ * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
+ * @param {...string} bodyAttributes - Attributes expected in the request body
+ * @returns {function(Request, Response): Promise} - Handler
+ */
+function updateHandler(db, ...bodyAttributes) {
+    return async (req, res) => {
+        let result
+        const newItem = {};
+        bodyAttributes.forEach(attribute => {
+            if (req.body[attribute]) {
+                newItem[attribute] = req.body[attribute];
+            }
+        });
+
+        console.log(newItem);
+
+        if (Object.entries(newItem).length === 0) {
+            return res.status(400).json({msg: "no attributes supplied"});
+        }
+
+        try {
+
+            result = await db.updateOne(req.params.id, newItem);
+        } catch (e) {
+            const message = "unable to update item";
+            console.log(message);
+            console.log(e);
+            return res.status(500).send(message);
+        }
+
+        if (!result) {
+            return res.sendStatus(404);
+        }
+
+        res.json(result);
     };
 }
 
@@ -89,4 +129,5 @@ module.exports = {
     inputValidator: inputValidator,
     createHandler: createHandler,
     readHandler: readHandler,
+    updateHandler: updateHandler,
 }

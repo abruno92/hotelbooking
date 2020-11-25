@@ -61,4 +61,31 @@ module.exports.MongoDatabase = class MongoDatabase {
             await cursor.close();
         }
     }
+
+    async updateOne(id, item) {
+        const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
+
+        try {
+            if (typeof id === "string") id = new ObjectId(id);
+
+            const query = {_id: id};
+
+            const updateDocument = {
+                $set: item
+            };
+
+            const result = await collection.updateOne(query, updateDocument);
+            if (result.result.nModified === 1) {
+                return this.getOne(id);
+            } else {
+                return undefined;
+            }
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
 }
