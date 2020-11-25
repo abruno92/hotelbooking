@@ -3,7 +3,7 @@
  */
 
 const config = require("./config");
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 
 module.exports.MongoDatabase = class MongoDatabase {
     _collectionName;
@@ -29,9 +29,10 @@ module.exports.MongoDatabase = class MongoDatabase {
 
     async getOne(id) {
         const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
 
         try {
-            const collection = client.db(config.databaseName).collection(this._collectionName);
+            if (typeof id === "string") id = new ObjectId(id);
 
             const query = {_id: id};
 

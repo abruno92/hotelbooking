@@ -53,7 +53,39 @@ function createHandler(db, ...bodyAttributes) {
     };
 }
 
+/** Function that returns a handler for a GET request
+ * related to retrieving one or more items in a database.
+ * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
+ * @param readOne - 'undefined' retrieves all items, anything else returns first matched item based on id
+ * @returns {function(Request, Response): Promise} - Handler
+ */
+function readHandler(db, readOne) {
+    return async (req, res) => {
+        let result
+        try {
+            if (readOne) {
+                result = await db.getOne(req.params.id);
+            } else {
+                return res.sendStatus(501);
+                result = await db.getAll();
+            }
+        } catch (e) {
+            const message = "unable to retrieve item" + itemId ? "" : "s";
+            console.log(message);
+            console.log(e);
+            return res.status(500).send(message);
+        }
+
+        if (!result) {
+            return res.sendStatus(404);
+        }
+
+        res.status(200).json(result);
+    };
+}
+
 module.exports = {
     inputValidator: inputValidator,
     createHandler: createHandler,
+    readHandler: readHandler,
 }

@@ -3,10 +3,10 @@
  * for the '/review' route.
  */
 const express = require("express");
-const {createHandler, inputValidator} = require("./restMiddleware");
+const {inputValidator, createHandler, readHandler} = require("./restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
-const {body} = require("express-validator");
+const {body, param} = require("express-validator");
 const router = express.Router();
 
 const db = new MongoDatabase(reviewCol);
@@ -22,6 +22,14 @@ router.post('/',
         .isLength({max: 1000}).withMessage('must not exceed 1000 characters'),
     inputValidator,
     createHandler(db, "userId", "content"));
+
+// read
+router.get('/:id',
+    param('id')
+        .exists().withMessage("must be provided").bail()
+        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    inputValidator,
+    readHandler(db, "id"));
 
 // read all
 // router.get('/',
