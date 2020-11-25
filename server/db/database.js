@@ -88,4 +88,30 @@ module.exports.MongoDatabase = class MongoDatabase {
             await client.close();
         }
     }
+
+    async deleteOne(id) {
+        const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
+
+        try {
+            if (typeof id === "string") id = new ObjectId(id);
+
+            const query = {_id: id};
+
+            const oldItem = await this.getOne(id);
+
+            const result = await collection.deleteOne(query);
+            console.log(result);
+            if (result.deletedCount === 1) {
+                return oldItem;
+            } else {
+                return undefined;
+            }
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
 }

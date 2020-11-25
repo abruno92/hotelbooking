@@ -3,7 +3,7 @@
  * for the '/review' route.
  */
 const express = require("express");
-const {inputValidator, createHandler, readHandler, updateHandler} = require("./restMiddleware");
+const {inputValidator, createHandler, readHandler, updateHandler, deleteHandler} = require("./restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
 const {body, param} = require("express-validator");
@@ -48,19 +48,9 @@ router.patch('/:id',
         .isLength({min: 10, max: 1000}).withMessage('must be between 10 and 1000 characters'),
     updateHandler(db, "userId", "content"));
 
-// // delete
-// router.delete('/:id', (req, res) => {
-//     const query = `DELETE
-//                    FROM main.SkatUser
-//                    WHERE Id = ?`;
-//     db.run(query, [req.params.id], (err) => {
-//         if (err) {
-//             console.log(err);
-//             return res.sendStatus(500);
-//         }
-//
-//         res.sendStatus(204);
-//     });
-// });
-//
+// delete
+router.delete('/:id',
+    getParamIdValidation(),
+    deleteHandler(db));
+
 module.exports = router;

@@ -125,9 +125,36 @@ function updateHandler(db, ...bodyAttributes) {
     };
 }
 
+/**
+ * Function that returns a handler for a DELETE request
+ * related to deleting an item in a database.
+ * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
+ * @returns {function(Request, Response): Promise} - Handler
+ */
+function deleteHandler(db) {
+    return async (req, res) => {
+        let result
+        try {
+            result = await db.deleteOne(req.params.id);
+        } catch (e) {
+            const message = "unable to delete item";
+            console.log(message);
+            console.log(e);
+            return res.status(500).json({error: message});
+        }
+
+        if (!result) {
+            return res.sendStatus(404);
+        }
+
+        res.json(result);
+    };
+}
+
 module.exports = {
     inputValidator: inputValidator,
     createHandler: createHandler,
     readHandler: readHandler,
     updateHandler: updateHandler,
+    deleteHandler: deleteHandler,
 }
