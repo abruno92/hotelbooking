@@ -15,7 +15,7 @@ function inputValidator(req, res, next) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        res.status(422).json({errors: errors.array()});
+        res.status(400).json({errors: errors.array()});
     } else {
         next();
     }
@@ -35,18 +35,20 @@ function createHandler(db, ...bodyAttributes) {
         try {
             id = await db.create(newItem);
         } catch (e) {
-            console.log(`unable to insert item '${newItem}'`);
+            const message = `unable to insert item '${newItem}'`;
+            console.log(message);
             console.log(e);
-            return res.status(500).send(`unable to insert item '${newItem}'`);
+            return res.status(500).json({error: message});
         }
 
         let retrievedItem
         try {
             retrievedItem = await db.getOne(id);
         } catch (e) {
-            console.log("unable to retrieve item");
+            const message = "unable to retrieve the new item";
+            console.log(message);
             console.log(e);
-            return res.status(500).send("unable to retrieve item");
+            return res.status(500).json({error: message});
         }
 
         res.status(201).json(retrievedItem);
@@ -72,7 +74,7 @@ function readHandler(db, readOne) {
             const message = "unable to retrieve item" + itemId ? "" : "s";
             console.log(message);
             console.log(e);
-            return res.status(500).send(message);
+            return res.status(500).json({error: message});
         }
 
         if (!result) {
@@ -101,24 +103,40 @@ function updateHandler(db, ...bodyAttributes) {
             }
         });
 
-        console.log(newItem);
-
         if (Object.entries(newItem).length === 0) {
-            return res.status(400).json({msg: "no attributes supplied"});
+            return res.status(400).json({error: "no attributes supplied"});
         }
 
-        try {
+        const id = req.params.id;
 
-            result = await db.updateOne(req.params.id, newItem);
+        let originalItem
+        try {
+            originalItem = await db.getOne(id);
+        } catch (e) {
+            const message = "unable to retrieve the original item";
+            console.log(message);
+            console.log(e);
+            return res.status(500).json({error: message});
+        }
+
+        if (!originalItem) {
+            const message = `item with id ${id} not found`;
+            console.log(message);
+            return res.status(404).json({error: message})
+        }
+        try {
+            result = await db.updateOne(id, newItem);
         } catch (e) {
             const message = "unable to update item";
             console.log(message);
             console.log(e);
-            return res.status(500).send(message);
+            return res.status(500).json({error: message});
         }
 
         if (!result) {
-            return res.sendStatus(404);
+            const message = 'provided attributes match already existing ones';
+            console.log(message);
+            return res.status(409).json({error: message});
         }
 
         res.json(result);

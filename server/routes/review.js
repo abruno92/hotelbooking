@@ -46,6 +46,8 @@ router.patch('/:id',
     body('content')
         .if(body('content').exists())
         .isLength({min: 10, max: 1000}).withMessage('must be between 10 and 1000 characters'),
+    // validate above attributes
+    inputValidator,
     updateHandler(db, "userId", "content"));
 
 // delete
