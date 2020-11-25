@@ -20,7 +20,7 @@ router.post('/',
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
     // 'roomId' body attribute
-    body('userId')
+    body('roomId')
         // ensure 'roomId' is provided
         .exists().withMessage("must be provided").bail()
         // check if is a valid ObjectId string
