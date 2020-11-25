@@ -2,7 +2,7 @@
  * This file contains various middleware functions.
  */
 const jwt = require("jsonwebtoken");
-const {jwtSecret} = require("./config");
+const {jwtSecret} = require("./jwtSecret");
 const userDb = require("./db/users");
 
 /**
