@@ -4,4 +4,5 @@ module.exports = {
     databaseName: "hotel",
     //Collection names
     reviewCol: "Review",
+    roomCol: "Room",
 };
