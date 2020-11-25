@@ -7,7 +7,7 @@ const {body, check, validationResult} = require("express-validator");
 const userDb = require("../db/users");
 const jwt = require("jsonwebtoken");
 const {jwtExpirySeconds} = require("../auth");
-const {jwtSecret} = require("../config");
+const {jwtSecret} = require("../jwtSecret");
 
 const router = express.Router();
 
