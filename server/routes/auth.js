@@ -3,11 +3,12 @@
  * for the '/auth' route.
  */
 const express = require("express");
-const {body, check, validationResult} = require("express-validator");
+const {body, check} = require("express-validator");
 const userDb = require("../db/users");
 const jwt = require("jsonwebtoken");
 const {jwtExpirySeconds} = require("../auth");
 const {jwtSecret} = require("../jwtSecret");
+const {inputValidator} = require("../middleware");
 
 const router = express.Router();
 
@@ -20,14 +21,8 @@ router.post('/login',
     check('email').isEmail().withMessage('must follow the email structure'),
     // validates password length
     body('password').isLength({min: 5}).withMessage('must be at least 5 characters long'),
+    inputValidator,
     (req, res) => {
-        // ensures no errors have occurred during field validation
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            // sends errors as response, if any
-            return res.status(400).json({errors: errors.array()});
-        }
-
         // gets email and password from request body
         const {email, password} = req.body;
         // checks credentials validity using the database

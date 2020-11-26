@@ -3,7 +3,8 @@
  * for the '/review' route.
  */
 const express = require("express");
-const {createHandler, readHandler, updateHandler, deleteHandler, inputValidator, getParamIdValidation} = require("../restMiddleware");
+const {inputValidator} = require("../middleware");
+const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation} = require("../restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
 const {body} = require("express-validator");

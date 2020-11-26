@@ -3,8 +3,9 @@
  * for the '/room' route.
  */
 const express = require("express");
+const {inputValidator} = require("../middleware");
 const {roomCol} = require("../db/config");
-const {createHandler, readHandler, updateHandler, deleteHandler, inputValidator, getParamIdValidation} = require("../restMiddleware");
+const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation} = require("../restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {body} = require("express-validator");
 const router = express.Router();
