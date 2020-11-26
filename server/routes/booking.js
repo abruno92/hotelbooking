@@ -5,7 +5,7 @@
 const express = require("express");
 const router = express.Router();
 
-router.use('/', (req, res) => {
+router.all('*', (req, res) => {
     res.sendStatus(501);
 });
 

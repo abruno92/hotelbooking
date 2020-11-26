@@ -1,0 +1,13 @@
+.NavLink {
+    border-radius: 25px 25px 5px 5px;
+    padding: 10px;
+    color: #61dafb;
+    /*background: #282c34;*/
+    margin: 10px;
+}
+
+.ActiveNavLink {
+    color: #282c34;
+    background: #61dafb;
+    margin: 10px;
+}

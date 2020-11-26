@@ -3,11 +3,12 @@
  * for the '/auth' route.
  */
 const express = require("express");
-const {body, check, validationResult} = require("express-validator");
+const {body, check} = require("express-validator");
 const userDb = require("../db/users");
 const jwt = require("jsonwebtoken");
 const {jwtExpirySeconds} = require("../auth");
-const {jwtSecret} = require("../config");
+const {jwtSecret} = require("../jwtSecret");
+const {inputValidator} = require("../middleware");
 
 const router = express.Router();
 
@@ -20,14 +21,8 @@ router.post('/login',
     check('email').isEmail().withMessage('must follow the email structure'),
     // validates password length
     body('password').isLength({min: 5}).withMessage('must be at least 5 characters long'),
+    inputValidator,
     (req, res) => {
-        // ensures no errors have occurred during field validation
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            // sends errors as response, if any
-            return res.status(400).json({errors: errors.array()});
-        }
-
         // gets email and password from request body
         const {email, password} = req.body;
         // checks credentials validity using the database
@@ -47,9 +42,8 @@ router.post('/login',
             res.status(200).send("Login Successful");
         } else {
             // no matching user was found
-            // set HTTP status to 403 "Forbidden"
-            res.status(403);
-            res.send('Wrong email or password');
+            // set HTTP status to 401 "Unauthorised"
+            res.status(401).send({error: 'wrong email or password'});
         }
     });
 
@@ -79,7 +73,7 @@ router.get('/refresh', function (req, res) {
 
                 if (payload.exp - nowUnixSeconds > 60) {
                     // token is more than 60 seconds away from expiring
-                    return res.status(409).send("Token is more than 60 seconds away from expiry");
+                    return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
                 }
 
                 // generates a new token
@@ -89,15 +83,15 @@ router.get('/refresh', function (req, res) {
                 });
 
                 res.cookie('JwtToken', newToken, {maxAge: jwtExpirySeconds * 1000});
-                res.status(200).send("Token Refresh Successful");
+                res.status(200).send("token refreshed");
             } else {
                 // token is expired
                 console.log(err);
-                res.sendStatus(401);
+                res.status(403).json({error: "token is expired"});
             }
         });
     } else {
-        res.status(400).send("Missing JWT Token");
+        res.status(401).json({error: "missing jwt token"});
     }
 });
 

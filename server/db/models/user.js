@@ -2,7 +2,7 @@
  * Object that represents a user of the system.
  */
 class User {
-    id;
+    _id;
     privilegeLevel;
     firstName;
     lastName;

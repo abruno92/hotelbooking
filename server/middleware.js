@@ -2,8 +2,29 @@
  * This file contains various middleware functions.
  */
 const jwt = require("jsonwebtoken");
-const {jwtSecret} = require("./config");
+const {jwtSecret} = require("./jwtSecret");
 const userDb = require("./db/users");
+const {validationResult} = require("express-validator");
+
+/**
+ * Router-level middleware function that check for input validation
+ * errors in the request body/params.
+ * @param req - The Request object
+ * @param res - The Response object
+ * @param next - The middleware function callback argument
+ */
+function inputValidator(req, res, next) {
+    // check if errors have been generated during field validation
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        // errors have been generated, send them in the response body
+        res.status(400).json({errors: errors.array()});
+    } else {
+        // no errors, go to the next middleware
+        next();
+    }
+}
 
 /**
  * Application-level middleware function that extracts the
@@ -64,6 +85,7 @@ function authGuard(privilegeLevel) {
 }
 
 module.exports = {
+    inputValidator: inputValidator,
     parseJwtToken: parseJwtToken,
     getAuthLevelMw: authGuard
 };
