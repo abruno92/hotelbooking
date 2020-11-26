@@ -79,7 +79,7 @@ router.get('/refresh', function (req, res) {
 
                 if (payload.exp - nowUnixSeconds > 60) {
                     // token is more than 60 seconds away from expiring
-                    return res.status(409).send("Token is more than 60 seconds away from expiry");
+                    return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
                 }
 
                 // generates a new token
@@ -89,15 +89,15 @@ router.get('/refresh', function (req, res) {
                 });
 
                 res.cookie('JwtToken', newToken, {maxAge: jwtExpirySeconds * 1000});
-                res.status(200).send("Token Refresh Successful");
+                res.status(200).send("token refreshed");
             } else {
                 // token is expired
                 console.log(err);
-                res.sendStatus(401);
+                res.status(403).json({error: "token is expired"});
             }
         });
     } else {
-        res.status(403).send("Missing JWT Token");
+        res.status(401).json({error: "missing jwt token"});
     }
 });
 
