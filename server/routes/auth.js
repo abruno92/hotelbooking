@@ -42,9 +42,8 @@ router.post('/login',
             res.status(200).send("Login Successful");
         } else {
             // no matching user was found
-            // set HTTP status to 403 "Forbidden"
-            res.status(403);
-            res.send('Wrong email or password');
+            // set HTTP status to 401 "Unauthorised"
+            res.status(401).send({error: 'wrong email or password'});
         }
     });
 
