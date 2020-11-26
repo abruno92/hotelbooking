@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import Axios from  "axios";
 import * as firebase from 'firebase'
-import 'firebase/auth';
+dividedimport firebaseConfig from 'client\public\firebase.confiq.js';
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 var provider = new firebase.auth.GoogleAuthProvider();
 provider.add2FactorAuthentication(userID)
 {
@@ -10,8 +12,6 @@ provider.add2FactorAuthentication(userID)
     const gaSecret = await generateSecret(); 
     //await DB.TheTable.update(userDI, {gaSecret});
 }
-
-
 
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
