@@ -49,34 +49,20 @@ class MongoDatabase {
     }
 
     /**
-     * Retrieves a single item from the database by its id.
+     * Retrieves a single item from the database.
      * @param id - Id of the item to retrieve
      * @returns {Promise<*|undefined>} - Matching item; null if not found or 'undefined' in case of errors
      */
-    async getOneById(id) {
-        return this.getOneByQuery({_id: id});
-    }
-
-    /**
-     * Retrieves a single item from the database using a custom query.
-     * @param {Object} query - Object used to query MongoDB
-     * @returns {Promise<*|undefined>} - Matching item; null if not found or 'undefined' in case of errors
-     */
-    async getOneByQuery(query) {
+    async getOne(id) {
         const client = await MongoClient.connect(config.connectionUrl);
         const collection = client.db(config.databaseName).collection(this._collectionName);
 
         try {
-            // find all string instances of attributes called
-            // '_id' or that end with 'Id' and replace them
-            // with ObjectId instances, if applicable
-            for (const queryAttr in query) {
-                const attrValue = query[queryAttr];
-                if ((queryAttr === '_id' || queryAttr.endsWith('Id')) &&
-                    ObjectId.isValid(attrValue) && typeof attrValue === "string") {
-                    query[queryAttr] = new ObjectId(attrValue);
-                }
-            }
+            // if a string id is given, convert it to ObjectId
+            if (typeof id === "string") id = new ObjectId(id);
+
+            // query object
+            const query = {_id: id};
 
             return await collection.findOne(query);
         } catch (err) {
@@ -136,7 +122,7 @@ class MongoDatabase {
             // check if any documents have been modified
             if (result.result.nModified === 1) {
                 // one document has been updated, return it
-                return this.getOneById(id);
+                return this.getOne(id);
             } else {
                 // no documents updated, return 'null'
                 return null;
@@ -165,7 +151,7 @@ class MongoDatabase {
             const query = {_id: id};
 
             // retrieve the old item from the database
-            const oldItem = await this.getOneById(id);
+            const oldItem = await this.getOne(id);
 
             const result = await collection.deleteOne(query);
             // check if any documents have been deleted

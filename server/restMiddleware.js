@@ -77,7 +77,7 @@ function createHandler(db, ...bodyAttributes) {
         let retrievedItem
         try {
             // retrieve the generated item
-            retrievedItem = await db.getOneById(id);
+            retrievedItem = await db.getOne(id);
         } catch (e) {
             const message = "unable to retrieve the new item";
             console.log(message);
@@ -104,7 +104,7 @@ function readHandler(db) {
         let result
         try {
             if (id) {
-                result = await db.getOneById(id);
+                result = await db.getOne(id);
             } else {
                 result = await db.getAll();
             }
@@ -154,7 +154,7 @@ function updateHandler(db, ...bodyAttributes) {
         let originalItem
         try {
             // retrieve the original item
-            originalItem = await db.getOneById(id);
+            originalItem = await db.getOne(id);
         } catch (e) {
             const message = "unable to retrieve the original item";
             console.log(message);
