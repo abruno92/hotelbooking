@@ -5,4 +5,5 @@ module.exports = {
     //Collection names
     reviewCol: "Review",
     roomCol: "Room",
+    replyCol: "Reply",
 };
