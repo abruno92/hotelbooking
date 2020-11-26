@@ -5,7 +5,7 @@
 const express = require("express");
 const {inputValidator} = require("../middleware");
 const {roomCol} = require("../db/config");
-const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation} = require("../restMiddleware");
+const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation, getStringValidation} = require("../restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {body} = require("express-validator");
 const router = express.Router();
@@ -15,21 +15,13 @@ const db = new MongoDatabase(roomCol);
 // create
 router.post('/',
     // 'number' body attribute
-    body('number')
-        .exists().withMessage("must be provided").bail()
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    getStringValidation('number', {min: 1, max: 3}),
     // 'floor' body attribute
-    body('floor')
-        .exists().withMessage("must be provided").bail()
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    getStringValidation('floor', {min: 1, max: 3}),
     // 'side' body attribute
-    body('side')
-        .exists().withMessage("must be provided").bail()
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    getStringValidation('side', {min: 1, max: 3}),
     // 'category' body attribute
-    body('category')
-        .exists().withMessage("must be provided").bail()
-        .isLength({min: 1, max: 20}).withMessage('must be between 1 and 20 characters'),
+    getStringValidation('category', {min: 1, max: 20}),
     // 'pictureUrl' body attribute
     body('pictureUrl')
         .exists().withMessage("must be provided").bail()
