@@ -1,5 +1,24 @@
 import React, {useState} from "react";
 import Axios from  "axios";
+import {Helmet} from "react-helmet";
+import {generateSecret} from '@authentication/google-authenticator';
+import * as firebase from 'firebase'
+import 'firebase/auth';
+
+const {generateSecret} = require('@authentication/google-authenticator');
+    async function add2FactorAuthentication(userID) {
+    // get the secret to be shared with the google authenticator app
+    const gaSecret = await generateSecret();
+    //await the DB.TheTable.update(userDI, {gaSecret});
+}
+var provider = new firebase.auth.GoogleAuthProvider();
+
+provider.add2FactorAuthentication(userID)
+{
+    // get the secret to be shared with the google authenticator app
+    const gaSecret = await generateSecret(); 
+    //await DB.TheTable.update(userDI, {gaSecret});
+}
 
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
@@ -83,6 +102,12 @@ const Register = () => {
                     <button type="submit">Login</button>
                 </div>
                 </form>
+            </div>
+
+            <div>
+                <Helmet>
+
+                </Helmet>
             </div>
         </div>
     );
