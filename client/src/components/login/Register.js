@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Axios from  "axios";
 import * as firebase from 'firebase'
-dividedimport firebaseConfig from 'client\public\firebase.confiq.js';
+import firebaseConfig from "client\public\firebase.confiq.js";
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
