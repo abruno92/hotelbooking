@@ -32,7 +32,7 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(db, "id"));
+    readHandler(db));
 
 // read all
 router.get('/',

@@ -92,17 +92,18 @@ function createHandler(db, ...bodyAttributes) {
 /**
  * Function that returns a handler for a GET request
  * related to retrieving one or more items in a database.
+ * If req.params.id is not supplied, the function retrieves
+ * all items of that database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
- * @param readOne - 'undefined' retrieves all items, anything else returns first matched item based on id
  * @returns {function(Request, Response): Promise} - Handler
  */
-function readHandler(db, readOne) {
+function readHandler(db) {
     return async (req, res) => {
         const id = req.params.id;
 
         let result
         try {
-            if (readOne) {
+            if (id) {
                 result = await db.getOneById(id);
             } else {
                 result = await db.getAll();
