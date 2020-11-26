@@ -9,11 +9,10 @@ const authRoute = require("./routes/auth");
 const bookingRoute = require('./routes/booking');
 const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
+const {port} = require("./config");
 const {parseJwtToken} = require("./middleware");
 
 const app = express();
-
-const port = process.env.PORT || 3001;
 
 app.use(logger('dev'));
 app.use(express.json());
