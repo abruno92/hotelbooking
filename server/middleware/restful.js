@@ -2,21 +2,22 @@
  * This file contains various middleware functions
  * related to RESTful APIs.
  */
+const {MongoDatabase} = require("../db/database");
 
 /**
  * Function that returns a handler for a POST request
  * related to inserting items in a database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
- * @param {...string} bodyAttributes - Attributes expected in the request body
+ * @param {...string} documentAttributes - Attributes to be part of the new item to be inserted
  * @returns {function(Request, Response): Promise} - Handler
  */
-function createHandler(db, ...bodyAttributes) {
+function createHandler(db, ...documentAttributes) {
     return async (req, res) => {
         const newItem = {};
 
-        // loop through the provided list of attribute names and add their respective values
+        // loop through the provided list of document attributes and add their respective values
         // from the request body to the newItem object
-        bodyAttributes.forEach(attribute => newItem[attribute] = req.body[attribute]);
+        documentAttributes.forEach(attribute => newItem[attribute] = req.body[attribute]);
 
         let id;
         try {
@@ -82,17 +83,17 @@ function readHandler(db) {
  * Function that returns a handler for a PATCH request
  * related to updating one or more fields of an item in a database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
- * @param {...string} bodyAttributes - Attributes expected in the request body
+ * @param {...string} documentAttributes - Attributes expected in the request body
  * @returns {function(Request, Response): Promise} - Handler
  */
-function updateHandler(db, ...bodyAttributes) {
+function updateHandler(db, ...documentAttributes) {
     return async (req, res) => {
         const newItem = {};
 
-        // loop through the provided list of attribute names and add their respective values
+        // loop through the provided list of document attributes and add their respective values
         // from the request body to the newItem object, only if they are already defined in the
         // request body
-        bodyAttributes.forEach(attribute => {
+        documentAttributes.forEach(attribute => {
             if (req.body[attribute]) {
                 newItem[attribute] = req.body[attribute];
             }

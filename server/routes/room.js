@@ -31,7 +31,7 @@ router.post('/',
 // read
 router.get('/:id',
     // 'id' URL param
-    parseObjectId('id', false, 'param'),
+    parseObjectId(),
     // validate above attributes
     inputValidator,
     // handle read
@@ -45,7 +45,7 @@ router.get('/',
 // update
 router.patch('/:id',
     // 'id' URL param
-    parseObjectId('id', false, 'param'),
+    parseObjectId(),
     // 'number' body attribute
     parseString('number', {min: 1, max: 3}, true),
     // 'floor' body attribute
@@ -64,7 +64,7 @@ router.patch('/:id',
 // delete
 router.delete('/:id',
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId(),
     // handle delete
     deleteHandler(db));
 

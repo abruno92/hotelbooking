@@ -2,6 +2,7 @@
  * This file contains database-related functions.
  */
 const config = require("./config");
+const {confirmPassword} = require("../auth");
 const {MongoClient, ObjectId} = require('mongodb');
 
 class MongoDatabase {
@@ -160,4 +161,49 @@ class MongoDatabase {
     }
 }
 
-module.exports.MongoDatabase = MongoDatabase;
+class UserDatabase extends MongoDatabase {
+    constructor() {
+        super(config.userCol);
+    }
+
+    async validate(email, password) {
+        const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
+
+        try {
+            const query = {email: email};
+
+            const user = await collection.findOne(query);
+
+            return confirmPassword(password, user.passwordHash) ? user : undefined;
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
+
+    async exists(email) {
+        const client = await MongoClient.connect(config.connectionUrl);
+        const collection = client.db(config.databaseName).collection(this._collectionName);
+
+        try {
+            const query = {email: email};
+
+            const user = await collection.findOne(query);
+
+            return user !== null;
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
+}
+
+module.exports = {
+    MongoDatabase: MongoDatabase,
+    UserDatabase: UserDatabase,
+}
