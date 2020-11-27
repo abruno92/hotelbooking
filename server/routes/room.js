@@ -4,10 +4,9 @@
  */
 const express = require("express");
 const {roomCol} = require("../db/config");
-const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
+const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
-const {body} = require("express-validator");
 const router = express.Router();
 
 const db = new MongoDatabase(roomCol);
@@ -23,11 +22,7 @@ router.post('/',
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}),
     // 'pictureUrl' body attribute
-    body('pictureUrl')
-        .exists().withMessage("must be provided").bail()
-        // todo: either this or isDataURI() to validate it
-        // .isURL().withMessage('must be a valid URL')
-        .isLength({min: 1, max: 2000}).withMessage('must be between 1 and 2000 characters'),
+    parseUrl('pictureUrl'),
     // validate above attributes
     inputValidator,
     // handle create
@@ -36,7 +31,7 @@ router.post('/',
 // read
 router.get('/:id',
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // validate above attributes
     inputValidator,
     // handle read
@@ -50,29 +45,17 @@ router.get('/',
 // update
 router.patch('/:id',
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // 'number' body attribute
-    body('number')
-        .if(body('number').exists())
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    parseString('number', {min: 1, max: 3}, true),
     // 'floor' body attribute
-    body('floor')
-        .if(body('floor').exists())
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    parseString('floor', {min: 1, max: 3}, true),
     // 'side' body attribute
-    body('side')
-        .if(body('side').exists())
-        .isLength({min: 1, max: 3}).withMessage('must be between 1 and 3 characters'),
+    parseString('side', {min: 1, max: 3}, true),
     // 'category' body attribute
-    body('category')
-        .if(body('category').exists())
-        .isLength({min: 1, max: 20}).withMessage('must be between 1 and 20 characters'),
+    parseString('category', {min: 1, max: 20}, true),
     // 'pictureUrl' body attribute
-    body('pictureUrl')
-        .if(body('pictureUrl').exists())
-        // todo: either this or isDataURI() to validate it
-        // .isURL().withMessage('must be a valid URL')
-        .isLength({min: 10, max: 2000}).withMessage('must be between 10 and 1000 characters'),
+    parseUrl('pictureUrl', true),
     // validate above attributes
     inputValidator,
     // handle update

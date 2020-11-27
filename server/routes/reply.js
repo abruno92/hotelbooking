@@ -8,7 +8,6 @@ const {parseObjectId, parseString, inputValidator} = require("../middleware/inpu
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {replyCol} = require("../db/config");
-const {body} = require("express-validator");
 const axios = require("axios");
 const {ObjectId} = require("mongodb");
 const router = express.Router({mergeParams: true});
@@ -18,7 +17,7 @@ const db = new MongoDatabase(replyCol);
 // middleware to validate the 'reviewId' parameter
 // and add it to the request body
 router.use('/',
-    parseObjectId('reviewId', 'param'),
+    parseObjectId('reviewId', false, 'param'),
     // validate above attribute
     inputValidator
 );
@@ -91,25 +90,13 @@ router.get('/*',
 router.patch(['/', '/:id'],
     retrieveId,
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // 'userId' body attribute
-    body('userId')
-        // only run validation if 'userId' is provided
-        .if(body('userId').exists())
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    parseObjectId('userId'),
     // 'reviewId' body attribute
-    body('reviewId')
-        // only run validation if 'reviewId' is provided
-        .if(body('reviewId').exists())
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    parseObjectId('reviewId'),
     // 'content' body attribute
-    body('content')
-        // only run validation if 'content' is provided
-        .if(body('content').exists())
-        // ensure length is between 10 and 1000 characters
-        .isLength({min: 10, max: 1000}).withMessage('must be between 10 and 1000 characters'),
+    parseString('content', {min: 10, max: 1000}, true),
     // validate above attributes
     inputValidator,
     // handle update
@@ -121,7 +108,7 @@ router.delete(['/', '/:id'],
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // handle delete
     deleteHandler(db)
 );

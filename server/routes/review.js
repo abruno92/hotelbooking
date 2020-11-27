@@ -7,7 +7,6 @@ const {parseObjectId, parseString, inputValidator} = require("../middleware/inpu
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
-const {body} = require("express-validator");
 const router = express.Router();
 
 const db = new MongoDatabase(reviewCol);
@@ -28,7 +27,7 @@ router.post('/',
 // read
 router.get('/:id',
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // validate above attributes
     inputValidator,
     // handle read
@@ -42,25 +41,13 @@ router.get('/',
 // update
 router.patch('/:id',
     // 'id' URL param
-    parseObjectId('id', 'param'),
+    parseObjectId('id', false, 'param'),
     // 'userId' body attribute
-    body('userId')
-        // only run validation if 'userId' is provided
-        .if(body('userId').exists())
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    parseObjectId('userId', true),
     // 'roomId' body attribute
-    body('roomId')
-        // only run validation if 'roomId' is provided
-        .if(body('roomId').exists())
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    parseObjectId('roomId', true),
     // 'content' body attribute
-    body('content')
-        // only run validation if 'content' is provided
-        .if(body('content').exists())
-        // ensure length is between 10 and 1000 characters
-        .isLength({min: 10, max: 1000}).withMessage('must be between 10 and 1000 characters'),
+    parseString('content', {min: 10, max: 1000}, true),
     // validate above attributes
     inputValidator,
     // handle update

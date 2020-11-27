@@ -2,7 +2,6 @@
  * This file contains various middleware functions
  * related to input validation and sanitization.
  */
-const {locale} = require("../config");
 const {validationResult} = require("express-validator");
 const validator = require('express-validator'), ValidationChain = validator.ValidationChain;
 const {ObjectId} = require("mongodb");
@@ -10,17 +9,34 @@ const {ObjectId} = require("mongodb");
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given context object
- * is a valid {@link ObjectId} string). The field is then
+ * exists if it is not optional.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field must be present
+ * @param {string} context - Object in the request where the attribute is to be tested
+ * @returns {ValidationChain} - the current Validation chain instance
+ */
+function parseField(field, optional, context) {
+    const parser = validator[context](field);
+    return optional ?
+        // only run parsing if field is provided
+        parser.if(validator[context](field).exists()) :
+        // ensure field is provided
+        parser.exists().withMessage("must be provided").bail();
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given context object
+ * is a valid {@link ObjectId} string. The field is then
  * cast to an {@link ObjectId} instance.
  * @param {string} field - Attribute to be validated, defaults to 'id'
+ * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - the current Validation chain instance
  */
-function parseObjectId(field = 'id', context = 'body') {
-    return validator[context](field)
+function parseObjectId(field = 'id', optional = false, context = 'body') {
+    return parseField(field, optional, context)
         // Validation
-        // ensure field is provided
-        .exists().withMessage("must be provided").bail()
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string").bail()
         // Sanitization
@@ -35,20 +51,19 @@ function parseObjectId(field = 'id', context = 'body') {
  * trimmed of whitespaces.
  * @param {string} field - Attribute to be validated
  * @param {Object} options - Object of 'min' and 'max' to set the length of the string
+ * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - the current Validation chain instance
  */
-function parseString(field, options, context = 'body') {
-    return validator[context](field)
+function parseString(field, options, optional = false, context = 'body') {
+    return parseField(field, optional, context)
         // Validation
-        // ensure field is provided
-        .exists().withMessage("must be provided").bail()
         // check if length matches
         .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`)
         // Sanitization
         // trim leading and trailing whitespaces
         .trim()
-        // todo sanitize input against SQL, XSS and the like
+    // todo sanitize input against SQL, XSS and the like
 }
 
 /**
@@ -57,14 +72,13 @@ function parseString(field, options, context = 'body') {
  * is a valid number. The field is then
  * cast to a float.
  * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
- * @returns {function} - ValidationChain object
+ * @returns {function} - the current Validation chain instance
  */
-function parseDecimal(field, context = 'body') {
-    return validator[context](field)
+function parseDecimal(field, optional = false, context = 'body') {
+    return parseField(field, optional, context)
         // Validation
-        // ensure field is provided
-        .exists().withMessage("must be provided").bail()
         // check if the number format matches
         .isFloat().withMessage("must be a valid float")
         // Sanitization
@@ -77,18 +91,35 @@ function parseDecimal(field, context = 'body') {
  * is a valid date. The field is then
  * cast to a JavaScript {@link Date}.
  * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
- * @returns {function} - ValidationChain object
+ * @returns {function} - the current Validation chain instance
  */
-function parseDate(field, context = 'body') {
-    return validator[context](field)
+function parseDate(field, optional = false, context = 'body') {
+    return parseField(field, optional, context)
         // Validation
-        // ensure field is provided
-        .exists().withMessage("must be provided").bail()
-        // check if the number format matches
+        // check if length matches
         .isDate().withMessage("must be a valid date")
         // Sanitization
         .toDate()
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid URL.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
+ * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @returns {function} - the current Validation chain instance
+ */
+function parseUrl(field, optional = false, context = 'body') {
+    return parseString(field, {min: 2, max: 2000}, context)
+        // Validation
+        // check if valid URL
+        .isURL().withMessage("must be a valid URL")
+    // Sanitization
+    // none
 }
 
 /**
@@ -117,4 +148,5 @@ module.exports = {
     parseString: parseString,
     parseDecimal: parseDecimal,
     parseDate: parseDate,
+    parseUrl: parseUrl,
 }
