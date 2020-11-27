@@ -2,6 +2,7 @@
  * This file contains various middleware functions
  * related to RESTful APIs.
  */
+const {MongoDatabase} = require("../db/database");
 
 /**
  * Function that returns a handler for a POST request
