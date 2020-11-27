@@ -56,7 +56,9 @@ function parseString(field, options, optional = false) {
     return parseField(field, optional)
         // Validation
         // check if length matches
-        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`)
+        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`).bail()
+        // ensure field is not empty, outside of whitespaces
+        .not().isEmpty({ignore_whitespace: true}).withMessage("cannot be empty").bail()
         // Sanitization
         // trim leading and trailing whitespaces
         .trim()
@@ -76,7 +78,7 @@ function parseDecimal(field, optional = false) {
     return parseField(field, optional)
         // Validation
         // check if the number format matches
-        .isFloat().withMessage("must be a valid float")
+        .isFloat().withMessage("must be a valid float").bail()
         // Sanitization
         .toFloat()
 }
@@ -94,7 +96,7 @@ function parseDate(field, optional = false) {
     return parseField(field, optional)
         // Validation
         // check if length matches
-        .isDate().withMessage("must be a valid date")
+        .isDate().withMessage("must be a valid date").bail()
         // Sanitization
         .toDate()
 }
@@ -111,7 +113,7 @@ function parseUrl(field, optional = false) {
     return parseString(field, {min: 2, max: 2000})
         // Validation
         // check if valid URL
-        .isURL().withMessage("must be a valid URL")
+        .isURL().withMessage("must be a valid URL").bail()
     // Sanitization
     // none
 }
