@@ -1,6 +1,6 @@
 /**
  * This file contains the configuration of an Express.js router
- * for the '/review' route.
+ * for the '/reply' route.
  */
 const express = require("express");
 const {port} = require("../config");
