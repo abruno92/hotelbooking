@@ -4,7 +4,7 @@
  */
 const express = require("express");
 const {port} = require("../config");
-const {getParamIdValidation, getIdValidation, getStringValidation, inputValidator} = require("../middleware/inputValidation");
+const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {replyCol} = require("../db/config");
@@ -18,7 +18,7 @@ const db = new MongoDatabase(replyCol);
 // middleware to validate the 'reviewId' parameter
 // and add it to the request body
 router.use('/',
-    getParamIdValidation('reviewId'),
+    parseObjectId('reviewId', 'param'),
     // validate above attribute
     inputValidator
 );
@@ -26,9 +26,9 @@ router.use('/',
 // create
 router.post('/',
     // 'userId' body attribute
-    getIdValidation('userId'),
+    parseObjectId('userId'),
     // 'content' body attribute
-    getStringValidation('content', {min: 10, max: 1000}),
+    parseString('content', {min: 10, max: 1000}),
     // validate above attributes
     inputValidator,
     // check that another reply does not already exist for this review
@@ -91,7 +91,7 @@ router.get('/*',
 router.patch(['/', '/:id'],
     retrieveId,
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // 'userId' body attribute
     body('userId')
         // only run validation if 'userId' is provided
@@ -121,7 +121,7 @@ router.delete(['/', '/:id'],
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // handle delete
     deleteHandler(db)
 );

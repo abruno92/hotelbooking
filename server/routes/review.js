@@ -3,7 +3,7 @@
  * for the '/review' route.
  */
 const express = require("express");
-const {getParamIdValidation, getIdValidation, getStringValidation, inputValidator} = require("../middleware/inputValidation");
+const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
@@ -15,11 +15,11 @@ const db = new MongoDatabase(reviewCol);
 // create
 router.post('/',
     // 'userId' body attribute
-    getIdValidation('userId'),
+    parseObjectId('userId'),
     // 'roomId' body attribute
-    getIdValidation('roomId'),
+    parseObjectId('roomId'),
     // 'content' body attribute
-    getStringValidation('content', {min: 10, max: 1000}),
+    parseString('content', {min: 10, max: 1000}),
     // validate above attributes
     inputValidator,
     // handle create
@@ -28,7 +28,7 @@ router.post('/',
 // read
 router.get('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // validate above attributes
     inputValidator,
     // handle read
@@ -42,7 +42,7 @@ router.get('/',
 // update
 router.patch('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // 'userId' body attribute
     body('userId')
         // only run validation if 'userId' is provided
@@ -69,7 +69,7 @@ router.patch('/:id',
 // delete
 router.delete('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // handle delete
     deleteHandler(db));
 

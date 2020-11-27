@@ -4,7 +4,7 @@
  */
 const express = require("express");
 const {roomCol} = require("../db/config");
-const {getParamIdValidation, getStringValidation, inputValidator} = require("../middleware/inputValidation");
+const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {body} = require("express-validator");
@@ -15,13 +15,13 @@ const db = new MongoDatabase(roomCol);
 // create
 router.post('/',
     // 'number' body attribute
-    getStringValidation('number', {min: 1, max: 3}),
+    parseString('number', {min: 1, max: 3}),
     // 'floor' body attribute
-    getStringValidation('floor', {min: 1, max: 3}),
+    parseString('floor', {min: 1, max: 3}),
     // 'side' body attribute
-    getStringValidation('side', {min: 1, max: 3}),
+    parseString('side', {min: 1, max: 3}),
     // 'category' body attribute
-    getStringValidation('category', {min: 1, max: 20}),
+    parseString('category', {min: 1, max: 20}),
     // 'pictureUrl' body attribute
     body('pictureUrl')
         .exists().withMessage("must be provided").bail()
@@ -36,7 +36,7 @@ router.post('/',
 // read
 router.get('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // validate above attributes
     inputValidator,
     // handle read
@@ -50,7 +50,7 @@ router.get('/',
 // update
 router.patch('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // 'number' body attribute
     body('number')
         .if(body('number').exists())
@@ -81,7 +81,7 @@ router.patch('/:id',
 // delete
 router.delete('/:id',
     // 'id' URL param
-    getParamIdValidation(),
+    parseObjectId('id', 'param'),
     // handle delete
     deleteHandler(db));
 

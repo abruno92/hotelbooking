@@ -23,17 +23,6 @@ class MongoDatabase {
         const collection = client.db(config.databaseName).collection(this._collectionName);
 
         try {
-            // find all string instances of attributes that end
-            // with 'Id' and replace them
-            // with ObjectId instances, if applicable
-            for (const itemAttr in item) {
-                const attrValue = item[itemAttr];
-                if (itemAttr.endsWith('Id') &&
-                    ObjectId.isValid(attrValue) && typeof attrValue === "string") {
-                    item[itemAttr] = new ObjectId(attrValue);
-                }
-            }
-
             // insert the item in the database
             const writeResult = await collection.insertOne(item);
             // return the ObjectId of the new item

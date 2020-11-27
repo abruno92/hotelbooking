@@ -5,82 +5,90 @@
 const {locale} = require("../config");
 const {validationResult} = require("express-validator");
 const validator = require('express-validator'), ValidationChain = validator.ValidationChain;
-
-/**
- * Function that returns a {@link ValidationChain} used to
- * ensure the 'field' parameter in the request URL
- * is a valid {@link ObjectId} string)
- * @param {string} field - Parameter to be validated, defaults to 'id'
- * @returns {function} - ValidationChain object
- */
-function getParamIdValidation(field = 'id') {
-    return getIdValidation(field, 'param');
-}
+const {ObjectId} = require("mongodb");
 
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given context object
- * is a valid {@link ObjectId} string).
+ * is a valid {@link ObjectId} string). The field is then
+ * cast to an {@link ObjectId} instance.
  * @param {string} field - Attribute to be validated, defaults to 'id'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
- * @returns {function} - ValidationChain object
+ * @returns {function} - the current Validation chain instance
  */
-function getIdValidation(field = 'id', context = 'body') {
+function parseObjectId(field = 'id', context = 'body') {
     return validator[context](field)
+        // Validation
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string");
+        .isMongoId().withMessage("must be a valid MongoDB ObjectId string").bail()
+        // Sanitization
+        // convert to ObjectId (same as value => ObjectId(value) )
+        .customSanitizer(ObjectId)
 }
 
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given request object
- * is a valid string that matches given boundaries.
+ * is a valid string that matches given boundaries. The field is then
+ * trimmed of whitespaces.
  * @param {string} field - Attribute to be validated
  * @param {Object} options - Object of 'min' and 'max' to set the length of the string
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
- * @returns {function} - ValidationChain object
+ * @returns {function} - the current Validation chain instance
  */
-function getStringValidation(field, options, context = 'body') {
+function parseString(field, options, context = 'body') {
     return validator[context](field)
+        // Validation
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if length matches
-        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`);
-    // todo sanitize input against SQL, XSS and the like
+        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`)
+        // Sanitization
+        // trim leading and trailing whitespaces
+        .trim()
+        // todo sanitize input against SQL, XSS and the like
 }
 
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given request object
- * is a valid number.
+ * is a valid number. The field is then
+ * cast to a float.
  * @param {string} field - Attribute to be validated
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
  */
-function getDecimalValidation(field, context = 'body') {
+function parseDecimal(field, context = 'body') {
     return validator[context](field)
+        // Validation
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if the number format matches
         .isDecimal({locale: locale}).withMessage("must be a valid decimal number")
+        // Sanitization
+        .toFloat()
 }
 
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given request object
- * is a valid date.
+ * is a valid date. The field is then
+ * cast to a JavaScript {@link Date}.
  * @param {string} field - Attribute to be validated
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
  */
-function getDateValidation(field, context = 'body') {
+function parseDate(field, context = 'body') {
     return validator[context](field)
+        // Validation
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if the number format matches
         .isDate().withMessage("must be a valid date")
+        // Sanitization
+        .toDate()
 }
 
 /**
@@ -105,9 +113,8 @@ function inputValidator(req, res, next) {
 
 module.exports = {
     inputValidator: inputValidator,
-    getParamIdValidation: getParamIdValidation,
-    getIdValidation: getIdValidation,
-    getStringValidation: getStringValidation,
-    getDecimalValidation: getDecimalValidation,
-    getDateValidation: getDateValidation,
+    parseObjectId: parseObjectId,
+    parseString: parseString,
+    parseDecimal: parseDecimal,
+    parseDate: parseDate,
 }
