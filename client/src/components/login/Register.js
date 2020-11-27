@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Axios from  "axios";
+import Axios from "axios";
 import * as firebase from 'firebase'
 import firebaseConfig from "client\public\firebase.confiq.js";
 
@@ -31,6 +31,8 @@ const Register = () => {
     const [lastNameReg, setLastNameReg] = useState('');
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
+
+    handleForm();
 
     const register = () => {
         Axios.post('http://localhost:3001/auth/register', {
