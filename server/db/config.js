@@ -6,4 +6,5 @@ module.exports = {
     reviewCol: "Review",
     roomCol: "Room",
     replyCol: "Reply",
+    bookingCol: "Booking",
 };

@@ -8,7 +8,7 @@ const userDb = require("../db/users");
 const jwt = require("jsonwebtoken");
 const {jwtExpirySeconds} = require("../auth");
 const {jwtSecret} = require("../jwtSecret");
-const {inputValidator} = require("../middleware");
+const {inputValidator} = require("../middleware/inputParsing");
 
 const router = express.Router();
 
