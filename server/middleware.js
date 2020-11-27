@@ -4,13 +4,14 @@
 const jwt = require("jsonwebtoken");
 const {jwtSecret} = require("./jwtSecret");
 const userDb = require("./db/users");
+const {locale} = require("./config");
 const {validationResult} = require("express-validator");
 const validator = require('express-validator'), ValidationChain = validator.ValidationChain;
 
 /**
  * Function that returns a {@link ValidationChain} used to
- * validate (ensure is a valid {@link ObjectId} string) the 'field'
- * parameter in the request URL.
+ * ensure the 'field' parameter in the request URL
+ * is a valid {@link ObjectId} string)
  * @param {string} field - Parameter to be validated, defaults to 'id'
  * @returns {function} - ValidationChain object
  */
@@ -20,10 +21,10 @@ function getParamIdValidation(field = 'id') {
 
 /**
  * Function that returns a {@link ValidationChain} used to
- * validate (ensure is a valid {@link ObjectId} string) the 'field'
- * attribute in the given context object.
+ * ensure the 'field' attribute in the given context object
+ * is a valid {@link ObjectId} string).
+ * @param {string} field - Field to be validated, defaults to 'id'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
- * @param {string} field - Parameter to be validated, defaults to 'id'
  * @returns {function} - ValidationChain object
  */
 function getIdValidation(field = 'id', context = 'body') {
@@ -36,19 +37,36 @@ function getIdValidation(field = 'id', context = 'body') {
 
 /**
  * Function that returns a {@link ValidationChain} used to
- * validate (ensure is a valid string that matches given boundaries) the 'field'
- * attribute in the given context object.
- * @param {string} field - Parameter to be validated, defaults to 'id'
+ * ensure the 'field' attribute in the given request object
+ * is a valid string that matches given boundaries.
+ * @param {string} field - Field to be validated
  * @param {Object} options - Object of 'min' and 'max' to set the length of the string
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
  */
 function getStringValidation(field, options, context = 'body') {
     return validator[context](field)
-        //ensure field is provided
+        // ensure field is provided
         .exists().withMessage("must be provided").bail()
-        //check if length matches
+        // check if length matches
         .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`);
+    // todo sanitize input against SQL, XSS and the like
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid number.
+ * @param {string} field - Field to be validated
+ * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @returns {function} - ValidationChain object
+ */
+function getDecimalValidation(field, context = 'body') {
+    return validator[context](field)
+        // ensure field is provided
+        .exists().withMessage("must be provided").bail()
+        // check if the number format matches
+        .isDecimal({locale: locale}).withMessage("must be a valid decimal number").bail()
 }
 
 /**
@@ -136,4 +154,5 @@ module.exports = {
     getParamIdValidation: getParamIdValidation,
     getIdValidation: getIdValidation,
     getStringValidation: getStringValidation,
+    getDecimalValidation: getDecimalValidation,
 };
