@@ -2,8 +2,9 @@
  * This file contains various middleware functions
  * related to input validation and sanitization.
  */
+const {locale} = require("../config");
 const {validationResult} = require("express-validator");
-const {ValidationChain, check} = require('express-validator');
+const {ValidationChain, check, body} = require('express-validator');
 const {ObjectId} = require("mongodb");
 
 /**
@@ -119,6 +120,68 @@ function parseUrl(field, optional = false) {
 }
 
 /**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid email string.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parseEmail(field = "email", optional = false) {
+    return parseString(field, {min: 10, max: 250}, optional)
+        // Validation
+        .isEmail({allow_utf8_local_part: false}).withMessage("must be a valid email").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid alphanumeric password.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parsePassword(field = 'password', optional = false) {
+    return parseString(field, {min: 5, max: 50}, optional)
+        // Validation
+        .isAlphanumeric(locale).withMessage("must only contain letters and numbers").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid alphanumeric password.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parseName(field = 'password', optional = false) {
+    return parseString(field, {min: 5, max: 50}, optional)
+        // Validation
+        .isAlpha(locale).withMessage("must only contain letters").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure both 'first' and 'second' attributes in the given request object
+ * are matching.
+ * @param {string} first - First attribute to be compared
+ * @param {string} second - Second attribute to be compared
+ * @returns {function} - the current Validation chain instance
+ */
+function fieldsMatch(first, second) {
+    return body(first)
+        .custom((value, {req}) => value === req.body[second])
+        .withMessage(`must match the '${second}' field`)
+}
+
+/**
  * Router-level middleware function that check for input validation
  * errors in the request body/params.
  * @param req - The Request object
@@ -145,4 +208,8 @@ module.exports = {
     parseDecimal: parseDecimal,
     parseDate: parseDate,
     parseUrl: parseUrl,
+    parseEmail: parseEmail,
+    parsePassword: parsePassword,
+    parseName: parseName,
+    fieldsMatch: fieldsMatch,
 }

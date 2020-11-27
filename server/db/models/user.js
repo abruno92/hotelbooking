@@ -8,6 +8,7 @@ class User {
     lastName;
     email;
     passwordHash;
+    pictureUrl;
 }
 
 module.exports = User;
