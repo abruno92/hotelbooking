@@ -4,7 +4,7 @@
  */
 const express = require("express");
 const {inputValidator} = require("../middleware");
-const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation} = require("../restMiddleware");
+const {createHandler, readHandler, updateHandler, deleteHandler, getParamIdValidation, getIdValidation, getStringValidation} = require("../restMiddleware");
 const {MongoDatabase} = require("../db/database");
 const {reviewCol} = require("../db/config");
 const {body} = require("express-validator");
@@ -15,23 +15,11 @@ const db = new MongoDatabase(reviewCol);
 // create
 router.post('/',
     // 'userId' body attribute
-    body('userId')
-        // ensure 'userId' is provided
-        .exists().withMessage("must be provided").bail()
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    getIdValidation('userId'),
     // 'roomId' body attribute
-    body('roomId')
-        // ensure 'roomId' is provided
-        .exists().withMessage("must be provided").bail()
-        // check if is a valid ObjectId string
-        .isMongoId().withMessage("must be a valid MongoDB ObjectId string"),
+    getIdValidation('roomId'),
     // 'content' body attribute
-    body('content')
-        // ensure 'content' is provided
-        .exists().withMessage("must be provided").bail()
-        // ensure length is between 10 and 1000 characters
-        .isLength({min: 10, max: 1000}).withMessage('must be between 10 and 1000 characters'),
+    getStringValidation('content', {min: 10, max: 1000}),
     // validate above attributes
     inputValidator,
     // handle create
@@ -44,7 +32,7 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(db, "id"));
+    readHandler(db));
 
 // read all
 router.get('/',
