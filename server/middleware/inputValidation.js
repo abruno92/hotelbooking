@@ -21,7 +21,7 @@ function getParamIdValidation(field = 'id') {
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given context object
  * is a valid {@link ObjectId} string).
- * @param {string} field - Field to be validated, defaults to 'id'
+ * @param {string} field - Attribute to be validated, defaults to 'id'
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
  */
@@ -37,7 +37,7 @@ function getIdValidation(field = 'id', context = 'body') {
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given request object
  * is a valid string that matches given boundaries.
- * @param {string} field - Field to be validated
+ * @param {string} field - Attribute to be validated
  * @param {Object} options - Object of 'min' and 'max' to set the length of the string
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
@@ -55,7 +55,7 @@ function getStringValidation(field, options, context = 'body') {
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the given request object
  * is a valid number.
- * @param {string} field - Field to be validated
+ * @param {string} field - Attribute to be validated
  * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - ValidationChain object
  */
@@ -64,7 +64,23 @@ function getDecimalValidation(field, context = 'body') {
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if the number format matches
-        .isDecimal({locale: locale}).withMessage("must be a valid decimal number").bail()
+        .isDecimal({locale: locale}).withMessage("must be a valid decimal number")
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid date.
+ * @param {string} field - Attribute to be validated
+ * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @returns {function} - ValidationChain object
+ */
+function getDateValidation(field, context = 'body') {
+    return validator[context](field)
+        // ensure field is provided
+        .exists().withMessage("must be provided").bail()
+        // check if the number format matches
+        .isDate().withMessage("must be a valid date")
 }
 
 /**
@@ -93,4 +109,5 @@ module.exports = {
     getIdValidation: getIdValidation,
     getStringValidation: getStringValidation,
     getDecimalValidation: getDecimalValidation,
+    getDateValidation: getDateValidation,
 }
