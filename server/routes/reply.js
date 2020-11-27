@@ -4,8 +4,8 @@
  */
 const express = require("express");
 const {port} = require("../config");
-const {getParamIdValidation, getIdValidation, getStringValidation, inputValidator} = require("../middleware");
-const {createHandler, updateHandler, deleteHandler} = require("../restMiddleware");
+const {getParamIdValidation, getIdValidation, getStringValidation, inputValidator} = require("../middleware/inputValidation");
+const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const {replyCol} = require("../db/config");
 const {body} = require("express-validator");

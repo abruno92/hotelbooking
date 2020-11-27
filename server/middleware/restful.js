@@ -1,5 +1,6 @@
 /**
- * This file contains various middleware functions related to RESTful APIs.
+ * This file contains various middleware functions
+ * related to RESTful APIs.
  */
 
 /**

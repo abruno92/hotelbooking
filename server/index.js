@@ -11,7 +11,7 @@ const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
 const replyRoute = require('./routes/reply');
 const {port} = require("./config");
-const {parseJwtToken} = require("./middleware");
+const {parseJwtToken} = require("./middleware/misc");
 
 const app = express();
 
