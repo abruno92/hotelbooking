@@ -13,6 +13,19 @@ provider.add2FactorAuthentication(userID)
     //await DB.TheTable.update(userDI, {gaSecret});
 }
 
+const handleForm = e => {
+    e.preventDefault();
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(res => {
+        if (res.user) Auth.setLoggedIn(true);
+      })
+      .catch(e => {
+        setErrors(e.message);
+      });
+  };
+
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
     const [lastNameReg, setLastNameReg] = useState('');
