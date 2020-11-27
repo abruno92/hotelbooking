@@ -66,7 +66,7 @@ function parseDecimal(field, context = 'body') {
         // ensure field is provided
         .exists().withMessage("must be provided").bail()
         // check if the number format matches
-        .isDecimal({locale: locale}).withMessage("must be a valid decimal number")
+        .isFloat().withMessage("must be a valid float")
         // Sanitization
         .toFloat()
 }
