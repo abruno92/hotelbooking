@@ -202,14 +202,14 @@ function inputValidator(req, res, next) {
 }
 
 module.exports = {
-    inputValidator: inputValidator,
-    parseObjectId: parseObjectId,
-    parseString: parseString,
-    parseDecimal: parseDecimal,
-    parseDate: parseDate,
-    parseUrl: parseUrl,
-    parseEmail: parseEmail,
-    parsePassword: parsePassword,
-    parseName: parseName,
-    fieldsMatch: fieldsMatch,
+    inputValidator,
+    parseObjectId,
+    parseString,
+    parseDecimal,
+    parseDate,
+    parseUrl,
+    parseEmail,
+    parsePassword,
+    parseName,
+    fieldsMatch,
 }

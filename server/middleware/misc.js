@@ -86,7 +86,8 @@ function requireJwtToken(req, res, next) {
 }
 
 module.exports = {
-    parseJwtToken: parseJwtToken,
-    requireJwtToken: requireJwtToken,
-    getAuthLevelMw: authGuard,
+    parseJwtToken,
+    requireJwtToken,
+    authGuard,
+    notImplemented,
 };
