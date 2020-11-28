@@ -139,7 +139,7 @@ router.get('/logout',
     (_, res) => {
         res.cookie(jwtTokenCookie, '', {expires: new Date(0)});
         // res.clearCookie(jwtTokenCookie);
-        res.sendStatus(200);
+        res.sendStatus(204);
     })
 
 module.exports = router;
