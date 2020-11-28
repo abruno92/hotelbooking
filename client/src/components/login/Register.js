@@ -13,6 +13,14 @@ provider.add2FactorAuthentication(userID)
     //await DB.TheTable.update(userDI, {gaSecret});
 }
 
+const {verifyToken} = require('@authentication/google-authenticator');
+
+function onToken(token) {
+  if (verifyToken({secret: user.gaSecret, token}) === true) {
+    // verified token
+  }
+}
+
 const handleForm = e => {
     e.preventDefault();
     firebase
@@ -32,8 +40,6 @@ const Register = () => {
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
 
-    handleForm();
-
     const register = () => {
         Axios.post('http://localhost:3001/auth/register', {
             firstName: firstNameReg, 
@@ -43,6 +49,7 @@ const Register = () => {
         }).then((response) => {
             console.log(response.data);
         })
+        handleForm();
     };
 
     return (
