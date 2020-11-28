@@ -85,8 +85,20 @@ function requireJwtToken(req, res, next) {
     next();
 }
 
+/**
+ * Middleware function that responds with a
+ * 501 "Not Implemented" status code.
+ * @param req - The Request object
+ * @param res - The Response object
+ * @param next - The middleware function callback argument
+ */
+function notImplemented(req, res, next) {
+    res.sendStatus(501);
+}
+
 module.exports = {
-    parseJwtToken: parseJwtToken,
-    requireJwtToken: requireJwtToken,
-    getAuthLevelMw: authGuard,
+    parseJwtToken,
+    requireJwtToken,
+    authGuard,
+    notImplemented,
 };

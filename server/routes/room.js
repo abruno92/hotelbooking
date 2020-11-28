@@ -3,6 +3,7 @@
  * for the '/room' route.
  */
 const express = require("express");
+const {notImplemented} = require("../middleware/misc");
 const {roomCol} = require("../db/config");
 const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
@@ -67,5 +68,9 @@ router.delete('/:id',
     parseObjectId(),
     // handle delete
     deleteHandler(db));
+
+router.get('/:id/picture', notImplemented);
+router.put('/:id/picture', notImplemented);
+router.delete('/:id/picture', notImplemented);
 
 module.exports = router;
