@@ -1,4 +1,4 @@
-import React, { } from 'react';
+import React, { Profiler } from 'react'
 import ProfileUploader from './ProfileImg';
 
 function signOut() {
@@ -10,7 +10,6 @@ function signOut() {
 export const Profile = () => {
     return (
         <div>            
-<<<<<<< HEAD
             <div className = "ProfilePage">
                 <div className="flex border">
                     <div
@@ -28,11 +27,10 @@ export const Profile = () => {
                 </div>                
                         <button className = "signOut">Sign out</button>
             </div>
-=======
-             <ProfileUploader />
->>>>>>> 90f60bf9570f08408ddc540250b567f628db0393
+            <ProfileUploader />
         </div>
     );
+        }
 }
 
 export default Profile;
