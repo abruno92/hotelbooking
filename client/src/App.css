@@ -1,12 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
-body {
-  margin: 0;
-  width: 0;
-  padding: 10px;
+App {
   background: linear-gradient(120deg, #2980b9, #8e44ad);
-  height: 100vh;
-  overflow: hidden;
   font-family: 'Roboto';
 }
 

@@ -1,31 +1,31 @@
 import React, {useState} from "react";
 import Axios from "axios";
-import * as firebase from 'firebase'
+// import * as firebase from 'firebase'
 import './logreg.css'
-import firebaseConfig from "client\public\firebase.confiq.js";
+// import firebaseConfig from "client\public\firebase.confiq.js";
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-var provider = new firebase.auth.GoogleAuthProvider();
-provider.add2FactorAuthentication(userID)
-{
-    // get the secret to be shared with the google authenticator app
-    const gaSecret = await generateSecret(); 
-    //await DB.TheTable.update(userDI, {gaSecret});
-}
+// // Initialize Firebase
+// firebase.initializeApp(firebaseConfig);
+// var provider = new firebase.auth.GoogleAuthProvider();
+// provider.add2FactorAuthentication(userID)
+// {
+//     // get the secret to be shared with the google authenticator app
+//     const gaSecret = await generateSecret(); 
+//     //await DB.TheTable.update(userDI, {gaSecret});
+// }
 
-const handleForm = e => {
-    e.preventDefault();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(res => {
-        if (res.user) Auth.setLoggedIn(true);
-      })
-      .catch(e => {
-        setErrors(e.message);
-      });
-  };
+// const handleForm = e => {
+//     e.preventDefault();
+//     firebase
+//       .auth()
+//       .createUserWithEmailAndPassword(email, password)
+//       .then(res => {
+//         if (res.user) Auth.setLoggedIn(true);
+//       })
+//       .catch(e => {
+//         setErrors(e.message);
+//       });
+//   };
 
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
@@ -33,7 +33,7 @@ const Register = () => {
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
 
-    handleForm();
+    // handleForm();
 
     const register = () => {
         Axios.post('http://localhost:3001/auth/register', {
@@ -116,7 +116,7 @@ const Register = () => {
     );
 }
 
-export const signInWithGoogle = () => {
-    auth.signInWithPopup(provider);
-  };
+// export const signInWithGoogle = () => {
+//     auth.signInWithPopup(provider);
+//   };
 export default Register; 
