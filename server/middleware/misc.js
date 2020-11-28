@@ -2,32 +2,38 @@
  * This file contains various middleware functions.
  */
 const jwt = require("jsonwebtoken");
+const {jwtTokenCookie} = require("../config");
 const {jwtSecret} = require("../jwtSecret");
-const userDb = require("../db/users");
+const {UserDatabase} = require("../db/database");
+
+const userDb = new UserDatabase();
 
 /**
  * Application-level middleware function that extracts the
- * AuthToken cookie from the request object and adds
- * the {@link User} of that token to the request object.
+ * JWT Token cookie from the request object and adds
+ * the {@link User} bearer of that token to the request object.
  * @param req - The Request object
  * @param res - The Response object
  * @param next - The middleware function callback argument
  */
-function parseJwtToken(req, res, next) {
-    const token = req.cookies["JwtToken"];
+async function parseJwtToken(req, res, next) {
+    const token = req.cookies[jwtTokenCookie];
 
-    if (token) {
-        jwt.verify(token, jwtSecret, (err, payload) => {
-            if (!err) {
-                req.user = userDb.getUser(payload.username);
-            } else {
-                console.log(err);
-            }
-            next();
-        });
-    } else {
-        next();
+    if (!token) {
+        return next();
     }
+
+    let payload;
+    try {
+        payload = await jwt.verify(token, jwtSecret);
+    } catch (e) {
+        console.log(e);
+        return next();
+    }
+
+    req.user = userDb.getOne(payload.userId);
+
+    next();
 }
 
 /**
@@ -35,8 +41,8 @@ function parseJwtToken(req, res, next) {
  * to users of given privilegeLevel.
  * E.g. Users of privilegeLevel '1' won't get access to a route
  * of privilegeLevel '0' nor vice versa.
- * @param {string} privilegeLevel - The privilege level needed to access the route
- * @returns {function(Request, Response, function())} - The router-level middleware function
+ * @param {string} privilegeLevel - Privilege level needed to access the route
+ * @returns {function} - The router-level middleware function
  */
 function authGuard(privilegeLevel) {
     // Throw error if privilegeLevel is not of type "string"
@@ -63,7 +69,24 @@ function authGuard(privilegeLevel) {
     }
 }
 
+/**
+ * Router-level middleware function that ensures a
+ * JWT Token cookie is present in the request.
+ * @param req - The Request object
+ * @param res - The Response object
+ * @param next - The middleware function callback argument
+ */
+function requireJwtToken(req, res, next) {
+    const token = req.cookies[jwtTokenCookie];
+    if (!token) {
+        return res.status(401).json({error: "missing jwt token"});
+    }
+
+    next();
+}
+
 module.exports = {
     parseJwtToken: parseJwtToken,
+    requireJwtToken: requireJwtToken,
     getAuthLevelMw: authGuard,
 };

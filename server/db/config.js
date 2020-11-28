@@ -7,4 +7,5 @@ module.exports = {
     roomCol: "Room",
     replyCol: "Reply",
     bookingCol: "Booking",
+    userCol: "User",
 };

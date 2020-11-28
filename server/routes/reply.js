@@ -90,7 +90,7 @@ router.get('/*',
 router.patch(['/', '/:id'],
     retrieveId,
     // 'id' URL param
-    parseObjectId('id', false, 'param'),
+    parseObjectId(),
     // 'userId' body attribute
     parseObjectId('userId'),
     // 'reviewId' body attribute
@@ -108,7 +108,7 @@ router.delete(['/', '/:id'],
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
-    parseObjectId('id', false, 'param'),
+    parseObjectId(),
     // handle delete
     deleteHandler(db)
 );

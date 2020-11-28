@@ -2,40 +2,39 @@
  * This file contains various middleware functions
  * related to input validation and sanitization.
  */
+const {locale} = require("../config");
 const {validationResult} = require("express-validator");
-const validator = require('express-validator'), ValidationChain = validator.ValidationChain;
+const {ValidationChain, check, body} = require('express-validator');
 const {ObjectId} = require("mongodb");
 
 /**
  * Function that returns a {@link ValidationChain} used to
- * ensure the 'field' attribute in the given context object
+ * ensure the 'field' attribute in the request object
  * exists if it is not optional.
  * @param {string} field - Attribute to be validated
  * @param {boolean} optional - Whether or not the field must be present
- * @param {string} context - Object in the request where the attribute is to be tested
  * @returns {ValidationChain} - the current Validation chain instance
  */
-function parseField(field, optional, context) {
-    const parser = validator[context](field);
+function parseField(field, optional) {
+    const parser = check(field);
     return optional ?
         // only run parsing if field is provided
-        parser.if(validator[context](field).exists()) :
+        parser.if(check(field).exists()) :
         // ensure field is provided
         parser.exists().withMessage("must be provided").bail();
 }
 
 /**
  * Function that returns a {@link ValidationChain} used to
- * ensure the 'field' attribute in the given context object
+ * ensure the 'field' attribute in the request object
  * is a valid {@link ObjectId} string. The field is then
  * cast to an {@link ObjectId} instance.
  * @param {string} field - Attribute to be validated, defaults to 'id'
  * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
- * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - the current Validation chain instance
  */
-function parseObjectId(field = 'id', optional = false, context = 'body') {
-    return parseField(field, optional, context)
+function parseObjectId(field = 'id', optional = false) {
+    return parseField(field, optional)
         // Validation
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string").bail()
@@ -52,14 +51,15 @@ function parseObjectId(field = 'id', optional = false, context = 'body') {
  * @param {string} field - Attribute to be validated
  * @param {Object} options - Object of 'min' and 'max' to set the length of the string
  * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
- * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
  * @returns {function} - the current Validation chain instance
  */
-function parseString(field, options, optional = false, context = 'body') {
-    return parseField(field, optional, context)
+function parseString(field, options, optional = false) {
+    return parseField(field, optional)
         // Validation
         // check if length matches
-        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`)
+        .isLength(options).withMessage(`must be between ${options.min} and ${options.max} characters`).bail()
+        // ensure field is not empty, outside of whitespaces
+        .not().isEmpty({ignore_whitespace: true}).withMessage("cannot be empty").bail()
         // Sanitization
         // trim leading and trailing whitespaces
         .trim()
@@ -72,15 +72,14 @@ function parseString(field, options, optional = false, context = 'body') {
  * is a valid number. The field is then
  * cast to a float.
  * @param {string} field - Attribute to be validated
- * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
- * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
  * @returns {function} - the current Validation chain instance
  */
-function parseDecimal(field, optional = false, context = 'body') {
-    return parseField(field, optional, context)
+function parseDecimal(field, optional = false) {
+    return parseField(field, optional)
         // Validation
         // check if the number format matches
-        .isFloat().withMessage("must be a valid float")
+        .isFloat().withMessage("must be a valid float").bail()
         // Sanitization
         .toFloat()
 }
@@ -91,15 +90,14 @@ function parseDecimal(field, optional = false, context = 'body') {
  * is a valid date. The field is then
  * cast to a JavaScript {@link Date}.
  * @param {string} field - Attribute to be validated
- * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
- * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
  * @returns {function} - the current Validation chain instance
  */
-function parseDate(field, optional = false, context = 'body') {
-    return parseField(field, optional, context)
+function parseDate(field, optional = false) {
+    return parseField(field, optional)
         // Validation
         // check if length matches
-        .isDate().withMessage("must be a valid date")
+        .isDate().withMessage("must be a valid date").bail()
         // Sanitization
         .toDate()
 }
@@ -109,17 +107,78 @@ function parseDate(field, optional = false, context = 'body') {
  * ensure the 'field' attribute in the given request object
  * is a valid URL.
  * @param {string} field - Attribute to be validated
- * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
- * @param {string} context - Object in the request where the attribute is to be tested, defaults to 'body'
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
  * @returns {function} - the current Validation chain instance
  */
-function parseUrl(field, optional = false, context = 'body') {
-    return parseString(field, {min: 2, max: 2000}, context)
+function parseUrl(field, optional = false) {
+    return parseString(field, {min: 2, max: 2000})
         // Validation
         // check if valid URL
-        .isURL().withMessage("must be a valid URL")
+        .isURL().withMessage("must be a valid URL").bail()
     // Sanitization
     // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid email string.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parseEmail(field = "email", optional = false) {
+    return parseString(field, {min: 10, max: 250}, optional)
+        // Validation
+        .isEmail({allow_utf8_local_part: false}).withMessage("must be a valid email").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid alphanumeric password.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parsePassword(field = 'password', optional = false) {
+    return parseString(field, {min: 5, max: 50}, optional)
+        // Validation
+        .isAlphanumeric(locale).withMessage("must only contain letters and numbers").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure the 'field' attribute in the given request object
+ * is a valid alphanumeric password.
+ * @param {string} field - Attribute to be validated
+ * @param {boolean} optional - Whether or not the field is optional, defaults to 'false'
+ * @returns {function} - the current Validation chain instance
+ */
+function parseName(field = 'password', optional = false) {
+    return parseString(field, {min: 5, max: 50}, optional)
+        // Validation
+        .isAlpha(locale).withMessage("must only contain letters").bail()
+    // Sanitization
+    // none
+}
+
+/**
+ * Function that returns a {@link ValidationChain} used to
+ * ensure both 'first' and 'second' attributes in the given request object
+ * are matching.
+ * @param {string} first - First attribute to be compared
+ * @param {string} second - Second attribute to be compared
+ * @returns {function} - the current Validation chain instance
+ */
+function fieldsMatch(first, second) {
+    return body(first)
+        .custom((value, {req}) => value === req.body[second])
+        .withMessage(`must match the '${second}' field`)
 }
 
 /**
@@ -149,4 +208,8 @@ module.exports = {
     parseDecimal: parseDecimal,
     parseDate: parseDate,
     parseUrl: parseUrl,
+    parseEmail: parseEmail,
+    parsePassword: parsePassword,
+    parseName: parseName,
+    fieldsMatch: fieldsMatch,
 }

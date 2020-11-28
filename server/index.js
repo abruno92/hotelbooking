@@ -6,6 +6,7 @@ const cors = require("cors");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/auth");
+const userRoute = require("./routes/user");
 const bookingRoute = require('./routes/booking');
 const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use(parseJwtToken);
 
 app.use('/auth', authRoute);
+app.use('/user', userRoute);
 app.use('/booking', bookingRoute);
 app.use('/room', roomRoute);
 app.use('/review', reviewRoute);

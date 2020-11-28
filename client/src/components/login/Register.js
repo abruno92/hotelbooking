@@ -1,38 +1,6 @@
 import React, {useState} from "react";
 import Axios from "axios";
-import * as firebase from 'firebase'
-import firebaseConfig from "client\public\firebase.confiq.js";
 
-// Initialize Firebase
-//firebase.initializeApp(firebaseConfig);
-//var provider = new firebase.auth.GoogleAuthProvider();
-//provider.add2FactorAuthentication(userID)
-//{
-    // get the secret to be shared with the google authenticator app
-//    const gaSecret = await generateSecret(); 
-    //await DB.TheTable.update(userDI, {gaSecret});
-//}
-
-const {verifyToken} = require('@authentication/google-authenticator');
-
-function onToken(token) {
-  if (verifyToken({secret: user.gaSecret, token}) === true) {
-    // verified token
-  }
-}
-
-const handleForm = e => {
-    e.preventDefault();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(res => {
-        if (res.user) Auth.setLoggedIn(true);
-      })
-      .catch(e => {
-        setErrors(e.message);
-      });
-  };
 
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
@@ -121,8 +89,4 @@ const Register = () => {
         </div>
     );
 }
-
-export const signInWithGoogle = () => {
-    auth.signInWithPopup(provider);
-  };
 export default Register; 
