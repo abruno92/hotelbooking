@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Axios from "axios";
 import * as firebase from 'firebase'
+import './logreg.css'
 import firebaseConfig from "client\public\firebase.confiq.js";
 
 // Initialize Firebase

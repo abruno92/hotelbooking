@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import './logreg.css'
 import Axios from "axios";
 
 const Login = () => {
