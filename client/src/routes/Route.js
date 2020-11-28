@@ -9,7 +9,7 @@ export default function RouteWrapper({
 }) {
 
     //Lets add redux/formik to do this
-    const loggedIn = false;
+    const loggedIn = true;
 
     // Route is private and user is not logged in
     if (isPrivate && !loggedIn) {     

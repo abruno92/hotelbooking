@@ -1,17 +1,12 @@
 import React, {useState} from "react";
 import { Redirect } from "react-router-dom";
+import './LoginReg.css';
 import Axios from "axios";
 
-const Login = () => {
+const Login = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginStatus, setLoginStatus] = useState('');
-    const [isAuth, setIsAuth] = useState(true);
-
-    if(!isAuth) {
-        return <Redirect to="/login" />
-    }
-
 
     const login = () => {
         Axios.post('http://localhost:3001/auth/login', {
@@ -24,7 +19,7 @@ const Login = () => {
                 setLoginStatus(response.data[0].email)
             }
         })
-    };
+    };    
 
     return (
         <div className="wrapper">
@@ -60,7 +55,7 @@ const Login = () => {
                 </div> 
                 <small>Don't have an account?</small>
                 <div className="createAccount">
-                    <button type="submit" to="/register">Create an Account</button>
+                    <button type="submit" onClick={()=>props.history.push('/register')}>Create an Account</button>
                 </div>
                 </form>
             </div>

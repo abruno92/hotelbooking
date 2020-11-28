@@ -1,7 +1,9 @@
 import React, {useState} from "react";
 import Axios from  "axios";
+import './LoginReg.css';
 
-const Register = () => {
+
+const Register = (props) => {
     const [firstNameReg, setFirstNameReg] = useState('');
     const [lastNameReg, setLastNameReg] = useState('');
     const [emailReg, setEmailReg] = useState('');
@@ -80,7 +82,7 @@ const Register = () => {
                 </div> 
                 <small>Already have an account?</small>
                 <div className="createAccount">
-                    <button type="submit" to="/login">Login</button>
+                    <button type="submit"  onClick={()=>props.history.push('/login')}>Login</button>
                 </div>
                 </form>
             </div>

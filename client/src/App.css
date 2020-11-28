@@ -4,136 +4,57 @@ body {
   margin: 0;
   width: 0;
   padding: 10px;
-  background: linear-gradient(120deg, #2980b9, #8e44ad);
+  background: linear-gradient(120deg, #2980b9, #8e44ad); 
   height: 100vh;
   overflow: hidden;
   font-family: 'Roboto';
 }
 
 
-/* Login */
+/* images */
 
-.wrapper {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.img-container {
   position: absolute;
 }
-
-.form-wrapper {
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 40px;
-  border-radius: 10px;
-  box-shadow: 0px 10px 50px #555;
-  background: white;
-}
-
-form {
+.img-container img {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: block;
+  transition: var(--mainTransition);
 }
-
-form h1, h2 {
-  text-align:  center;
-  width: 100%;
-  color: darkslategray;
+.price-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--mainWhite);
+  padding: 0.3rem 0.6rem 0.5rem;
+  border-bottom-right-radius: 1rem;
+  font-size: 0.5rem;
+  text-align: center;
+  transition: var(--mainTransition);
 }
-
-form small {
-  text-align:  center;
-  width: 100%;
+.price-top h6 {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: var(--mainSpacing);
 }
-
-label {
- font-size: 0.8em;
- color: #222;
- font-weight: lighter;
- padding-bottom: 10px;
+.room-link {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: scale(0);
+  transition: all 0.3s linear;
 }
-
-input {
-  padding: 10px 10px;
-  border-radius: 5px;
-  outline: none;
-  border: 1px solid #cfcfcf;
+.img-container:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
-
-input::placeholder {
-  font-size: 1em;
-  font-weight: lighter;
-  color: #999;
-  padding: 5px;
+.img-container:hover img {
+  opacity: 0.3;
 }
-
-input:focus::placeholder {
-  color: transparent;
+.img-container:hover .price-top {
+  opacity: 0;
 }
-
-input[type="text"] {
-  padding-left: 10px;
+.img-container:hover .room-link {
+  transform: translate(-50%, -50%) scale(1);
 }
-
-input.error {
-  border: 1px solid red;
-}
-
-.errorMessage {
-  color: red;
-  font-size: 0.75em;
-  display: relative;
-}
-
-.firstname {
-  width: 49%;
-  margin-right: 1%;
-}
-
-.lastname {
-  width: 50%;
-}
-
-.firstname,
-.lastname,
-.email,
-.password {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 0px;
-}
-
-.email,
-.password {
-  width: 100%;
-}
-
-.login,
-.createAccount {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 10px 0px;
-}
-
-button {
-  padding: 10px 10px;
-  border-radius: 5px;
-  outline: none;
-  background-color: lightblue;
-  border: 1px solid #cfcfcf;
-}
-
-.login button:hover,
-.createAccount button:hover {
-  color: white;
-  background: linear-gradient(120deg, #2980b9, #8e44ad);
-}
-
-
-
-
