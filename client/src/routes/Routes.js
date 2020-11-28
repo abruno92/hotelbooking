@@ -1,7 +1,6 @@
 import React from "react";
 import { Switch } from "react-router-dom";
 import Admin from "../components/admin/Admin";
-import Error from "../components/home/FourOFour";
 import Homepage from "../components/home/Homepage";
 import Login from "../components/login/Login";
 import Profile from "../components/user/Profile";
@@ -17,11 +16,11 @@ export default function Routes() {
         <Route path="/" exact component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/homepage" component={Homepage} isPrivate />
-        <Route path="/room/:slug" component={Room} isPrivate />
+        <Route path="/room" component={Room} isPrivate />
         <Route path="/rooms" component={Rooms} isPrivate />
         <Route path="/admin" component={Admin} isPrivate />
-        <Route path="/profile/:slug" component={Profile} isPrivate />
-        <Route component={Error} />
+        <Route path="/profile" component={Profile} isPrivate />
+        <Route component={Homepage} />
     </Switch>
     );
 }

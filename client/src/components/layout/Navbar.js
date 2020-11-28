@@ -1,4 +1,4 @@
-import './Layout.css';
+import "./layout.css";
 import React, { useState } from 'react';
 import {NavLink, Redirect} from "react-router-dom";
 

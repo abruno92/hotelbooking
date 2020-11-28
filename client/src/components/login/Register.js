@@ -1,6 +1,6 @@
+import './loginreg.css'
 import React, {useState} from "react";
 import Axios from  "axios";
-import './LoginReg.css';
 
 
 const Register = (props) => {

@@ -1,6 +1,6 @@
+import './loginreg.css'
 import React, {useState} from "react";
 import { Redirect } from "react-router-dom";
-import './LoginReg.css';
 import Axios from "axios";
 
 const Login = (props) => {

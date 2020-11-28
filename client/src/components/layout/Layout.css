@@ -1,3 +1,5 @@
+/* upload form styles */
+
 /* Navbar */
 
 .NavLink {
@@ -6,32 +8,30 @@
     color: #61dafb;
     /*background: #282c34;*/
     margin: 10px;
-}
-
-.ActiveNavLink {
+  }
+  
+  .ActiveNavLink {
     color: #ffffff;
-}
+  }
+  
+/* END Navbar */
 
-/* Banner */
-.hero-container {
-  background-color: aquamarine;
-}
+/* title */
 
-/* Title */
-.sectionTitle {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-.sectionTitle h4 {
-  font-size: 2rem;
-  letter-spacing: var(--mainSpacing);
-  text-transform: capitalize;
-  margin-bottom: 1rem;
-}
-.sectionTitle div {
-  width: 5rem;
-  height: 5px;
-  margin: 0 auto;
-  background: var(--primaryColor);
-}
-/* end of Title */
+.title h1{
+    color: var(--primary);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    font-weight: normal;
+  }
+  .title h2, .title {
+    text-align: center;
+  }
+  .title h2{
+    margin-top: 60px;
+    font-size: 2.6rem;
+  }
+  .title h3, p {
+    text-align: left;
+  }
+

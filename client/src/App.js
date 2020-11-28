@@ -3,18 +3,15 @@ import React from 'react';
 import NavBar from './components/layout/Navbar';
 import {BrowserRouter} from "react-router-dom";
 import Routes from './routes/Routes';
-import {RoomProvider} from './Context';
 
 
 function App() {
     return (
-        <div className="body">
-            <RoomProvider>
+        <div className="Body">
             <BrowserRouter>
-                <NavBar/>
+                <NavBar />
                 <Routes/>
             </BrowserRouter>
-            </RoomProvider>
         </div>
     );
 }

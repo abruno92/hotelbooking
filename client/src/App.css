@@ -1,60 +1,45 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
 body {
-  margin: 0;
-  width: 0;
-  padding: 10px;
-  background: linear-gradient(120deg, #2980b9, #8e44ad); 
+  /* background: linear-gradient(120deg, #2980b9, #8e44ad);  */
+  background: #ffffff;
   height: 100vh;
-  overflow: hidden;
   font-family: 'Roboto';
 }
 
-
-/* images */
-
-.img-container {
-  position: absolute;
+.App{
+  max-width: 960px;
+  margin: 0 auto;
 }
-.img-container img {
-  width: 100%;
-  display: block;
-  transition: var(--mainTransition);
+
+/* Images */
+
+/* image grid styles */
+.img-grid{
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 40px;
 }
-.price-top {
+
+.img-wrap{
+  overflow: hidden;
+  height: 0;
+  padding: 50% 0;
+  /* padding controls height, will always be perfectly square regardless of width */
+  position: relative;
+  opacity: 0.8;
+}
+
+.img-wrap img{
+  min-width: 100%;
+  min-height: 100%;
+  max-width: 150%;
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.8);
-  color: var(--mainWhite);
-  padding: 0.3rem 0.6rem 0.5rem;
-  border-bottom-right-radius: 1rem;
-  font-size: 0.5rem;
-  text-align: center;
-  transition: var(--mainTransition);
 }
-.price-top h6 {
-  margin-bottom: 0;
-  font-size: 0.9rem;
-  font-weight: 300;
-  letter-spacing: var(--mainSpacing);
-}
-.room-link {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: scale(0);
-  transition: all 0.3s linear;
-}
-.img-container:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-.img-container:hover img {
-  opacity: 0.3;
-}
-.img-container:hover .price-top {
-  opacity: 0;
-}
-.img-container:hover .room-link {
-  transform: translate(-50%, -50%) scale(1);
-}
+
+/* END Images */
+
+

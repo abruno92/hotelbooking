@@ -1,9 +1,12 @@
-import React, { Profiler } from 'react'
+import React, { Profiler } from 'react';
+import Title from '../layout/Title';
+import ProfileImage from './ProfileImage';
 
 export const Profile = () => {
     return (
-        <div>
-            <h1>Hello User</h1>
+        <div className="App"> 
+            <ProfileImage />        
+            <Title />
         </div>
     )
 }
