@@ -31,8 +31,6 @@ export default class ProfileImage extends Component {
                             </div>                       
                         </label>
                     </div>
-
-                    
                 </div>      
     ) 
     }
