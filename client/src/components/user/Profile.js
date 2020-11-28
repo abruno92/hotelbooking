@@ -1,5 +1,11 @@
 import React, { Profiler } from 'react'
 
+function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+
 export const Profile = () => {
     return (
         <div>            
@@ -17,8 +23,8 @@ export const Profile = () => {
                         <h2 className = "Name">Antonia</h2>
                         <h3 className = "Mail">Antonia@gmail.com</h3>
                     </div>
-                </div>
-                        <button className = "SignOut">Sign out</button>
+                </div>                
+                        <button className = "signOut">Sign out</button>
             </div>
         </div>
     );
