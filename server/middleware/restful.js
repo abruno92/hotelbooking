@@ -176,8 +176,8 @@ function deleteHandler(db) {
 }
 
 module.exports = {
-    createHandler: createHandler,
-    readHandler: readHandler,
-    updateHandler: updateHandler,
-    deleteHandler: deleteHandler,
+    createHandler,
+    readHandler,
+    updateHandler,
+    deleteHandler,
 }

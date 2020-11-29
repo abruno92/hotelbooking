@@ -17,7 +17,7 @@ const db = new MongoDatabase(replyCol);
 // middleware to validate the 'reviewId' parameter
 // and add it to the request body
 router.use('/',
-    parseObjectId('reviewId', false, 'param'),
+    parseObjectId('reviewId'),
     // validate above attribute
     inputValidator
 );

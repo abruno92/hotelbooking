@@ -202,6 +202,6 @@ class UserDatabase extends MongoDatabase {
 }
 
 module.exports = {
-    MongoDatabase: MongoDatabase,
-    UserDatabase: UserDatabase,
+    MongoDatabase,
+    UserDatabase,
 }

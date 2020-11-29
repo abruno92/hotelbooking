@@ -131,12 +131,15 @@ router.get('/refresh', (req, res) => {
     res.json({message: "token refreshed"});
 });
 
+/**
+ * Logs the user out by removing the JWT cookie.
+ */
 router.get('/logout',
     requireJwtToken,
     (_, res) => {
         res.cookie(jwtTokenCookie, '', {expires: new Date(0)});
         // res.clearCookie(jwtTokenCookie);
-        res.sendStatus(200);
+        res.sendStatus(204);
     })
 
 module.exports = router;
