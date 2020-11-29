@@ -1,9 +1,28 @@
-import * as firebase from 'firebase'
+import firebase from 'firebase'
+import 'firebase/auth'
+import 'firebase/app'
+import firebaseconfig from './firebase.confiq'
+import firebase from 'firebase'
+
 
 const GoogleAuthentication = require('@authentication/google');
 const express = require('express');
 const app = express();
 const {verifyToken} = require('@authentication/google-authenticator');
+
+export const authMethods = {
+  // firebase helper methods go here... 
+  signup: (email, password) => {
+
+    },
+  signin: (email, password) => {
+
+    },
+  signout: (email, password) => {
+
+    },
+  }
+
 
 export const signIn = () => {
   auth.signInWithPopup(provider);
@@ -18,6 +37,7 @@ export function signOut() {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+export const AuthContect = React.createContext(null);
 
 var provider = new firebase.auth.GoogleAuthProvider();
 provider.add2FactorAuthentication(userID)
