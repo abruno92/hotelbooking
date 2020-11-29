@@ -3,13 +3,13 @@
  * for the '/booking' route.
  */
 const express = require("express");
+const config = require("../config");
 const {parseObjectId, parseDecimal, parseDate, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
-const {bookingCol} = require("../db/config");
 const router = express.Router();
 
-const db = new MongoDatabase(bookingCol);
+const db = new MongoDatabase(config.db.columns.booking);
 
 // create
 router.post('/',

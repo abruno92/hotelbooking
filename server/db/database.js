@@ -1,9 +1,13 @@
 /**
  * This file contains database-related functions.
  */
-const config = require("./config");
+const config = require("../config");
 const {confirmPassword} = require("../auth");
 const {MongoClient, ObjectId} = require('mongodb');
+
+const connectionString = config.db.connectionString;
+const name = config.db.name;
+const user = config.db.columns.user;
 
 class MongoDatabase {
     constructor(collectionName) {
@@ -17,9 +21,9 @@ class MongoDatabase {
      */
     async create(item) {
         // create a MongoClient instance and connect to the database
-        const client = await MongoClient.connect(config.connectionUrl);
+        const client = await MongoClient.connect(connectionString);
         // get a reference to the collection of this MongoDatabase instance
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             // insert the item in the database
@@ -42,8 +46,8 @@ class MongoDatabase {
      * @returns {Promise<*|undefined>} - Matching item; null if not found or 'undefined' in case of errors
      */
     async getOne(id) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             // if a string id is given, convert it to ObjectId
@@ -66,8 +70,8 @@ class MongoDatabase {
      * @returns {Promise<*|undefined>} - Matching item list or 'undefined' in case of errors
      */
     async getAll() {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         // ready mongodb cursor
         const cursor = collection.find();
@@ -93,8 +97,8 @@ class MongoDatabase {
      * or 'undefined' in case of other errors
      */
     async updateOne(id, item) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             if (typeof id === "string") id = new ObjectId(id);
@@ -130,8 +134,8 @@ class MongoDatabase {
      * or 'undefined' in case of other errors
      */
     async deleteOne(id) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             if (typeof id === "string") id = new ObjectId(id);
@@ -161,12 +165,12 @@ class MongoDatabase {
 
 class UserDatabase extends MongoDatabase {
     constructor() {
-        super(config.userCol);
+        super(user);
     }
 
     async validate(email, password) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             const query = {email: email};
@@ -183,8 +187,8 @@ class UserDatabase extends MongoDatabase {
     }
 
     async exists(email) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             const query = {email: email};

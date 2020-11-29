@@ -4,13 +4,13 @@
  */
 const express = require("express");
 const {notImplemented} = require("../middleware/misc");
-const {roomCol} = require("../db/config");
+const config = require("../config");
 const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
 const router = express.Router();
 
-const db = new MongoDatabase(roomCol);
+const db = new MongoDatabase(config.db.columns.room);
 
 // create
 router.post('/',

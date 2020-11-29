@@ -2,9 +2,11 @@
  * This file contains various middleware functions.
  */
 const jwt = require("jsonwebtoken");
-const {jwtTokenCookie} = require("../config");
-const {jwtSecret} = require("../jwtSecret");
+const config = require("../config");
 const {UserDatabase} = require("../db/database");
+
+const tokenCookie = config.jwt.tokenCookie;
+const secret = config.jwt.secret;
 
 const userDb = new UserDatabase();
 
@@ -17,7 +19,7 @@ const userDb = new UserDatabase();
  * @param next - The middleware function callback argument
  */
 async function parseJwtToken(req, res, next) {
-    const token = req.cookies[jwtTokenCookie];
+    const token = req.cookies[tokenCookie];
 
     if (!token) {
         return next();
@@ -25,7 +27,7 @@ async function parseJwtToken(req, res, next) {
 
     let payload;
     try {
-        payload = await jwt.verify(token, jwtSecret);
+        payload = await jwt.verify(token, secret);
     } catch (e) {
         console.log(e);
         return next();
@@ -77,7 +79,7 @@ function authGuard(privilegeLevel) {
  * @param next - The middleware function callback argument
  */
 function requireJwtToken(req, res, next) {
-    const token = req.cookies[jwtTokenCookie];
+    const token = req.cookies[tokenCookie];
     if (!token) {
         return res.status(401).json({error: "missing jwt token"});
     }

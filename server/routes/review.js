@@ -3,13 +3,13 @@
  * for the '/review' route.
  */
 const express = require("express");
+const config = require("../config");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
-const {reviewCol} = require("../db/config");
 const router = express.Router();
 
-const db = new MongoDatabase(reviewCol);
+const db = new MongoDatabase(config.db.columns.review);
 
 // create
 router.post('/',

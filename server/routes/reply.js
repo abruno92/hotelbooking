@@ -3,16 +3,16 @@
  * for the '/reply' route.
  */
 const express = require("express");
+const config = require("../config");
 const {port} = require("../config");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {MongoDatabase} = require("../db/database");
-const {replyCol} = require("../db/config");
 const axios = require("axios");
 const {ObjectId} = require("mongodb");
 const router = express.Router({mergeParams: true});
 
-const db = new MongoDatabase(replyCol);
+const db = new MongoDatabase(config.db.columns.reply);
 
 // middleware to validate the 'reviewId' parameter
 // and add it to the request body
