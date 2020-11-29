@@ -6,8 +6,6 @@ const {confirmPassword} = require("../auth");
 const {MongoClient, ObjectId} = require('mongodb');
 
 class MongoDatabase {
-    _collectionName;
-
     constructor(collectionName) {
         this._collectionName = collectionName;
     }
