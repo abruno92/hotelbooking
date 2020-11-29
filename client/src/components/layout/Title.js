@@ -1,4 +1,4 @@
-import "./layout.css";
+import "./Navbar.css";
 import React from 'react';
 
 const Title = () => {
