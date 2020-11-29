@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import Axios from "axios";
 
-
 const Register = () => {
     const [firstNameReg, setFirstNameReg] = useState('');
     const [lastNameReg, setLastNameReg] = useState('');
@@ -17,7 +16,6 @@ const Register = () => {
         }).then((response) => {
             console.log(response.data);
         })
-        //handleForm();
     };
 
     return (
