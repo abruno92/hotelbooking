@@ -1,3 +1,14 @@
+
+/* Upload form */
+
+input[type="file"] {
+  display: none;
+}
+
+/* END Upload form */
+
+/* Container needed to position the overlay. Adjust the width as needed */
+
 .container {
   display: flex;
   justify-content: center;
@@ -40,16 +51,4 @@
   -ms-transform: translate(-50%, -50%);
   text-align: center;
 }
-
-
-input[type="file"] {
-  display: none;
-}
-
-
-
-
-
-
-
 

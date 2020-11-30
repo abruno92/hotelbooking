@@ -1,3 +1,4 @@
+import './loginreg.css'
 import React, {useState} from "react";
 import Axios from "axios";
 // import * as firebase from 'firebase'
@@ -27,7 +28,8 @@ import './logreg.css'
 //       });
 //   };
 
-const Register = () => {
+
+const Register = (props) => {
     const [firstNameReg, setFirstNameReg] = useState('');
     const [lastNameReg, setLastNameReg] = useState('');
     const [emailReg, setEmailReg] = useState('');
@@ -108,7 +110,7 @@ const Register = () => {
                 </div> 
                 <small>Already have an account?</small>
                 <div className="createAccount">
-                    <button type="submit">Login</button>
+                    <button type="submit"  onClick={()=>props.history.push('/login')}>Login</button>
                 </div>
                 </form>
             </div>

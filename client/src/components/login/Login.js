@@ -1,8 +1,9 @@
+import './loginreg.css'
 import React, {useState} from "react";
-import './logreg.css'
+import { Redirect } from "react-router-dom";
 import Axios from "axios";
 
-const Login = () => {
+const Login = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginStatus, setLoginStatus] = useState('');
@@ -18,7 +19,7 @@ const Login = () => {
                 setLoginStatus(response.data[0].email)
             }
         })
-    };
+    };    
 
     return (
         <div className="wrapper">
@@ -54,7 +55,7 @@ const Login = () => {
                 </div> 
                 <small>Don't have an account?</small>
                 <div className="createAccount">
-                    <button type="submit">Create an Account</button>
+                    <button type="submit" onClick={()=>props.history.push('/register')}>Create an Account</button>
                 </div>
                 </form>
             </div>

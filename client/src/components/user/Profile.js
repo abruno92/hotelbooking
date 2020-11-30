@@ -1,14 +1,14 @@
-import React, { } from 'react';
-import ProfileUploader from './ProfileImg';
+import React, { Profiler } from 'react';
 import Title from '../layout/Title';
+import ProfileImage from './ProfileImage';
 
 export const Profile = () => {
     return (
-        <div>            
-             <ProfileUploader />
-             <Title />
+        <div className="App"> 
+            <ProfileImage />        
+            <Title />
         </div>
-    );
+    )
 }
 
 export default Profile;
