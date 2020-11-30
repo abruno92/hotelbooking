@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import Axios from "axios";
-import auth from "auth.js"
-
-
+//import auth from "auth.js"
 // import {auth} from 'client\src\components\Google Authentication\Auth.js';
 //import firebaseConfiq from "../Google Authentication/firebase.confiq";
 //import * as firebase from 'firebase';
