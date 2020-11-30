@@ -60,6 +60,19 @@ export const handleForm = e => {
       });
 };
 
+const handleForm = e => {
+  e.preventDefault();
+  firebase
+  .auth()
+  .signInWithEmailAndPassword(email, password)
+  .then(res => {
+    if (res.user) Auth.setLoggedIn(true);
+  })
+  .catch(e => {
+    setErrors(e.message);
+  });
+};
+
 export function onToken(token) {
   if (verifyToken({secret: user.gaSecret, token}) === true) {
     // verified token
@@ -101,4 +114,4 @@ app.get(googleAuthentication.callbackPath, async (req, res, next) => {
   }
 });
 
-app.listen(3000);
+app.listen(3000, () => console.log('Server running'));

@@ -16,7 +16,7 @@ const Register = () => {
         Axios.post('http://localhost:3001/auth/register', {
             firstName: firstNameReg, 
             lastName: lastNameReg, 
-            email: emailReg, 
+            email: emailReg,  
             password: passwordReg
         }).then((response) => {
             console.log(response.data);
