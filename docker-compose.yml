@@ -1,0 +1,40 @@
+version: '3.3'
+services:
+  hotel-app:
+    build:
+      context: "./client"
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    command: "serve -s app -l 3000"
+
+  hotel-api:
+    build:
+      context: "./server"
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DB_CONNECTIONSTRING=mongodb://mongo:27017/hotel
+      - NODE_ENV=production
+    networks:
+      - backend
+    command: npm start
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017"
+    networks:
+      - backend
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+
+networks:
+  backend:
+
+volumes:
+  mongodb:
+  mongodb_config:
