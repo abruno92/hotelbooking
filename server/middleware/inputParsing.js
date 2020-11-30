@@ -177,7 +177,7 @@ function parseName(field = 'password', optional = false) {
  */
 function fieldsMatch(first, second) {
     return body(first)
-        .custom((value, {req}) => value === req.body[second])
+        .custom((input, {req}) => input === req.body[second])
         .withMessage(`must match the '${second}' field`)
 }
 
