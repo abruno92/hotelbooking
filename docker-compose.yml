@@ -4,11 +4,17 @@ services:
     build:
       context: "./client"
     ports:
-      - "80:3000"
       - "443:3000"
     environment:
       - PORT=3000
     command: "serve -s app -l 3000 --ssl-cert /encryption/hotelbooking_cert.pem --ssl-key /encryption/hotelbooking_key.pem"
+
+  proxy:
+    build:
+      context: "./secure-proxy"
+    ports:
+      - "80:80"
+    command: "npm start"
 
   api:
     build:
@@ -21,11 +27,11 @@ services:
       - NODE_ENV=production
     networks:
       - backend
-    command: npm start
+    command: "npm start"
 
   mongo:
     image: mongo
-    ports:
+    expose:
       - "27017"
     networks:
       - backend
