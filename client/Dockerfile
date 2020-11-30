@@ -12,8 +12,7 @@ RUN npm run build
 
 WORKDIR /
 
-COPY /etc/ssl/certs/hotelbooking_cert.pem /cert/hotelbooking_cert.pem
-COPY /etc/ssl/private/hotelbooking_key.pem /cert/hotelbooking_key.pem
+COPY encryption encryption
 
 RUN mv /src/build /app
 
