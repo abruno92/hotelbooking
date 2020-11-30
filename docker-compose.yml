@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  hotel-app:
+  app:
     build:
       context: "./client"
     ports:
@@ -9,7 +9,7 @@ services:
       - PORT=3000
     command: "serve -s app -l 3000"
 
-  hotel-api:
+  api:
     build:
       context: "./server"
     ports:
