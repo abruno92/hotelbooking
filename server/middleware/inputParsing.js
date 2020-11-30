@@ -7,6 +7,14 @@ const {validationResult} = require("express-validator");
 const {ValidationChain, check, body} = require('express-validator');
 const {ObjectId} = require("mongodb");
 
+const encodableHtmlChars = {
+    "&": "&amp;",
+    "<": "&lt;",
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+}
+
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the request object
@@ -63,7 +71,8 @@ function parseString(field, options, optional = false) {
         // Sanitization
         // trim leading and trailing whitespaces
         .trim()
-    // todo sanitize input against SQL, XSS and the like
+        // encode HTML sensitive characters inside the string
+        .customSanitizer(encodeHtml)
 }
 
 /**
@@ -179,6 +188,17 @@ function fieldsMatch(first, second) {
     return body(first)
         .custom((input, {req}) => input === req.body[second])
         .withMessage(`must match the '${second}' field`)
+}
+
+/**
+ * Function that takes a string and
+ * replaces HTML sensitive characters
+ * with their encoded versions, as can be seen in {@link encodableHtmlChars}.
+ * @param input - Value to be sanitized
+ * @returns {function} - the current Validation chain instance
+ */
+function encodeHtml(input) {
+    return [...input].map(char => encodableHtmlChars[char] ? encodableHtmlChars[char] : char).join('');
 }
 
 /**
