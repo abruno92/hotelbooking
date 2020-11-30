@@ -24,7 +24,7 @@ export const authMethods = {
   }
 
 
-export const signIn = () => {
+export function signIn(){
   auth.signInWithPopup(provider);
 };
 
@@ -37,7 +37,7 @@ export function signOut() {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-export const AuthContect = React.createContext(null);
+export const AuthContext = React.createContext(null);
 
 var provider = new firebase.auth.GoogleAuthProvider();
 provider.add2FactorAuthentication(userID)
@@ -47,7 +47,7 @@ provider.add2FactorAuthentication(userID)
     //await DB.TheTable.update(userDI, {gaSecret});
 }
 
-export const handleForm = e => {
+export function handleForm (e) {
     e.preventDefault();
     firebase
       .auth()
@@ -60,7 +60,7 @@ export const handleForm = e => {
       });
 };
 
-const handleForm = e => {
+export function handleForm(e) {
   e.preventDefault();
   firebase
   .auth()
@@ -79,39 +79,6 @@ export function onToken(token) {
   }
 }
 
-const googleAuthentication = new GoogleAuthentication({
-  callbackURL: '/__/auth/google'
-});
 
-app.get('/', (req, res, next) => {
-  res.send(
-    `<form action=${
-      googleAuthentication.callbackPath
-    } method="post"><button type="submit">Login</button></form>`
-  );
-});
-
-app.post(googleAuthentication.callbackPath, async (req, res, next) => {
-  googleAuthentication.redirectToProvider(req, res, next, {
-    // you can pass some abritrary state through to the callback here
-    state: {message: ' '}
-  });
-});
-app.get(googleAuthentication.callbackPath, async (req, res, next) => {
-  try {
-    if (googleAuthentication.userCancelledLogin(req)) {
-      return res.redirect('/');
-    }
-    const {
-      accessToken, // use this to make requests to the Google API on behalf of the user
-      refreshToken,
-      profile,
-      state 
-    } = await googleAuthentication.completeAuthentication(req, res);
-    res.json(profile);
-  } catch (ex) {
-    next(ex);
-  }
-});
 
 app.listen(3000, () => console.log('Server running'));

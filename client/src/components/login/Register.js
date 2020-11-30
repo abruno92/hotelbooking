@@ -1,5 +1,8 @@
 import React, {useState} from "react";
 import Axios from "axios";
+import auth from "auth.js"
+
+
 // import {auth} from 'client\src\components\Google Authentication\Auth.js';
 //import firebaseConfiq from "../Google Authentication/firebase.confiq";
 //import * as firebase from 'firebase';
@@ -11,7 +14,8 @@ const Register = () => {
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
 
-    
+    auth.handleForm(email, password);
+
     const register = () => {
         Axios.post('http://localhost:3001/auth/register', {
             firstName: firstNameReg, 
