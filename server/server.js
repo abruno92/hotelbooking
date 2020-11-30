@@ -1,6 +1,7 @@
 /**
  * This file contains the configuration and entry point for the Node.js server.
  */
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const logger = require("morgan");
@@ -11,6 +12,7 @@ const bookingRoute = require('./routes/booking');
 const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
 const replyRoute = require('./routes/reply');
+const fs = require("fs");
 const {port} = require("./config");
 const {parseJwtToken} = require("./middleware/misc");
 
@@ -29,4 +31,9 @@ app.use('/room', roomRoute);
 app.use('/review', reviewRoute);
 app.use('/review/:reviewId/reply', replyRoute);
 
-app.listen(port, () => console.log(`Listening on port ${port}`))
+https.createServer({
+    key: fs.readFileSync('encryption/hotelbooking_key.pem'),
+    cert: fs.readFileSync('encryption/hotelbooking_cert.pem')
+}, app).listen(port, () => {
+    console.log(`Listening on port ${port}`);
+})
