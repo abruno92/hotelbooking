@@ -65,7 +65,7 @@ function readHandler(db) {
                 result = await db.getAll();
             }
         } catch (e) {
-            const message = "unable to retrieve item" + id ? "" : "s";
+            const message = `unable to retrieve item${id ? "" : "s"}`;
             console.log(message);
             console.log(e);
             return res.status(500).json({error: message});
