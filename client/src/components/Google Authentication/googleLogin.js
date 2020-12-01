@@ -1,54 +1,70 @@
-const googleLogIn = () => {
-    return (
-        <div className="wrapper">
-            <div class="googleSignIn" data-onsuccess="onSignIn"></div>
-        </div>
-    );  
-} 
+import React, { Component } from 'react'
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
 
+const CLIENT_ID = '711812867459-m97h2u5maequivh2m89imhujttt19aqn.apps.googleusercontent.com'
+class GoogleBtn extends Component {
+   constructor(props) {
+    super(props);
 
-function onSignIn(googleUser) {
-    var profile = googleUser.getBasicProfile();
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    this.state = {
+      isLogined: false,
+      accessToken: ''
+    };
+
+    this.login = this.login.bind(this);
+    this.handleLoginFailure = this.handleLoginFailure.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleLogoutFailure = this.handleLogoutFailure.bind(this);
   }
 
-  
-export const googleAuthentication = new GoogleAuthentication({
-    callbackURL: '/__/auth/google'
-  });
-  
-  app.get('/', (req, res, next) => {
-    res.send(
-      `<form action=${
-        googleAuthentication.callbackPath
-      } method="post"><button type="submit">Login</button></form>`
-    );
-  });
-  
-  app.post(googleAuthentication.callbackPath, async (req, res, next) => {
-    googleAuthentication.redirectToProvider(req, res, next, {
-      // you can pass some abritrary state through to the callback here
-      state: {message: ' '}
-    });
-  });
-  app.get(googleAuthentication.callbackPath, async (req, res, next) => {
-    try {
-      if (googleAuthentication.userCancelledLogin(req)) {
-        return res.redirect('/');
-      }
-      const {
-        accessToken, // use this to make requests to the Google API on behalf of the user
-        refreshToken,
-        profile,
-        state 
-      } = await googleAuthentication.completeAuthentication(req, res);
-      res.json(profile);
-    } catch (ex) {
-      next(ex);
+  login (response) {
+    if(response.accessToken){
+      this.setState(state => ({
+        isLogined: true,
+        accessToken: response.accessToken
+      }));
     }
-  });
+  }
 
-export default googleLogIn;
+  logout (response) {
+    this.setState(state => ({
+      isLogined: false,
+      accessToken: ''
+    }));
+  }
+
+  handleLoginFailure (response) {
+    alert('Failed to log in')
+  }
+
+  handleLogoutFailure (response) {
+    alert('Failed to log out')
+  }
+
+  render() {
+    return (
+    <div>
+      { this.state.isLogined ?
+        <GoogleLogout
+          clientId={ CLIENT_ID }
+          buttonText='Logout'
+          onLogoutSuccess={ this.logout }
+          onFailure={ this.handleLogoutFailure }
+        >
+        </GoogleLogout>: <GoogleLogin
+          clientId={ CLIENT_ID }
+          buttonText='Login'
+          onSuccess={ this.login }
+          onFailure={ this.handleLoginFailure }
+          cookiePolicy={ 'single_host_origin' }
+          responseType='code,token'
+        />
+      }
+      { this.state.accessToken ? <h5>Your Access Token: <br/><br/> { this.state.accessToken }</h5> : null }
+
+    </div>
+    )
+  }
+}
+
+export default GoogleBtn;

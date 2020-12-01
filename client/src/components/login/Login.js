@@ -1,13 +1,14 @@
 import React, {useState} from "react";
 import './logreg.css'
 import Axios from "axios";
-import googleLogIn from "../Google Authentication/googleLogin";
-
+import GoogleBtn from "../Google Authentication/googleLogin"
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginStatus, setLoginStatus] = useState('');
+
+    //handleSignIn(email,password);
 
     const login = () => {
         Axios.post('http://localhost:3001/auth/login', {
@@ -26,6 +27,7 @@ const Login = () => {
         <div className="wrapper">
             <div className="form-wrapper">
                 <form>
+                <GoogleBtn/>
                 <h1>Login</h1>              
                 <div className="email">
                     <label htmlFor="email">Email</label>
