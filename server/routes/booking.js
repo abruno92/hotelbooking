@@ -8,6 +8,7 @@ const {authGuard} = require("../middleware/misc");
 const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
+const axios = require("axios");
 const router = express.Router();
 
 router.use(authGuard(config.db.privileges.userAny));
@@ -76,7 +77,7 @@ module.exports = router;
 async function checkCurrentUser(value, {req, res}) {
     let booking;
     try {
-        booking = (await axios.get(`https://localhost:${port}/booking/${value}`)).data;
+        booking = (await axios.get(`https://localhost:${config.port}/booking/${value}`)).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);

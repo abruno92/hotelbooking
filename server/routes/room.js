@@ -8,6 +8,7 @@ const {authGuard, notImplemented} = require("../middleware/misc");
 const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {roomDb} = require("../db/database");
+const axios = require("axios");
 const router = express.Router();
 
 router.use(authGuard(config.db.privileges.userAny));
@@ -39,8 +40,46 @@ router.get('/:id',
     // handle read
     readHandler(roomDb));
 
-// read all
+// read not booked
 router.get('/',
+    // handle read not booked
+    async (req, res) => {
+
+        // get all bookings
+        let allBookings;
+        try {
+            allBookings = (await axios.get(`https://localhost:${config.port}/booking`, {withCredentials: true})).data;
+        } catch (e) {
+            if (!e.response) {
+                console.log(e);
+                return res.sendStatus(500);
+            }
+        }
+
+        // filter only bookings that are past their end date
+        const currentDate = new Date();
+        const currentlyBookedRooms = allBookings.filter(booking => booking.endDate <= currentDate)
+            .map(booking => booking.roomId);
+
+        // get all rooms
+        let allRooms;
+        try {
+            allRooms = (await axios.get(`https://localhost:${config.port}/room/all`, {withCredentials: true})).data;
+        } catch (e) {
+            if (!e.response) {
+                console.log(e);
+                return res.sendStatus(500);
+            }
+        }
+
+        //filter only rooms that are not present in currently booked rooms
+        const availableRooms = allRooms.filter(room => !currentlyBookedRooms.some(booking => booking.roomId.equals(room._id)))
+
+        res.json(availableRooms);
+    });
+
+// read all
+router.get('/all',
     // handle read all
     readHandler(roomDb));
 
