@@ -7,7 +7,7 @@ import LoginButton from "../components/GoogleAuthentication/Auth0LoginBtn";
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loginStatus, setLoginStatus] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const login = (e) => {
         e.preventDefault();
@@ -15,11 +15,13 @@ const Login = () => {
             email: email, 
             password: password
         }).then((response) => {
-            if (response.data.message) {
-                setLoginStatus(response.data.message)
-            } else {
-                setLoginStatus(response.data[0].email)
+            console.log(response.data.message);
+
+        }).catch(reason => {
+            if (reason.response.status === 401) {
+                setErrorMessage(reason.response.data.error);
             }
+            console.log(reason.response.data.errors);
         })
     };
 
@@ -28,19 +30,20 @@ const Login = () => {
         <div className="wrapper">
             <div className="form-wrapper">
                 <form>
-                <GoogleBtn/>
-                <LoginButton/>
+                {/*<GoogleBtn/>*/}
+                {/*<LoginButton/>*/}
                 <h1>Login</h1>
                 <div className="email">
                     <label htmlFor="email">Email</label>
                     <input 
-                        type="text" 
+                        type="email"
                         className="email" 
                         placeholder="Email"
                         id="email" 
-                        onClick = {(e)=>{
+                        onChange={(e)=>{
                             setEmail(e.target.value);
                         }}
+                        required
                     />
                 </div>
                 <div className="password">
@@ -50,11 +53,13 @@ const Login = () => {
                         className="password" 
                         placeholder="Password"
                         id="password"
-                        onClick = {(e)=>{
+                        onChange = {(e)=>{
                             setPassword(e.target.value);
                         }}
+                        required
                     />
                 </div>
+                    <span>{errorMessage}</span>
                 <div className="login">
                     <button type="submit" onClick={login}>Submit</button>
                 </div> 

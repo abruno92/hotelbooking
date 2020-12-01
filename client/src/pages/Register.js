@@ -7,16 +7,34 @@ const Register = () => {
     const [lastNameReg, setLastNameReg] = useState('');
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
+    const [confirmPasswordReg, setConfirmPasswordReg] = useState('');
+    // const firstNameErr
+    //todo show errors for each field if something goes wrong
 
-    const register = () => {
-        Axios.post('http://localhost:3001/auth/register', {
-            firstName: firstNameReg, 
-            lastName: lastNameReg, 
-            email: emailReg, 
-            password: passwordReg
+    const register = async (e) => {
+        e.preventDefault();
+        // try {
+        //     await Axios.post('https://localhost:3001/auth/register', {
+        //         firstName: firstNameReg,
+        //         lastName: lastNameReg,
+        //         email: emailReg,
+        //         password: passwordReg,
+        //         confirmPassword: confirmPasswordReg
+        //     });
+        // } catch (e) {
+        //     console.log(e.response.data.errors);
+        // }
+        Axios.post('https://localhost:3001/auth/register', {
+            firstName: firstNameReg,
+            lastName: lastNameReg,
+            email: emailReg,
+            password: passwordReg,
+            confirmPassword: confirmPasswordReg
         }).then((response) => {
             console.log(response.data);
-        })
+        }).catch(reason => {
+            console.log(reason.response.data.errors);
+        });
     };
 
     return (
@@ -25,12 +43,13 @@ const Register = () => {
                 <form>
                 <h1>Sign Up</h1>
                 <div className="firstname">
-                    <label htmlFor="firstname">First Name</label>
-                    <input 
+                    <label htmlFor="firstName">First Name</label>
+                    <span>{}</span>
+                    <input
                         type="text" 
                         name="firstname" 
                         placeholder="First Name"
-                        id="firstname" 
+                        id="firstName"
                         onChange={(e)=>{
                             setFirstNameReg(e.target.value);
                         }}
@@ -76,6 +95,19 @@ const Register = () => {
                         required
                     />
                 </div>
+                    <div className="password">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input
+                            type="text"
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            id="confirmPassword"
+                            onChange={(e)=>{
+                                setConfirmPasswordReg(e.target.value);
+                            }}
+                            required
+                        />
+                    </div>
                 <div className="login">
                     <button type="submit" onClick={register}>Submit</button>
                 </div> 
