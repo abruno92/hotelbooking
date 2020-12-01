@@ -33,7 +33,7 @@ router.post('/',
     // check that another reply does not already exist for this review
     async (req, res, next) => {
         try {
-            await axios.get(`http://localhost:${port}/review/${(req.params.reviewId)}/reply`);
+            await axios.get(`https://localhost:${port}/review/${(req.params.reviewId)}/reply`);
         } catch (e) {
             if (!e.response) {
                 console.log(e);
@@ -127,7 +127,7 @@ async function retrieveId(req, res, next) {
     if (!req.params.id) {
         // retrieve the reply and add its 'id' to req.params
         try {
-            const reply = (await axios.get(`http://localhost:${port}/review/${req.params.reviewId}/reply`)).data;
+            const reply = (await axios.get(`https://localhost:${port}/review/${req.params.reviewId}/reply`)).data;
             req.params.id = reply._id;
         } catch (e) {
             if (e.response) {

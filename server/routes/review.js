@@ -28,7 +28,7 @@ router.post('/',
     async (req, res, next) => {
         let review;
         try {
-            review = (await axios.get(`https://localhost:${port}/review`)).data
+            review = (await axios.get(`https://localhost:${config.port}/review`)).data
                 .filter(review => review.userId === req.body.userId && review.roomId === req.body.roomId);
             if (review.length === 0) {
                 return next();
