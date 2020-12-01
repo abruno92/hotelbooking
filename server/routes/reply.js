@@ -7,6 +7,7 @@ const {port, db} = require("../config");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const axios = require("axios");
+const {isCurrentUser} = require("../middleware/inputParsing");
 const {authGuard} = require("../middleware/misc");
 const {userDb, reviewDb, replyDb} = require("../db/database");
 const {ObjectId} = require("mongodb");
@@ -25,7 +26,9 @@ router.use('/',
 router.post('/',
     authGuard(db.privileges.userHigh),
     // 'userId' body attribute
-    parseObjectId('userId', async (value) => await userDb.existsById(value)),
+    parseObjectId('userId', async (value) => await userDb.existsById(value))
+        // check that the authenticated user is the one making the post request
+        .custom(isCurrentUser),
     // 'content' body attribute
     parseString('content', {min: 10, max: 1000}),
     // validate above attributes
@@ -90,17 +93,14 @@ router.patch(['/', '/:id'],
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
-    parseObjectId(),
-    // 'userId' body attribute
-    parseObjectId('userId'),
-    // 'reviewId' body attribute
-    parseObjectId('reviewId'),
+    parseObjectId('id', async (value) => await reviewDb.existsById(value))
+        .custom(checkCurrentUser),
     // 'content' body attribute
     parseString('content', {min: 10, max: 1000}, true),
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(replyDb, "userId", "reviewId", "content")
+    updateHandler(replyDb, "content")
 );
 
 // delete
@@ -109,7 +109,8 @@ router.delete(['/', '/:id'],
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
-    parseObjectId(),
+    parseObjectId('id', async (value) => await reviewDb.existsById(value))
+        .custom(checkCurrentUser),
     // handle delete
     deleteHandler(replyDb)
 );
@@ -139,4 +140,20 @@ async function retrieveId(req, res, next) {
         }
     }
     next();
+}
+
+async function checkCurrentUser(value, {req, res}) {
+    let reply;
+    try {
+        reply = (await axios.get(`https://localhost:${port}/reply/${value}`)).data;
+    } catch (e) {
+        if (!e.response) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+
+        return new Error("error occurred");
+    }
+
+    return isCurrentUser(reply.userId, {req});
 }

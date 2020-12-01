@@ -5,6 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const axios = require('axios');
+const {isCurrentUser} = require("../middleware/inputParsing");
 const {roomDb, userDb, reviewDb} = require("../db/database");
 const {authGuard} = require("../middleware/misc");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
@@ -17,7 +18,9 @@ router.use(authGuard(config.db.privileges.userAny));
 router.post('/',
     authGuard(config.db.privileges.userLow),
     // 'userId' body attribute
-    parseObjectId('userId', async (value) => await userDb.existsById(value)),
+    parseObjectId('userId', async (value) => await userDb.existsById(value))
+        // check that the authenticated user is the one making the post request
+        .custom(isCurrentUser),
     // 'roomId' body attribute
     parseObjectId('roomId', async (value) => await roomDb.existsById(value)),
     // 'content' body attribute
@@ -68,24 +71,38 @@ router.get('/',
 router.patch('/:id',
     authGuard(config.db.privileges.userLow),
     // 'id' URL param
-    parseObjectId(),
-    // 'userId' body attribute
-    parseObjectId('userId', async (value) => await userDb.existsById(value), true),
-    // 'roomId' body attribute
-    parseObjectId('roomId', async (value) => await roomDb.existsById(value), true),
+    parseObjectId('id', async (value) => await reviewDb.existsById(value))
+        .custom(checkCurrentUser),
     // 'content' body attribute
     parseString('content', {min: 10, max: 1000}, true),
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(reviewDb, "userId", "roomId", "content"));
+    updateHandler(reviewDb, "content"));
 
 // delete
 router.delete('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.userLow),
     // 'id' URL param
-    parseObjectId(),
+    parseObjectId('id', async (value) => await reviewDb.existsById(value))
+        .custom(checkCurrentUser),
     // handle delete
     deleteHandler(reviewDb));
 
 module.exports = router;
+
+async function checkCurrentUser(value, {req, res}) {
+    let review;
+    try {
+        review = (await axios.get(`https://localhost:${port}/review/${value}`)).data;
+    } catch (e) {
+        if (!e.response) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+
+        return new Error("error occurred");
+    }
+
+    return isCurrentUser(review.userId, {req});
+}

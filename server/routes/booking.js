@@ -5,7 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const {authGuard} = require("../middleware/misc");
-const {parseObjectId, parseDecimal, parseDate, inputValidator} = require("../middleware/inputParsing");
+const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
 const router = express.Router();
@@ -16,7 +16,9 @@ router.use(authGuard(config.db.privileges.userAny));
 router.post('/',
     authGuard(config.db.privileges.userLow),
     // 'userId' body attribute
-    parseObjectId('userId', async (value) => await userDb.existsById(value)),
+    parseObjectId('userId', async (value) => await userDb.existsById(value))
+        // check that the authenticated user is the one making the post request
+        .custom(isCurrentUser),
     // 'roomId' body attribute
     parseObjectId('roomId', async (value) => await roomDb.existsById(value)),
     // 'number' body attribute
@@ -48,11 +50,8 @@ router.get('/',
 router.patch('/:id',
     authGuard(config.db.privileges.userLow),
     // 'id' URL param
-    parseObjectId(),
-    // 'userId' body attribute
-    parseObjectId('userId', async (value) => await userDb.existsById(value), true),
-    // 'roomId' body attribute
-    parseObjectId('roomId', async (value) => await roomDb.existsById(value), true),
+    parseObjectId('id', async (value) => await bookingDb.existsById(value))
+        .custom(checkCurrentUser),
     // 'number' body attribute
     parseDecimal('price', true),
     // 'startDate' body attribute
@@ -62,7 +61,7 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(bookingDb, "userId", "roomId", "price", "startDate", "endDate"));
+    updateHandler(bookingDb, "price", "startDate", "endDate"));
 
 // delete
 router.delete('/:id',
@@ -73,3 +72,19 @@ router.delete('/:id',
     deleteHandler(bookingDb));
 
 module.exports = router;
+
+async function checkCurrentUser(value, {req, res}) {
+    let booking;
+    try {
+        booking = (await axios.get(`https://localhost:${port}/booking/${value}`)).data;
+    } catch (e) {
+        if (!e.response) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+
+        return new Error("error occurred");
+    }
+
+    return isCurrentUser(booking.userId, {req});
+}

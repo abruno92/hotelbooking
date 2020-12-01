@@ -236,6 +236,15 @@ function inputValidator(req, res, next) {
     }
 }
 
+function isCurrentUser(value, {req}) {
+    if (value.equals(ObjectId(req.user._id))) {
+        return true;
+    } else {
+        return new Error("must be the id of the user making the request");
+    }
+}
+
+
 module.exports = {
     inputValidator,
     parseObjectId,
@@ -247,4 +256,5 @@ module.exports = {
     parsePassword,
     parseName,
     fieldsMatch,
+    isCurrentUser
 }
