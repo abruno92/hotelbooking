@@ -7,7 +7,7 @@ function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
   var id_token = googleUser.getAuthResponse().id_token;
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'url';
+  xhr.open('POST', 'url');
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xhr.onload = function() {
 };
