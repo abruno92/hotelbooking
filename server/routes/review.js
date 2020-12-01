@@ -94,7 +94,7 @@ module.exports = router;
 async function checkCurrentUser(value, {req, res}) {
     let review;
     try {
-        review = (await axios.get(`https://localhost:${port}/review/${value}`, {withCredentials: true})).data;
+        review = (await axios.get(`https://localhost:${config.port}/review/${value}`, {withCredentials: true})).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);
