@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require("cors");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
+const indexRoute = require("./routes/index");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const bookingRoute = require('./routes/booking');
@@ -24,6 +25,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(parseAuthToken);
 
+app.use('/', indexRoute);
 app.use('/auth', authRoute);
 app.use('/user', userRoute);
 app.use('/booking', bookingRoute);
