@@ -1,18 +1,17 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import Axios from 'axios';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import GoogleBtn from "../Google Authentication/googleLogin";
-import LoginButton from "../Google Authentication/Auth0LoginBtn";
+import GoogleBtn from "../components/GoogleAuthentication/googleLogin";
+import LoginButton from "../components/GoogleAuthentication/Auth0LoginBtn";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginStatus, setLoginStatus] = useState('');
 
-    const login = () => {
-        Axios.post('http://localhost:3001/auth/login', {
+    const login = (e) => {
+        e.preventDefault();
+        Axios.post('https://localhost:3001/auth/login', {
             email: email, 
             password: password
         }).then((response) => {
@@ -47,7 +46,7 @@ const Login = () => {
                 <div className="password">
                     <label htmlFor="password">Password</label>
                     <input 
-                        type="text" 
+                        type="password"
                         className="password" 
                         placeholder="Password"
                         id="password"
