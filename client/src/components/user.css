@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 0 0;
+  margin: 50px 0 0 0;
+}
+
+.image {
+  height: auto;
+  width: auto;
+  max-width: 250px;
+  border-radius: 50%;
+}
+
+.overlay {
+  position: absolute;
+  background-color:  #88BDBC;
+  display: flex;
+  opacity: 0;
+  transition: .3s ease;
+  border-radius: 50%;
+}
+
+.container:hover .overlay {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 100px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+
+input[type="file"] {
+  display: none;
+}
+
+
+
+
+
+
+
+

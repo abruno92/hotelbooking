@@ -1,19 +1,32 @@
-import room1 from "./images/details-1.jpeg";
-import room2 from "./images/details-2.jpeg";
-import room3 from "./images/details-3.jpeg";
-import room4 from "./images/details-4.jpeg";
-import img1 from "./images/room-1.jpeg";
-import img2 from "./images/room-2.jpeg";
-import img3 from "./images/room-3.jpeg";
-import img4 from "./images/room-4.jpeg";
-import img5 from "./images/room-5.jpeg";
-import img6 from "./images/room-6.jpeg";
-import img7 from "./images/room-7.jpeg";
-import img8 from "./images/room-8.jpeg";
-import img9 from "./images/room-9.jpeg";
-import img10 from "./images/room-10.jpeg";
-import img11 from "./images/room-11.jpeg";
-import img12 from "./images/room-12.jpeg";
+import r1f1 from "./images/r1-feature1.jpg";
+import r1f2 from "./images/r1-feature2.jpg";
+import r1f3 from "./images/r1-feature3.jpg";
+import r2f1 from "./images/r2-feature1.jpg";
+import r2f2 from "./images/r2-feature2.jpg";
+import r2f3 from "./images/r2-feature3.jpg";
+import r3f1 from "./images/r3-feature1.jpg";
+import r3f2 from "./images/r3-feature2.jpg";
+import r3f3 from "./images/r3-feature3.jpg";
+import r4f1 from "./images/r4-feature1.jpg";
+import r4f2 from "./images/r4-feature2.jpg";
+import r4f3 from "./images/r4-feature3.jpg";
+import r5f1 from "./images/r5-feature1.jpg";
+import r5f2 from "./images/r5-feature2.jpg";
+import r5f3 from "./images/r5-feature3.jpg";
+import r6f1 from "./images/r6-feature1.jpg";
+import r6f2 from "./images/r6-feature2.jpg";
+import r6f3 from "./images/r6-feature3.jpg";
+
+
+import room1 from "./images/room-1.jpg";
+import room2 from "./images/room-2.jpg";
+import room3 from "./images/room-3.jpg";
+import room4 from "./images/room-4.jpg";
+import room5 from "./images/room-5.jpg";
+import room6 from "./images/room-6.jpg";
+
+
+
 
 export default [
   {
@@ -21,17 +34,15 @@ export default [
       id: "1"
     },
     fields: {
-      name: "single economy",
-      slug: "single-economy",
-      type: "single",
-      price: 100,
-      size: 200,
-      capacity: 1,
-      pets: false,
+      name: "deluxe double",
+      slug: "deluxe-double",
+      type: "double",
+      price: 150,
+      capacity: 2,
       breakfast: false,
       featured: false,
       description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
       extras: [
         "Plush pillows and breathable bed linens",
         "Soft, oversized bath towels",
@@ -45,28 +56,28 @@ export default [
         {
           fields: {
             file: {
-              url: img1
+              url: room6
             }
           }
         },
         {
           fields: {
             file: {
-              url: room2
+              url: r6f1
             }
           }
         },
         {
           fields: {
             file: {
-              url: room3
+              url: r6f2
             }
           }
         },
         {
           fields: {
             file: {
-              url: room4
+              url: r6f3
             }
           }
         }
@@ -78,17 +89,15 @@ export default [
       id: "2"
     },
     fields: {
-      name: "single basic",
-      slug: "single-basic",
-      type: "single",
-      price: 150,
-      size: 250,
-      capacity: 1,
-      pets: false,
+      name: "double standard",
+      slug: "standard-double",
+      type: "double",
+      price: 300,
+      capacity: 2,
       breakfast: false,
       featured: false,
       description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
       extras: [
         "Plush pillows and breathable bed linens",
         "Soft, oversized bath towels",
@@ -102,13 +111,6 @@ export default [
         {
           fields: {
             file: {
-              url: img2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
               url: room2
             }
           }
@@ -116,14 +118,21 @@ export default [
         {
           fields: {
             file: {
-              url: room3
+              url: r2f1
             }
           }
         },
         {
           fields: {
             file: {
-              url: room4
+              url: r2f2
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r2f3
             }
           }
         }
@@ -135,17 +144,15 @@ export default [
       id: "3"
     },
     fields: {
-      name: "single standard",
-      slug: "single-standard",
-      type: "single",
-      price: 250,
-      size: 300,
-      capacity: 1,
-      pets: true,
+      name: "family room",
+      slug: "family-room",
+      type: "family",
+      price: 400,
+      capacity: 3,
       breakfast: false,
       featured: false,
       description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
       extras: [
         "Plush pillows and breathable bed linens",
         "Soft, oversized bath towels",
@@ -159,20 +166,6 @@ export default [
         {
           fields: {
             file: {
-              url: img3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
               url: room3
             }
           }
@@ -180,7 +173,21 @@ export default [
         {
           fields: {
             file: {
-              url: room4
+              url: r3f1
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r3f2
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r3f3
             }
           }
         }
@@ -192,17 +199,15 @@ export default [
       id: "4"
     },
     fields: {
-      name: "single deluxe",
-      slug: "single-deluxe",
-      type: "single",
-      price: 300,
-      size: 400,
-      capacity: 1,
-      pets: true,
-      breakfast: true,
+      name: "junior room",
+      slug: "junior-room",
+      type: "family",
+      price: 500,
+      capacity: 5,
+      breakfast: false,
       featured: false,
       description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
       extras: [
         "Plush pillows and breathable bed linens",
         "Soft, oversized bath towels",
@@ -216,28 +221,28 @@ export default [
         {
           fields: {
             file: {
-              url: img4
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
               url: room4
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r4f1
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r4f2
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r4f3
             }
           }
         }
@@ -249,473 +254,15 @@ export default [
       id: "5"
     },
     fields: {
-      name: "double economy",
-      slug: "double-economy",
-      type: "double",
-      price: 200,
-      size: 300,
-      capacity: 2,
-      pets: false,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img5
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "6"
-    },
-    fields: {
-      name: "double basic",
-      slug: "double-basic",
-      type: "double",
-      price: 250,
-      size: 350,
-      capacity: 2,
-      pets: false,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img6
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "7"
-    },
-    fields: {
-      name: "double standard",
-      slug: "double-standard",
-      type: "double",
-      price: 300,
-      size: 400,
-      capacity: 2,
-      pets: true,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img7
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "8"
-    },
-    fields: {
-      name: "double deluxe",
-      slug: "double-deluxe",
-      type: "double",
-      price: 400,
-      size: 500,
-      capacity: 2,
-      pets: true,
-      breakfast: true,
-      featured: true,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img8
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "9"
-    },
-    fields: {
-      name: "family economy",
-      slug: "family-economy",
+      name: "deluxe suite",
+      slug: "deluxe-suite",
       type: "family",
-      price: 300,
-      size: 500,
-      capacity: 3,
-      pets: false,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img9
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "10"
-    },
-    fields: {
-      name: "family basic",
-      slug: "family-basic",
-      type: "family",
-      price: 350,
-      size: 550,
-      capacity: 4,
-      pets: false,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img10
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "11"
-    },
-    fields: {
-      name: "family standard",
-      slug: "family-standard",
-      type: "family",
-      price: 400,
-      size: 600,
-      capacity: 5,
-      pets: true,
-      breakfast: false,
-      featured: false,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img11
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "12"
-    },
-    fields: {
-      name: "family deluxe",
-      slug: "family-deluxe",
-      type: "family",
-      price: 500,
-      size: 700,
-      capacity: 6,
-      pets: true,
-      breakfast: true,
-      featured: true,
-      description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
-      extras: [
-        "Plush pillows and breathable bed linens",
-        "Soft, oversized bath towels",
-        "Full-sized, pH-balanced toiletries",
-        "Complimentary refreshments",
-        "Adequate safety/security",
-        "Internet",
-        "Comfortable beds"
-      ],
-      images: [
-        {
-          fields: {
-            file: {
-              url: img12
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room2
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room3
-            }
-          }
-        },
-        {
-          fields: {
-            file: {
-              url: room4
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    sys: {
-      id: "13"
-    },
-    fields: {
-      name: "presidential",
-      slug: "presidential-room",
-      type: "presidential",
       price: 600,
-      size: 1000,
-      capacity: 10,
-      pets: true,
+      capacity: 6,
       breakfast: true,
       featured: true,
       description:
-        "Street art edison bulb gluten-free, tofu try-hard lumbersexual brooklyn tattooed pickled chambray. Actually humblebrag next level, deep v art party wolf tofu direct trade readymade sustainable hell of banjo. Organic authentic subway tile cliche palo santo, street art XOXO dreamcatcher retro sriracha portland air plant kitsch stumptown. Austin small batch squid gastropub. Pabst pug tumblr gochujang offal retro cloud bread bushwick semiotics before they sold out sartorial literally mlkshk. Vaporware hashtag vice, sartorial before they sold out pok pok health goth trust fund cray.",
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
       extras: [
         "Plush pillows and breathable bed linens",
         "Soft, oversized bath towels",
@@ -736,21 +283,76 @@ export default [
         {
           fields: {
             file: {
-              url: room2
+              url: r1f1
             }
           }
         },
         {
           fields: {
             file: {
-              url: room3
+              url: r1f2
             }
           }
         },
         {
           fields: {
             file: {
-              url: room4
+              url: r1f3
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    sys: {
+      id: "6"
+    },
+    fields: {
+      name: "master suite",
+      slug: "master-suite",
+      type: "master",
+      price: 700,
+      capacity: 10,
+      breakfast: true,
+      featured: true,
+      description:
+      "Beautifully appointed, air-conditioned rooms have satellite TV and luxurious, exclusive Dream Beds, custom-designed for the hotel. In the heart of fashionable Kensington, this refurbished, 4-star boutique hotel offers Victorian elegance with modern comforts. Gloucester Road Tube Station and London’s museums are just a few minutes’ walk away.",
+      extras: [
+        "Plush pillows and breathable bed linens",
+        "Soft, oversized bath towels",
+        "Full-sized, pH-balanced toiletries",
+        "Complimentary refreshments",
+        "Adequate safety/security",
+        "Internet",
+        "Comfortable beds"
+      ],
+      images: [
+        {
+          fields: {
+            file: {
+              url: room5
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r5f1
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r5f2
+            }
+          }
+        },
+        {
+          fields: {
+            file: {
+              url: r5f3
             }
           }
         }
