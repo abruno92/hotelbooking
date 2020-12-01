@@ -31,7 +31,7 @@ router.post('/',
     async (req, res, next) => {
         let review;
         try {
-            review = (await axios.get(`https://localhost:${config.port}/review`)).data
+            review = (await axios.get(`https://localhost:${config.port}/review`, {withCredentials: true})).data
                 .filter(review => review.userId === req.body.userId && review.roomId === req.body.roomId);
             if (review.length === 0) {
                 return next();
@@ -94,7 +94,7 @@ module.exports = router;
 async function checkCurrentUser(value, {req, res}) {
     let review;
     try {
-        review = (await axios.get(`https://localhost:${port}/review/${value}`)).data;
+        review = (await axios.get(`https://localhost:${port}/review/${value}`, {withCredentials: true})).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);
