@@ -4,13 +4,10 @@
  */
 const express = require("express");
 const {notImplemented} = require("../middleware/misc");
-const config = require("../config");
 const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
-const {MongoDatabase} = require("../db/database");
+const {roomDb} = require("../db/database");
 const router = express.Router();
-
-const db = new MongoDatabase(config.db.columns.room);
 
 // create
 router.post('/',
@@ -27,7 +24,7 @@ router.post('/',
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(db, "number", "floor", "side", "category", "pictureUrl"));
+    createHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
 
 // read
 router.get('/:id',
@@ -36,12 +33,12 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(db));
+    readHandler(roomDb));
 
 // read all
 router.get('/',
     // handle read all
-    readHandler(db));
+    readHandler(roomDb));
 
 // update
 router.patch('/:id',
@@ -60,14 +57,14 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(db, "number", "floor", "side", "category", "pictureUrl"));
+    updateHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
 
 // delete
 router.delete('/:id',
     // 'id' URL param
     parseObjectId(),
     // handle delete
-    deleteHandler(db));
+    deleteHandler(roomDb));
 
 router.get('/:id/picture', notImplemented);
 router.put('/:id/picture', notImplemented);

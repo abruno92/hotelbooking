@@ -3,20 +3,17 @@
  * for the '/booking' route.
  */
 const express = require("express");
-const config = require("../config");
 const {parseObjectId, parseDecimal, parseDate, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
-const {MongoDatabase} = require("../db/database");
+const {bookingDb, userDb, roomDb} = require("../db/database");
 const router = express.Router();
-
-const db = new MongoDatabase(config.db.columns.booking);
 
 // create
 router.post('/',
     // 'userId' body attribute
-    parseObjectId('userId'),
+    parseObjectId('userId', async (value) => await userDb.existsById(value)),
     // 'roomId' body attribute
-    parseObjectId('roomId'),
+    parseObjectId('roomId', async (value) => await roomDb.existsById(value)),
     // 'number' body attribute
     parseDecimal('price'),
     // 'startDate' body attribute
@@ -26,7 +23,7 @@ router.post('/',
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(db, "userId", "roomId", "price", "startDate", "endDate"));
+    createHandler(bookingDb, "userId", "roomId", "price", "startDate", "endDate"));
 
 // read
 router.get('/:id',
@@ -35,21 +32,21 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(db));
+    readHandler(bookingDb));
 
 // read all
 router.get('/',
     // handle read all
-    readHandler(db));
+    readHandler(bookingDb));
 
 // update
 router.patch('/:id',
     // 'id' URL param
     parseObjectId(),
     // 'userId' body attribute
-    parseObjectId('userId', true),
+    parseObjectId('userId', async (value) => await userDb.existsById(value), true),
     // 'roomId' body attribute
-    parseObjectId('roomId', true),
+    parseObjectId('roomId', async (value) => await roomDb.existsById(value), true),
     // 'number' body attribute
     parseDecimal('price', true),
     // 'startDate' body attribute
@@ -59,13 +56,13 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(db, "userId", "roomId", "price", "startDate", "endDate"));
+    updateHandler(bookingDb, "userId", "roomId", "price", "startDate", "endDate"));
 
 // delete
 router.delete('/:id',
     // 'id' URL param
     parseObjectId(),
     // handle delete
-    deleteHandler(db));
+    deleteHandler(bookingDb));
 
 module.exports = router;

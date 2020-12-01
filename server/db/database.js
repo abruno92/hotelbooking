@@ -161,6 +161,32 @@ class MongoDatabase {
             await client.close();
         }
     }
+
+    /**
+     * Verifies if an item exists in the database, using its Id.
+     * @param id - Item id used to verify
+     * @returns {Promise<boolean|undefined>} -True if item exists, false otherwise
+     */
+    async existsById(id) {
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
+
+        try {
+            if (typeof id === "string") id = new ObjectId(id);
+
+            const query = {_id: id};
+
+            const item = await collection.findOne(query);
+            console.log(item);
+
+            return item !== null;
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
 }
 
 class UserDatabase extends MongoDatabase {
@@ -168,6 +194,12 @@ class UserDatabase extends MongoDatabase {
         super(user);
     }
 
+    /**
+     * Validates the email and password pair for a user.
+     * @param email - Email used to validate
+     * @param password - Password used to validate
+     * @returns {Promise<boolean|undefined>} - Returns the user if they match, false otherwise
+     */
     async validate(email, password) {
         const client = await MongoClient.connect(connectionString);
         const collection = client.db(name).collection(this._collectionName);
@@ -176,6 +208,10 @@ class UserDatabase extends MongoDatabase {
             const query = {email: email};
 
             const user = await collection.findOne(query);
+
+            if (user === null) {
+                return undefined;
+            }
 
             return confirmPassword(password, user.passwordHash) ? user : undefined;
         } catch (err) {
@@ -186,7 +222,12 @@ class UserDatabase extends MongoDatabase {
         }
     }
 
-    async exists(email) {
+    /**
+     * Verifies if a user exists in the database, using the provided email.
+     * @param {string|ObjectId} email - Email used to verify
+     * @returns {Promise<boolean|undefined>} -True if user exists, false otherwise
+     */
+    async existsByEmail(email) {
         const client = await MongoClient.connect(connectionString);
         const collection = client.db(name).collection(this._collectionName);
 
@@ -208,4 +249,9 @@ class UserDatabase extends MongoDatabase {
 module.exports = {
     MongoDatabase,
     UserDatabase,
+    userDb: new UserDatabase(),
+    bookingDb: new MongoDatabase(config.db.columns.booking),
+    replyDb: new MongoDatabase(config.db.columns.reply),
+    reviewDb: new MongoDatabase(config.db.columns.review),
+    roomDb: new MongoDatabase(config.db.columns.room),
 }

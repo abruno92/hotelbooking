@@ -8,15 +8,13 @@ const config = require("../config");
 const {requireJwtToken} = require("../middleware/misc");
 const {fieldsMatch} = require("../middleware/inputParsing");
 const {createHandler} = require("../middleware/restful");
-const {UserDatabase} = require("../db/database");
+const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
 const {parseEmail, parsePassword, parseName, inputValidator} = require("../middleware/inputParsing");
 
 const {expirySeconds, secret, tokenCookie} = config.jwt;
 
 const router = express.Router();
-
-const db = new UserDatabase();
 
 /**
  * Validates 'email' and 'password' fields, searches the database
@@ -34,7 +32,7 @@ router.post('/login',
         // gets email and password from request body
         const {email, password} = req.body;
         // checks credentials validity using the database
-        const user = db.validate(email, getHashedPassword(password));
+        const user = userDb.validate(email, getHashedPassword(password));
 
         if (user) {
             // a matching user was found
@@ -69,7 +67,7 @@ router.post('/register',
     parseEmail()
         // ensure that email is not already in use
         .custom((email) => {
-            return db.exists(email).then(exists => {
+            return userDb.existsByEmail(email).then(exists => {
                 return new Promise((resolve, reject) => {
                     if (exists) {
                         reject();
@@ -95,7 +93,7 @@ router.post('/register',
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
-    createHandler(db, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
+    createHandler(userDb, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
 
 /**
  * Refreshes the JWT token if it is less than 60 seconds

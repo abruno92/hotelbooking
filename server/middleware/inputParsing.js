@@ -38,14 +38,23 @@ function parseField(field, optional) {
  * is a valid {@link ObjectId} string. The field is then
  * cast to an {@link ObjectId} instance.
  * @param {string} field - Attribute to be validated, defaults to 'id'
+ * @param {DatabaseFunc} dbExistsFunc - Function called
  * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @returns {function} - the current Validation chain instance
  */
-function parseObjectId(field = 'id', optional = false) {
+function parseObjectId(field = 'id', dbExistsFunc = undefined, optional = false) {
     return parseField(field, optional)
         // Validation
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string").bail()
+        // check if the ObjectId references an existing item in a DB
+        .custom(async value => {
+            if (dbExistsFunc ? await dbExistsFunc(value) : true) {
+                return true;
+            } else {
+                throw new Error("must be an existing database item");
+            }
+        }).bail()
         // Sanitization
         // convert to ObjectId (same as value => ObjectId(value) )
         .customSanitizer(ObjectId)
