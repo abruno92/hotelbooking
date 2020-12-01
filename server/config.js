@@ -11,7 +11,7 @@ config.port = process.env.PORT || 3001;
 config.locale = "da-DK";
 
 config.jwt.expirySeconds = 60 * 10;
-config.jwt.tokenCookie = "JwtToken";
+config.jwt.cookieName = "AuthToken";
 config.jwt.secret = jwtSecret;
 
 config.db.privileges.userLow = "0";

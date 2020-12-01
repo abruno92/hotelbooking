@@ -14,7 +14,7 @@ const reviewRoute = require('./routes/review');
 const replyRoute = require('./routes/reply');
 const fs = require("fs");
 const {port} = require("./config");
-const {parseJwtToken} = require("./middleware/misc");
+const {parseAuthToken} = require("./middleware/misc");
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-app.use(parseJwtToken);
+app.use(parseAuthToken);
 
 app.use('/auth', authRoute);
 app.use('/user', userRoute);

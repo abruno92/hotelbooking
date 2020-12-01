@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config");
 const {UserDatabase} = require("../db/database");
 
-const tokenCookie = config.jwt.tokenCookie;
+const tokenCookie = config.jwt.cookieName;
 const secret = config.jwt.secret;
 
 const userDb = new UserDatabase();
@@ -18,7 +18,7 @@ const userDb = new UserDatabase();
  * @param res - The Response object
  * @param next - The middleware function callback argument
  */
-async function parseJwtToken(req, res, next) {
+async function parseAuthToken(req, res, next) {
     const token = req.cookies[tokenCookie];
 
     if (!token) {
@@ -83,7 +83,7 @@ function notImplemented(req, res, next) {
 }
 
 module.exports = {
-    parseJwtToken,
+    parseAuthToken,
     authGuard,
     notImplemented,
 };

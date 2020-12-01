@@ -11,7 +11,7 @@ const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
 const {parseEmail, parsePassword, parseName, inputValidator, fieldsMatch} = require("../middleware/inputParsing");
 
-const {expirySeconds, secret, tokenCookie} = config.jwt;
+const {expirySeconds, secret, cookieName} = config.jwt;
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.post('/login',
             });
 
             // todo maybe store JWT in session/localStorage instead of cookies
-            res.cookie('JwtToken', token, {maxAge: expirySeconds * 1000});
+            res.cookie(config.jwt.cookieName, token, {maxAge: expirySeconds * 1000});
             res.json({message: "login successful"});
         } else {
             // no matching user was found
@@ -101,7 +101,7 @@ router.post('/register',
 router.get('/refresh',
     authGuard(config.db.privileges.userAny),
     (req, res) => {
-    const token = req.cookies[tokenCookie];
+    const token = req.cookies[cookieName];
 
     let payload;
     try {
@@ -127,7 +127,7 @@ router.get('/refresh',
         expiresIn: expirySeconds
     });
 
-    res.cookie(tokenCookie, newToken, {maxAge: expirySeconds * 1000});
+    res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
     res.json({message: "token refreshed"});
 });
 
@@ -137,7 +137,7 @@ router.get('/refresh',
 router.get('/logout',
     authGuard(config.db.privileges.userAny),
     (_, res) => {
-        res.cookie(tokenCookie, '', {expires: new Date(0)});
+        res.cookie(cookieName, '', {expires: new Date(0)});
         // res.clearCookie(jwtTokenCookie);
         res.sendStatus(204);
     })
