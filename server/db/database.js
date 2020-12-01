@@ -1,9 +1,13 @@
 /**
  * This file contains database-related functions.
  */
-const config = require("./config");
+const config = require("../config");
 const {confirmPassword} = require("../auth");
 const {MongoClient, ObjectId} = require('mongodb');
+
+const connectionString = config.db.connectionString;
+const name = config.db.name;
+const user = config.db.columns.user;
 
 class MongoDatabase {
     constructor(collectionName) {
@@ -17,17 +21,17 @@ class MongoDatabase {
      */
     async create(item) {
         // create a MongoClient instance and connect to the database
-        const client = await MongoClient.connect(config.connectionUrl);
+        const client = await MongoClient.connect(connectionString);
         // get a reference to the collection of this MongoDatabase instance
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             // insert the item in the database
             const writeResult = await collection.insertOne(item);
             // return the ObjectId of the new item
             return writeResult.insertedId;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             // return 'undefined' if any error occurred
             return undefined;
         } finally {
@@ -42,8 +46,8 @@ class MongoDatabase {
      * @returns {Promise<*|undefined>} - Matching item; null if not found or 'undefined' in case of errors
      */
     async getOne(id) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             // if a string id is given, convert it to ObjectId
@@ -53,8 +57,8 @@ class MongoDatabase {
             const query = {_id: id};
 
             return await collection.findOne(query);
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -66,8 +70,8 @@ class MongoDatabase {
      * @returns {Promise<*|undefined>} - Matching item list or 'undefined' in case of errors
      */
     async getAll() {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         // ready mongodb cursor
         const cursor = collection.find();
@@ -75,8 +79,8 @@ class MongoDatabase {
         try {
             // convert cursor documents to array
             return await cursor.toArray();
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -93,8 +97,8 @@ class MongoDatabase {
      * or 'undefined' in case of other errors
      */
     async updateOne(id, item) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             if (typeof id === "string") id = new ObjectId(id);
@@ -115,8 +119,8 @@ class MongoDatabase {
                 // no documents updated, return 'null'
                 return null;
             }
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -130,8 +134,8 @@ class MongoDatabase {
      * or 'undefined' in case of other errors
      */
     async deleteOne(id) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             if (typeof id === "string") id = new ObjectId(id);
@@ -150,8 +154,33 @@ class MongoDatabase {
                 // no documents deleted, return 'null'
                 return null;
             }
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            return undefined;
+        } finally {
+            await client.close();
+        }
+    }
+
+    /**
+     * Verifies if an item exists in the database, using its Id.
+     * @param id - Item id used to verify
+     * @returns {Promise<boolean|undefined>} -True if item exists, false otherwise
+     */
+    async existsById(id) {
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
+
+        try {
+            if (typeof id === "string") id = new ObjectId(id);
+
+            const query = {_id: id};
+
+            const item = await collection.findOne(query);
+
+            return item !== null;
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -161,30 +190,45 @@ class MongoDatabase {
 
 class UserDatabase extends MongoDatabase {
     constructor() {
-        super(config.userCol);
+        super(user);
     }
 
+    /**
+     * Validates the email and password pair for a user.
+     * @param email - Email used to validate
+     * @param password - Password used to validate
+     * @returns {Promise<boolean|undefined>} - Returns the user if they match, false otherwise
+     */
     async validate(email, password) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             const query = {email: email};
 
             const user = await collection.findOne(query);
 
+            if (user === null) {
+                return undefined;
+            }
+
             return confirmPassword(password, user.passwordHash) ? user : undefined;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
         }
     }
 
-    async exists(email) {
-        const client = await MongoClient.connect(config.connectionUrl);
-        const collection = client.db(config.databaseName).collection(this._collectionName);
+    /**
+     * Verifies if a user exists in the database, using the provided email.
+     * @param {string|ObjectId} email - Email used to verify
+     * @returns {Promise<boolean|undefined>} -True if user exists, false otherwise
+     */
+    async existsByEmail(email) {
+        const client = await MongoClient.connect(connectionString);
+        const collection = client.db(name).collection(this._collectionName);
 
         try {
             const query = {email: email};
@@ -192,8 +236,8 @@ class UserDatabase extends MongoDatabase {
             const user = await collection.findOne(query);
 
             return user !== null;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -202,6 +246,11 @@ class UserDatabase extends MongoDatabase {
 }
 
 module.exports = {
-    MongoDatabase: MongoDatabase,
-    UserDatabase: UserDatabase,
+    MongoDatabase,
+    UserDatabase,
+    userDb: new UserDatabase(),
+    bookingDb: new MongoDatabase(config.db.columns.booking),
+    replyDb: new MongoDatabase(config.db.columns.reply),
+    reviewDb: new MongoDatabase(config.db.columns.review),
+    roomDb: new MongoDatabase(config.db.columns.room),
 }

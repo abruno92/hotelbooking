@@ -2,7 +2,6 @@
  * This file contains various middleware functions
  * related to RESTful APIs.
  */
-const {MongoDatabase} = require("../db/database");
 
 /**
  * Function that returns a handler for a POST request
@@ -65,7 +64,7 @@ function readHandler(db) {
                 result = await db.getAll();
             }
         } catch (e) {
-            const message = "unable to retrieve item" + id ? "" : "s";
+            const message = `unable to retrieve item${id ? "" : "s"}`;
             console.log(message);
             console.log(e);
             return res.status(500).json({error: message});
@@ -176,8 +175,8 @@ function deleteHandler(db) {
 }
 
 module.exports = {
-    createHandler: createHandler,
-    readHandler: readHandler,
-    updateHandler: updateHandler,
-    deleteHandler: deleteHandler,
+    createHandler,
+    readHandler,
+    updateHandler,
+    deleteHandler,
 }

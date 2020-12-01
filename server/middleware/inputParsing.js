@@ -7,6 +7,14 @@ const {validationResult} = require("express-validator");
 const {ValidationChain, check, body} = require('express-validator');
 const {ObjectId} = require("mongodb");
 
+const encodableHtmlChars = {
+    "&": "&amp;",
+    "<": "&lt;",
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+}
+
 /**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the request object
@@ -25,19 +33,34 @@ function parseField(field, optional) {
 }
 
 /**
+ * @typedef {function} DatabaseFunc
+ * @param {string|ObjectId} objectId
+ * @returns {Promise<boolean|undefined>}
+ */
+
+/**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the request object
  * is a valid {@link ObjectId} string. The field is then
  * cast to an {@link ObjectId} instance.
  * @param {string} field - Attribute to be validated, defaults to 'id'
+ * @param {DatabaseFunc} dbExistsFunc - Function called
  * @param {boolean} optional - Whether or not the field must be present, defaults to 'false'
  * @returns {function} - the current Validation chain instance
  */
-function parseObjectId(field = 'id', optional = false) {
+function parseObjectId(field = 'id', dbExistsFunc = undefined, optional = false) {
     return parseField(field, optional)
         // Validation
         // check if is a valid ObjectId string
         .isMongoId().withMessage("must be a valid MongoDB ObjectId string").bail()
+        // check if the ObjectId references an existing item in a DB
+        .custom(async value => {
+            if (dbExistsFunc ? await dbExistsFunc(value) : true) {
+                return true;
+            } else {
+                throw new Error("must be an existing database item");
+            }
+        }).bail()
         // Sanitization
         // convert to ObjectId (same as value => ObjectId(value) )
         .customSanitizer(ObjectId)
@@ -63,7 +86,8 @@ function parseString(field, options, optional = false) {
         // Sanitization
         // trim leading and trailing whitespaces
         .trim()
-    // todo sanitize input against SQL, XSS and the like
+        // encode HTML sensitive characters inside the string
+        .customSanitizer(encodeHtml)
 }
 
 /**
@@ -177,8 +201,19 @@ function parseName(field = 'password', optional = false) {
  */
 function fieldsMatch(first, second) {
     return body(first)
-        .custom((value, {req}) => value === req.body[second])
+        .custom((input, {req}) => input === req.body[second])
         .withMessage(`must match the '${second}' field`)
+}
+
+/**
+ * Function that takes a string and
+ * replaces HTML sensitive characters
+ * with their encoded versions, as can be seen in {@link encodableHtmlChars}.
+ * @param input - Value to be sanitized
+ * @returns {function} - the current Validation chain instance
+ */
+function encodeHtml(input) {
+    return [...input].map(char => encodableHtmlChars[char] ? encodableHtmlChars[char] : char).join('');
 }
 
 /**
@@ -201,15 +236,31 @@ function inputValidator(req, res, next) {
     }
 }
 
+/**
+ * Checks if the id is the one of the currently authenticated user.
+ * @param id - Id to be checked
+ * @param req - The Request object
+ * @returns {Error|boolean} True if the id matches the current user, throws Error otherwise
+ */
+function isCurrentUser(id, {req}) {
+    if (id.equals(ObjectId(req.user._id))) {
+        return true;
+    } else {
+        return new Error("must be the id of the user making the request");
+    }
+}
+
+
 module.exports = {
-    inputValidator: inputValidator,
-    parseObjectId: parseObjectId,
-    parseString: parseString,
-    parseDecimal: parseDecimal,
-    parseDate: parseDate,
-    parseUrl: parseUrl,
-    parseEmail: parseEmail,
-    parsePassword: parsePassword,
-    parseName: parseName,
-    fieldsMatch: fieldsMatch,
+    inputValidator,
+    parseObjectId,
+    parseString,
+    parseDecimal,
+    parseDate,
+    parseUrl,
+    parseEmail,
+    parsePassword,
+    parseName,
+    fieldsMatch,
+    isCurrentUser
 }

@@ -2,9 +2,11 @@
  * This file contains various middleware functions.
  */
 const jwt = require("jsonwebtoken");
-const {jwtTokenCookie} = require("../config");
-const {jwtSecret} = require("../jwtSecret");
+const config = require("../config");
 const {UserDatabase} = require("../db/database");
+
+const tokenCookie = config.jwt.cookieName;
+const secret = config.jwt.secret;
 
 const userDb = new UserDatabase();
 
@@ -16,8 +18,8 @@ const userDb = new UserDatabase();
  * @param res - The Response object
  * @param next - The middleware function callback argument
  */
-async function parseJwtToken(req, res, next) {
-    const token = req.cookies[jwtTokenCookie];
+async function parseAuthToken(req, res, next) {
+    const token = req.cookies[tokenCookie];
 
     if (!token) {
         return next();
@@ -25,13 +27,13 @@ async function parseJwtToken(req, res, next) {
 
     let payload;
     try {
-        payload = await jwt.verify(token, jwtSecret);
+        payload = await jwt.verify(token, secret);
     } catch (e) {
         console.log(e);
         return next();
     }
 
-    req.user = userDb.getOne(payload.userId);
+    req.user = await userDb.getOne(payload.userId);
 
     next();
 }
@@ -49,44 +51,39 @@ function authGuard(privilegeLevel) {
     if (typeof privilegeLevel !== "string") throw new TypeError('"privilegeLevel" argument must be of type "string"');
 
     return (req, res, next) => {
-        if (req.user) {
+        const {user} = req;
+        if (user) {
             // user is signed in
-            if (req.user.privilegeLevel === privilegeLevel) {
-                // user is of correct privilege
-                next();
+            if (privilegeLevel === config.db.privileges.userAny ||
+                user.privilegeLevel === privilegeLevel) {
+                // user is of correct privilege or endpoint doesn't require specific privilege
+                return next();
             } else {
                 // user is of incorrect privilege
                 // set HTTP status to 403 "Forbidden"
-                res.status(403);
-                res.redirect('/login');
+                res.status(403).json({error: "user has incorrect privilege"});
             }
         } else {
             // user is not signed in
             // set HTTP status to 401 "Unauthorized"
-            res.status(401);
-            res.redirect('/login');
+            res.status(401).json({error: "user is not authenticated"});
         }
     }
 }
 
 /**
- * Router-level middleware function that ensures a
- * JWT Token cookie is present in the request.
+ * Middleware function that responds with a
+ * 501 "Not Implemented" status code.
  * @param req - The Request object
  * @param res - The Response object
  * @param next - The middleware function callback argument
  */
-function requireJwtToken(req, res, next) {
-    const token = req.cookies[jwtTokenCookie];
-    if (!token) {
-        return res.status(401).json({error: "missing jwt token"});
-    }
-
-    next();
+function notImplemented(req, res, next) {
+    res.sendStatus(501);
 }
 
 module.exports = {
-    parseJwtToken: parseJwtToken,
-    requireJwtToken: requireJwtToken,
-    getAuthLevelMw: authGuard,
+    parseAuthToken,
+    authGuard,
+    notImplemented,
 };

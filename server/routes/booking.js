@@ -3,20 +3,25 @@
  * for the '/booking' route.
  */
 const express = require("express");
-const {parseObjectId, parseDecimal, parseDate, inputValidator} = require("../middleware/inputParsing");
+const config = require("../config");
+const {authGuard} = require("../middleware/misc");
+const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
-const {MongoDatabase} = require("../db/database");
-const {bookingCol} = require("../db/config");
+const {bookingDb, userDb, roomDb} = require("../db/database");
+const {axiosJwtCookie} = require("../utils");
 const router = express.Router();
 
-const db = new MongoDatabase(bookingCol);
+router.use(authGuard(config.db.privileges.userAny));
 
 // create
 router.post('/',
+    authGuard(config.db.privileges.userLow),
     // 'userId' body attribute
-    parseObjectId('userId'),
+    parseObjectId('userId', async (value) => await userDb.existsById(value))
+        // check that the authenticated user is the one making the post request
+        .custom(isCurrentUser),
     // 'roomId' body attribute
-    parseObjectId('roomId'),
+    parseObjectId('roomId', async (value) => await roomDb.existsById(value)),
     // 'number' body attribute
     parseDecimal('price'),
     // 'startDate' body attribute
@@ -26,7 +31,36 @@ router.post('/',
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(db, "userId", "roomId", "price", "startDate", "endDate"));
+    createHandler(bookingDb, "userId", "roomId", "price", "startDate", "endDate"));
+
+// read all
+router.get('/',
+    // handle read all
+    readHandler(bookingDb));
+
+// read for a user
+router.get('/forUser',
+    authGuard(config.db.privileges.userLow),
+    async (req, res) => {
+        let bookings;
+        try {
+            bookings = (await axiosJwtCookie(req).get(`/review`)).data;
+        } catch (e) {
+            if (!e.response) {
+                console.log(e);
+                return res.sendStatus(500);
+            }
+
+            if (e.response.status !== 404) {
+                console.log(e.response);
+                return res.status(e.response.status).send({error: e.response.data});
+            }
+        }
+
+        const userBookings = bookings.filter(booking => req.user._id.equals(booking.userId));
+        res.json(userBookings);
+    }
+);
 
 // read
 router.get('/:id',
@@ -35,21 +69,14 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(db));
-
-// read all
-router.get('/',
-    // handle read all
-    readHandler(db));
+    readHandler(bookingDb));
 
 // update
 router.patch('/:id',
+    authGuard(config.db.privileges.userLow),
     // 'id' URL param
-    parseObjectId(),
-    // 'userId' body attribute
-    parseObjectId('userId', true),
-    // 'roomId' body attribute
-    parseObjectId('roomId', true),
+    parseObjectId('id', async (value) => await bookingDb.existsById(value))
+        .custom(checkCurrentUser),
     // 'number' body attribute
     parseDecimal('price', true),
     // 'startDate' body attribute
@@ -59,13 +86,37 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(db, "userId", "roomId", "price", "startDate", "endDate"));
+    updateHandler(bookingDb, "price", "startDate", "endDate"));
 
 // delete
 router.delete('/:id',
+    authGuard(config.db.privileges.userHigh),
     // 'id' URL param
     parseObjectId(),
     // handle delete
-    deleteHandler(db));
+    deleteHandler(bookingDb));
 
 module.exports = router;
+
+/**
+ * Checks if the currently authenticated user is the owner of the booking.
+ * @param bookingId - Id of the booking to check
+ * @param req - The Request object
+ * @param res - The Response object
+ * @returns {Error|boolean} True if the user owns the booking, throws Error otherwise (see {@link isCurrentUser})
+ */
+async function checkCurrentUser(bookingId, {req, res}) {
+    let booking;
+    try {
+        booking = (await axiosJwtCookie(req).get(`booking/${bookingId}`)).data;
+    } catch (e) {
+        if (!e.response) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+
+        return new Error("error occurred");
+    }
+
+    return isCurrentUser(booking.userId, {req});
+}

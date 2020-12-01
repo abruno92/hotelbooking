@@ -4,18 +4,16 @@
  */
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const {requireJwtToken} = require("../middleware/misc");
-const {fieldsMatch} = require("../middleware/inputParsing");
+const config = require("../config");
+const {authGuard} = require("../middleware/misc");
 const {createHandler} = require("../middleware/restful");
-const {UserDatabase} = require("../db/database");
+const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
-const {jwtExpirySeconds, jwtTokenCookie} = require("../config");
-const {jwtSecret} = require("../jwtSecret");
-const {parseEmail, parsePassword, parseName, inputValidator} = require("../middleware/inputParsing");
+const {parseEmail, parsePassword, parseName, inputValidator, fieldsMatch} = require("../middleware/inputParsing");
+
+const {expirySeconds, secret, cookieName} = config.jwt;
 
 const router = express.Router();
-
-const db = new UserDatabase();
 
 /**
  * Validates 'email' and 'password' fields, searches the database
@@ -29,23 +27,23 @@ router.post('/login',
     parsePassword(),
     // validate above attributes
     inputValidator,
-    (req, res) => {
+    async (req, res) => {
         // gets email and password from request body
         const {email, password} = req.body;
         // checks credentials validity using the database
-        const user = db.validate(email, getHashedPassword(password));
+        const user = await userDb.validate(email, password);
 
         if (user) {
             // a matching user was found
 
             // signs JWT with the user's ObjectId as payload
-            const token = jwt.sign({userId: user._id}, jwtSecret, {
+            const token = jwt.sign({userId: user._id}, secret, {
                 algorithm: 'HS256',
-                expiresIn: jwtExpirySeconds
+                expiresIn: expirySeconds
             });
 
             // todo maybe store JWT in session/localStorage instead of cookies
-            res.cookie('JwtToken', token, {maxAge: jwtExpirySeconds * 1000});
+            res.cookie(config.jwt.cookieName, token, {maxAge: expirySeconds * 1000});
             res.json({message: "login successful"});
         } else {
             // no matching user was found
@@ -68,7 +66,7 @@ router.post('/register',
     parseEmail()
         // ensure that email is not already in use
         .custom((email) => {
-            return db.exists(email).then(exists => {
+            return userDb.existsByEmail(email).then(exists => {
                 return new Promise((resolve, reject) => {
                     if (exists) {
                         reject();
@@ -90,23 +88,25 @@ router.post('/register',
     inputValidator,
     // fill the rest of the database fields
     (req, res, next) => {
-        req.body.privilegeLevel = "0";
+        req.body.privilegeLevel = config.db.privileges.userLow;
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
-    createHandler(db, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
+    createHandler(userDb, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
 
 /**
  * Refreshes the JWT token if it is less than 60 seconds
  * away from expiring.
  */
-router.get('/refresh', (req, res) => {
-    const token = req.cookies[jwtTokenCookie];
+router.get('/refresh',
+    authGuard(config.db.privileges.userAny),
+    (req, res) => {
+    const token = req.cookies[cookieName];
 
     let payload;
     try {
         // verifies the token
-        payload = jwt.verify(token, jwtSecret);
+        payload = jwt.verify(token, secret);
     } catch (e) {
         // token is expired
         console.log(e);
@@ -122,21 +122,24 @@ router.get('/refresh', (req, res) => {
     }
 
     // generates a new token
-    const newToken = jwt.sign({username: payload.username}, jwtSecret, {
+    const newToken = jwt.sign({username: payload.username}, secret, {
         algorithm: 'HS256',
-        expiresIn: jwtExpirySeconds
+        expiresIn: expirySeconds
     });
 
-    res.cookie(jwtTokenCookie, newToken, {maxAge: jwtExpirySeconds * 1000});
+    res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
     res.json({message: "token refreshed"});
 });
 
+/**
+ * Logs the user out by removing the JWT cookie.
+ */
 router.get('/logout',
-    requireJwtToken,
+    authGuard(config.db.privileges.userAny),
     (_, res) => {
-        res.cookie(jwtTokenCookie, '', {expires: new Date(0)});
+        res.cookie(cookieName, '', {expires: new Date(0)});
         // res.clearCookie(jwtTokenCookie);
-        res.sendStatus(200);
+        res.sendStatus(204);
     })
 
 module.exports = router;
