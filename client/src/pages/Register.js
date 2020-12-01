@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import {Link} from 'react-router-dom';
 import Axios from "axios";
 
 const Register = () => {
@@ -7,13 +8,11 @@ const Register = () => {
     const [emailReg, setEmailReg] = useState('');
     const [passwordReg, setPasswordReg] = useState('');
 
-    //handleCreation(emailReg, passwordReg);
-
     const register = () => {
         Axios.post('http://localhost:3001/auth/register', {
             firstName: firstNameReg, 
             lastName: lastNameReg, 
-            email: emailReg,  
+            email: emailReg, 
             password: passwordReg
         }).then((response) => {
             console.log(response.data);
@@ -82,7 +81,9 @@ const Register = () => {
                 </div> 
                 <small>Already have an account?</small>
                 <div className="createAccount">
-                    <button type="submit">Login</button>
+                    <button>
+                        <Link to='/login' style={{textDecoration: "none", color:"black"}}>Login</Link>
+                    </button>
                 </div>
                 </form>
             </div>

@@ -1,6 +1,8 @@
-import React, {useState} from "react";
-import './logreg.css'
-import Axios from "axios";
+import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
+import Axios from 'axios';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import GoogleBtn from "../Google Authentication/googleLogin";
 import LoginButton from "../Google Authentication/Auth0LoginBtn";
 
@@ -8,9 +10,6 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginStatus, setLoginStatus] = useState('');
-
-    //handleSignIn(email,password);
-    //const auth = new AuthService("711812867459-m97h2u5maequivh2m89imhujttt19aqn.apps.googleusercontent.com",  "AdWj1GnYeM6h4OKaH_TtUH5k");
 
     const login = () => {
         Axios.post('http://localhost:3001/auth/login', {
@@ -24,14 +23,15 @@ const Login = () => {
             }
         })
     };
-    //<LoginButton/>
+
     return (
+        <>
         <div className="wrapper">
             <div className="form-wrapper">
-                <form>                
+                <form>
                 <GoogleBtn/>
                 <LoginButton/>
-                <h1>Login</h1>              
+                <h1>Login</h1>
                 <div className="email">
                     <label htmlFor="email">Email</label>
                     <input 
@@ -57,15 +57,18 @@ const Login = () => {
                     />
                 </div>
                 <div className="login">
-                     <button type="submit" onClick={login}>Submit</button>
+                    <button type="submit" onClick={login}>Submit</button>
                 </div> 
                 <small>Don't have an account?</small>
                 <div className="createAccount">
-                    <button type="submit">Create an Account</button>
+                    <button>
+                        <Link to='/register' style={{textDecoration: "none", color:"black"}}>Create an Account</Link>
+                    </button>
                 </div>
                 </form>
             </div>
         </div>
+        </>
     );
 }
 
