@@ -27,11 +27,11 @@ router.post('/login',
     parsePassword(),
     // validate above attributes
     inputValidator,
-    (req, res) => {
+    async (req, res) => {
         // gets email and password from request body
         const {email, password} = req.body;
         // checks credentials validity using the database
-        const user = userDb.validate(email, getHashedPassword(password));
+        const user = await userDb.validate(email, password);
 
         if (user) {
             // a matching user was found
@@ -88,7 +88,7 @@ router.post('/register',
     inputValidator,
     // fill the rest of the database fields
     (req, res, next) => {
-        req.body.privilegeLevel = "0";
+        req.body.privilegeLevel = config.db.privileges.userLow;
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
