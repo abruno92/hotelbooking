@@ -1,32 +1,20 @@
 import firebase from 'firebase'
-import 'firebase/auth'
-import 'firebase/app'
-import firebaseconfig from './firebase.confiq'
-import firebase from 'firebase'
 
-
-const GoogleAuthentication = require('@authentication/google');
 const express = require('express');
 const app = express();
-const {verifyToken} = require('@authentication/google-authenticator');
 
-export const authMethods = {
-  // firebase helper methods go here... 
-  signup: (email, password) => {
-
-    },
-  signin: (email, password) => {
-
-    },
-  signout: (email, password) => {
-
-    },
-  }
-
-
-export function signIn(){
-  auth.signInWithPopup(provider);
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  var id_token = googleUser.getAuthResponse().id_token;
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'url';
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = function() {
 };
+  xhr.send('idtoken=' + id_token);
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
 
 export function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
@@ -47,11 +35,11 @@ provider.add2FactorAuthentication(userID)
     //await DB.TheTable.update(userDI, {gaSecret});
 }
 
-export function handleForm (e) {
+export function handleCreation(e) {
     e.preventDefault();
     firebase
       .auth()
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(emailReg, passwordReg)
       .then(res => {
         if (res.user) Auth.setLoggedIn(true);
       })
@@ -60,7 +48,7 @@ export function handleForm (e) {
       });
 };
 
-export function handleForm(e) {
+export function handleSignIn(e) {
   e.preventDefault();
   firebase
   .auth()
@@ -78,7 +66,5 @@ export function onToken(token) {
     // verified token
   }
 }
-
-
 
 app.listen(3000, () => console.log('Server running'));
