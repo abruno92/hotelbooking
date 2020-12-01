@@ -3,8 +3,11 @@
  * for the '/auth' route.
  */
 const express = require("express");
-const {notImplemented} = require('../middleware/misc');
+const config = require("../config");
+const {authGuard, notImplemented} = require('../middleware/misc');
 const router = express.Router();
+
+router.use(authGuard(config.db.privileges.userHigh));
 
 router.get('/:id/picture', notImplemented);
 router.put('/:id/picture', notImplemented);

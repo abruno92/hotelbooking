@@ -51,22 +51,22 @@ function authGuard(privilegeLevel) {
     if (typeof privilegeLevel !== "string") throw new TypeError('"privilegeLevel" argument must be of type "string"');
 
     return (req, res, next) => {
-        if (req.user) {
+        const {user} = req;
+        if (user) {
             // user is signed in
-            if (req.user.privilegeLevel === privilegeLevel) {
-                // user is of correct privilege
-                next();
+            if (privilegeLevel === config.db.privileges.userAny ||
+                user.privilegeLevel === privilegeLevel) {
+                // user is of correct privilege or endpoint doesn't require specific privilege
+                return next();
             } else {
                 // user is of incorrect privilege
                 // set HTTP status to 403 "Forbidden"
-                res.status(403);
-                res.redirect('/login');
+                res.status(403).json({error: "user has incorrect privilege"});
             }
         } else {
             // user is not signed in
             // set HTTP status to 401 "Unauthorized"
-            res.status(401);
-            res.redirect('/login');
+            res.status(401).json({error: "user is not authenticated"});
         }
     }
 }

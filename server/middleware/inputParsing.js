@@ -33,6 +33,12 @@ function parseField(field, optional) {
 }
 
 /**
+ * @typedef {function} DatabaseFunc
+ * @param {string|ObjectId} objectId
+ * @returns {Promise<boolean|undefined>}
+ */
+
+/**
  * Function that returns a {@link ValidationChain} used to
  * ensure the 'field' attribute in the request object
  * is a valid {@link ObjectId} string. The field is then

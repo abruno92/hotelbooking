@@ -3,13 +3,18 @@
  * for the '/booking' route.
  */
 const express = require("express");
+const config = require("../config");
+const {authGuard} = require("../middleware/misc");
 const {parseObjectId, parseDecimal, parseDate, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
 const router = express.Router();
 
+router.use(authGuard(config.db.privileges.userAny));
+
 // create
 router.post('/',
+    authGuard(config.db.privileges.userLow),
     // 'userId' body attribute
     parseObjectId('userId', async (value) => await userDb.existsById(value)),
     // 'roomId' body attribute
@@ -41,6 +46,7 @@ router.get('/',
 
 // update
 router.patch('/:id',
+    authGuard(config.db.privileges.userLow),
     // 'id' URL param
     parseObjectId(),
     // 'userId' body attribute
@@ -60,6 +66,7 @@ router.patch('/:id',
 
 // delete
 router.delete('/:id',
+    authGuard(config.db.privileges.userHigh),
     // 'id' URL param
     parseObjectId(),
     // handle delete

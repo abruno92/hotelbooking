@@ -3,10 +3,11 @@
  * for the '/reply' route.
  */
 const express = require("express");
-const {port} = require("../config");
+const {port, db} = require("../config");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const axios = require("axios");
+const {authGuard} = require("../middleware/misc");
 const {userDb, reviewDb, replyDb} = require("../db/database");
 const {ObjectId} = require("mongodb");
 const router = express.Router({mergeParams: true});
@@ -14,6 +15,7 @@ const router = express.Router({mergeParams: true});
 // middleware to validate the 'reviewId' parameter
 // and add it to the request body
 router.use('/',
+    authGuard(db.privileges.userAny),
     parseObjectId('reviewId', async (value) => await reviewDb.existsById(value)),
     // validate above attribute
     inputValidator
@@ -21,6 +23,7 @@ router.use('/',
 
 // create
 router.post('/',
+    authGuard(db.privileges.userHigh),
     // 'userId' body attribute
     parseObjectId('userId', async (value) => await userDb.existsById(value)),
     // 'content' body attribute
@@ -29,9 +32,8 @@ router.post('/',
     inputValidator,
     // check that another reply does not already exist for this review
     async (req, res, next) => {
-        let reply;
         try {
-            reply = (await axios.get(`http://localhost:${port}/review/${(req.params.reviewId)}/reply`)).data;
+            await axios.get(`http://localhost:${port}/review/${(req.params.reviewId)}/reply`);
         } catch (e) {
             if (!e.response) {
                 console.log(e);
@@ -46,7 +48,6 @@ router.post('/',
             req.body.reviewId = req.params.reviewId;
             return next();
         }
-        console.log(reply);
 
         const message = `a reply already exists for this review`;
         console.log(message);
@@ -85,6 +86,8 @@ router.get('/*',
 
 // update
 router.patch(['/', '/:id'],
+    authGuard(db.privileges.userHigh),
+    // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
     parseObjectId(),
@@ -102,6 +105,7 @@ router.patch(['/', '/:id'],
 
 // delete
 router.delete(['/', '/:id'],
+    authGuard(db.privileges.userHigh),
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param

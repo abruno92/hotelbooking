@@ -5,12 +5,11 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
-const {requireJwtToken} = require("../middleware/misc");
-const {fieldsMatch} = require("../middleware/inputParsing");
+const {authGuard} = require("../middleware/misc");
 const {createHandler} = require("../middleware/restful");
 const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
-const {parseEmail, parsePassword, parseName, inputValidator} = require("../middleware/inputParsing");
+const {parseEmail, parsePassword, parseName, inputValidator, fieldsMatch} = require("../middleware/inputParsing");
 
 const {expirySeconds, secret, tokenCookie} = config.jwt;
 
@@ -99,7 +98,9 @@ router.post('/register',
  * Refreshes the JWT token if it is less than 60 seconds
  * away from expiring.
  */
-router.get('/refresh', (req, res) => {
+router.get('/refresh',
+    authGuard(config.db.privileges.userAny),
+    (req, res) => {
     const token = req.cookies[tokenCookie];
 
     let payload;
@@ -134,7 +135,7 @@ router.get('/refresh', (req, res) => {
  * Logs the user out by removing the JWT cookie.
  */
 router.get('/logout',
-    requireJwtToken,
+    authGuard(config.db.privileges.userAny),
     (_, res) => {
         res.cookie(tokenCookie, '', {expires: new Date(0)});
         // res.clearCookie(jwtTokenCookie);
