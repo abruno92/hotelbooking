@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import './logreg.css'
 import Axios from "axios";
-import GoogleBtn from "../Google Authentication/googleLogin"
+import GoogleBtn from "../Google Authentication/googleLogin";
+import LoginButton from "../Google Authentication/Auth0LoginBtn";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const Login = () => {
     const [loginStatus, setLoginStatus] = useState('');
 
     //handleSignIn(email,password);
+    //const auth = new AuthService("711812867459-m97h2u5maequivh2m89imhujttt19aqn.apps.googleusercontent.com",  "AdWj1GnYeM6h4OKaH_TtUH5k");
 
     const login = () => {
         Axios.post('http://localhost:3001/auth/login', {
@@ -22,12 +24,13 @@ const Login = () => {
             }
         })
     };
-    
+    //<LoginButton/>
     return (
         <div className="wrapper">
             <div className="form-wrapper">
-                <form>
+                <form>                
                 <GoogleBtn/>
+                <LoginButton/>
                 <h1>Login</h1>              
                 <div className="email">
                     <label htmlFor="email">Email</label>
