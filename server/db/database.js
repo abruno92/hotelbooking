@@ -30,8 +30,8 @@ class MongoDatabase {
             const writeResult = await collection.insertOne(item);
             // return the ObjectId of the new item
             return writeResult.insertedId;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             // return 'undefined' if any error occurred
             return undefined;
         } finally {
@@ -57,8 +57,8 @@ class MongoDatabase {
             const query = {_id: id};
 
             return await collection.findOne(query);
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -79,8 +79,8 @@ class MongoDatabase {
         try {
             // convert cursor documents to array
             return await cursor.toArray();
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -119,8 +119,8 @@ class MongoDatabase {
                 // no documents updated, return 'null'
                 return null;
             }
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -154,8 +154,8 @@ class MongoDatabase {
                 // no documents deleted, return 'null'
                 return null;
             }
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -177,11 +177,10 @@ class MongoDatabase {
             const query = {_id: id};
 
             const item = await collection.findOne(query);
-            console.log(item);
 
             return item !== null;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -214,8 +213,8 @@ class UserDatabase extends MongoDatabase {
             }
 
             return confirmPassword(password, user.passwordHash) ? user : undefined;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();
@@ -237,8 +236,8 @@ class UserDatabase extends MongoDatabase {
             const user = await collection.findOne(query);
 
             return user !== null;
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
             return undefined;
         } finally {
             await client.close();

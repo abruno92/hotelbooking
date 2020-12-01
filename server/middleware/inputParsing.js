@@ -236,8 +236,14 @@ function inputValidator(req, res, next) {
     }
 }
 
-function isCurrentUser(value, {req}) {
-    if (value.equals(ObjectId(req.user._id))) {
+/**
+ * Checks if the id is the one of the currently authenticated user.
+ * @param id - Id to be checked
+ * @param req - The Request object
+ * @returns {Error|boolean} True if the id matches the current user, throws Error otherwise
+ */
+function isCurrentUser(id, {req}) {
+    if (id.equals(ObjectId(req.user._id))) {
         return true;
     } else {
         return new Error("must be the id of the user making the request");

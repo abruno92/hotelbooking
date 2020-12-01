@@ -3,10 +3,10 @@
  * for the '/reply' route.
  */
 const express = require("express");
-const {port, db} = require("../config");
+const {db} = require("../config");
 const {parseObjectId, parseString, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, updateHandler, deleteHandler} = require("../middleware/restful");
-const axios = require("axios");
+const {axiosJwtCookie} = require("../utils");
 const {isCurrentUser} = require("../middleware/inputParsing");
 const {authGuard} = require("../middleware/misc");
 const {userDb, reviewDb, replyDb} = require("../db/database");
@@ -36,7 +36,7 @@ router.post('/',
     // check that another reply does not already exist for this review
     async (req, res, next) => {
         try {
-            await axios.get(`https://localhost:${port}/review/${(req.params.reviewId)}/reply`, {withCredentials: true});
+            await axiosJwtCookie(req).get(`review/${(req.params.reviewId)}/reply`, {withCredentials: true});
         } catch (e) {
             if (!e.response) {
                 console.log(e);
@@ -128,7 +128,7 @@ async function retrieveId(req, res, next) {
     if (!req.params.id) {
         // retrieve the reply and add its 'id' to req.params
         try {
-            const reply = (await axios.get(`https://localhost:${port}/review/${req.params.reviewId}/reply`, {withCredentials: true})).data;
+            const reply = (await axiosJwtCookie(req).get(`review/${req.params.reviewId}/reply`, {withCredentials: true})).data;
             req.params.id = reply._id;
         } catch (e) {
             if (e.response) {
@@ -142,10 +142,17 @@ async function retrieveId(req, res, next) {
     next();
 }
 
-async function checkCurrentUser(value, {req, res}) {
+/**
+ * Checks if the currently authenticated user is the owner of the reply.
+ * @param replyId - Id of the reply to check
+ * @param req - The Request object
+ * @param res - The Response object
+ * @returns {Error|boolean} True if the user owns the reply, throws Error otherwise (see {@link isCurrentUser})
+ */
+async function checkCurrentUser(replyId, {req, res}) {
     let reply;
     try {
-        reply = (await axios.get(`https://localhost:${port}/reply/${value}`, {withCredentials: true})).data;
+        reply = (await axiosJwtCookie(req).get(`reply/${replyId}`, {withCredentials: true})).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);

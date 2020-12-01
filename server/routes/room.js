@@ -8,7 +8,7 @@ const {authGuard, notImplemented} = require("../middleware/misc");
 const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {roomDb} = require("../db/database");
-const axios = require("axios");
+const {axiosJwtCookie} = require("../utils");
 const router = express.Router();
 
 router.use(authGuard(config.db.privileges.userAny));
@@ -48,7 +48,7 @@ router.get('/',
         // get all bookings
         let allBookings;
         try {
-            allBookings = (await axios.get(`https://localhost:${config.port}/booking`, {withCredentials: true})).data;
+            allBookings = (await axiosJwtCookie(req).get(`booking`)).data;
         } catch (e) {
             if (!e.response) {
                 console.log(e);
@@ -64,7 +64,7 @@ router.get('/',
         // get all rooms
         let allRooms;
         try {
-            allRooms = (await axios.get(`https://localhost:${config.port}/room/all`, {withCredentials: true})).data;
+            allRooms = (await axiosJwtCookie(req).get(`room/all`)).data;
         } catch (e) {
             if (!e.response) {
                 console.log(e);

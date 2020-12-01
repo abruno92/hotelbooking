@@ -4,7 +4,7 @@
  */
 const express = require("express");
 const config = require("../config");
-const axios = require('axios');
+const {axiosJwtCookie} = require("../utils");
 const {isCurrentUser} = require("../middleware/inputParsing");
 const {roomDb, userDb, reviewDb} = require("../db/database");
 const {authGuard} = require("../middleware/misc");
@@ -31,23 +31,27 @@ router.post('/',
     async (req, res, next) => {
         let review;
         try {
-            review = (await axios.get(`https://localhost:${config.port}/review`, {withCredentials: true})).data
+            review = (await axiosJwtCookie(req).get(`review`)).data
                 .filter(review => review.userId === req.body.userId && review.roomId === req.body.roomId);
-            if (review.length === 0) {
-                return next();
-            } else {
-                const message = `a review already exists for this room by this user`;
-                console.log(message);
-                return res.status(409).send({error: message});
-            }
         } catch (e) {
-            if (e.response.status !== 404) {
+            if (!e.response) {
+                console.log(e);
+                return res.sendStatus(500);
+            } else if (e.response.status !== 404) {
                 console.log(e.response);
                 return res.status(e.response.status).send({error: e.response.data});
             }
 
             console.log(e);
             return res.sendStatus(500);
+        }
+
+        if (review.length === 0) {
+            return next();
+        } else {
+            const message = `a review already exists for this room by this user`;
+            console.log(message);
+            return res.status(409).send({error: message});
         }
     },
     // handle create
@@ -91,10 +95,17 @@ router.delete('/:id',
 
 module.exports = router;
 
-async function checkCurrentUser(value, {req, res}) {
+/**
+ * Checks if the currently authenticated user is the owner of the review.
+ * @param reviewId - Id of the review to check
+ * @param req - The Request object
+ * @param res - The Response object
+ * @returns {Error|boolean} True if the user owns the review, throws Error otherwise (see {@link isCurrentUser})
+ */
+async function checkCurrentUser(reviewId, {req, res}) {
     let review;
     try {
-        review = (await axios.get(`https://localhost:${config.port}/review/${value}`, {withCredentials: true})).data;
+        review = (await axiosJwtCookie(req).get(`review/${reviewId}`, {withCredentials: true})).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);

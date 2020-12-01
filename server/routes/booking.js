@@ -8,7 +8,7 @@ const {authGuard} = require("../middleware/misc");
 const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
-const axios = require("axios");
+const {axiosJwtCookie} = require("../utils");
 const router = express.Router();
 
 router.use(authGuard(config.db.privileges.userAny));
@@ -33,6 +33,35 @@ router.post('/',
     // handle create
     createHandler(bookingDb, "userId", "roomId", "price", "startDate", "endDate"));
 
+// read all
+router.get('/',
+    // handle read all
+    readHandler(bookingDb));
+
+// read for a user
+router.get('/forUser',
+    authGuard(config.db.privileges.userLow),
+    async (req, res) => {
+        let bookings;
+        try {
+            bookings = (await axiosJwtCookie(req).get(`/review`)).data;
+        } catch (e) {
+            if (!e.response) {
+                console.log(e);
+                return res.sendStatus(500);
+            }
+
+            if (e.response.status !== 404) {
+                console.log(e.response);
+                return res.status(e.response.status).send({error: e.response.data});
+            }
+        }
+
+        const userBookings = bookings.filter(booking => req.user._id.equals(booking.userId));
+        res.json(userBookings);
+    }
+);
+
 // read
 router.get('/:id',
     // 'id' URL param
@@ -40,11 +69,6 @@ router.get('/:id',
     // validate above attributes
     inputValidator,
     // handle read
-    readHandler(bookingDb));
-
-// read all
-router.get('/',
-    // handle read all
     readHandler(bookingDb));
 
 // update
@@ -74,10 +98,17 @@ router.delete('/:id',
 
 module.exports = router;
 
-async function checkCurrentUser(value, {req, res}) {
+/**
+ * Checks if the currently authenticated user is the owner of the booking.
+ * @param bookingId - Id of the booking to check
+ * @param req - The Request object
+ * @param res - The Response object
+ * @returns {Error|boolean} True if the user owns the booking, throws Error otherwise (see {@link isCurrentUser})
+ */
+async function checkCurrentUser(bookingId, {req, res}) {
     let booking;
     try {
-        booking = (await axios.get(`https://localhost:${config.port}/booking/${value}`, {withCredentials: true})).data;
+        booking = (await axiosJwtCookie(req).get(`booking/${bookingId}`)).data;
     } catch (e) {
         if (!e.response) {
             console.log(e);
