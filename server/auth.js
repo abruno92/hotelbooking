@@ -4,12 +4,6 @@
 const bcrypt = require("bcrypt");
 
 /**
- * Time in seconds until a JWT expires.
- * @type {number}
- */
-const jwtExpirySeconds = 60 * 10;
-
-/**
  * Takes in a password string and returns the bcrypt hash value of that password.
  * @param {string} password - The password
  * @returns {string} hash value. of the password
@@ -30,7 +24,6 @@ function confirmPassword(password, hash) {
 }
 
 module.exports = {
-    jwtExpirySeconds: jwtExpirySeconds,
-    getHashedPassword: getHashedPassword,
-    confirmPassword: confirmPassword
+    getHashedPassword,
+    confirmPassword,
 };
