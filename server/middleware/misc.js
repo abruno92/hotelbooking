@@ -33,7 +33,7 @@ async function parseJwtToken(req, res, next) {
         return next();
     }
 
-    req.user = userDb.getOne(payload.userId);
+    req.user = await userDb.getOne(payload.userId);
 
     next();
 }
@@ -72,22 +72,6 @@ function authGuard(privilegeLevel) {
 }
 
 /**
- * Router-level middleware function that ensures a
- * JWT Token cookie is present in the request.
- * @param req - The Request object
- * @param res - The Response object
- * @param next - The middleware function callback argument
- */
-function requireJwtToken(req, res, next) {
-    const token = req.cookies[tokenCookie];
-    if (!token) {
-        return res.status(401).json({error: "missing jwt token"});
-    }
-
-    next();
-}
-
-/**
  * Middleware function that responds with a
  * 501 "Not Implemented" status code.
  * @param req - The Request object
@@ -100,7 +84,6 @@ function notImplemented(req, res, next) {
 
 module.exports = {
     parseJwtToken,
-    requireJwtToken,
     authGuard,
     notImplemented,
 };
