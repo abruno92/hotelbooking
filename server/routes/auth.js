@@ -85,7 +85,9 @@ router.post('/register',
                     }
                 });
             });
-        }).withMessage("must not be already in use"),
+        })
+        //todo possible bug
+        .withMessage("must not be already in use"),
     // 'password' body attribute
     parsePassword(),
     // 'confirmPassword' body attribute
