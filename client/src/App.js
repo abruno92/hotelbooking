@@ -3,8 +3,9 @@ import Home from "./pages/Home";
 import Rooms from "./pages/Rooms";
 import SingleRoom from "./pages/SingleRoom";
 import Profile from "./pages/Profile";
-import Error from "./pages/Error"; 
+import Error from "./pages/Error";
 import Login from "./pages/Login";
+import Logout from "./pages/intermediary/Logout";
 import Register from "./pages/Register";
 
 
@@ -13,18 +14,19 @@ import React from "react";
 
 
 function App() {
-  return <>      
-      <Switch>
-         <Route exact path="/" component={Home}/>
-         <Route exact path="/rooms/" component={Rooms}/>
-         <Route exact path="/rooms/:slug" component={SingleRoom}/>
-         <Route exact path="/login" component={Login}/>
-         <Route exact path="/register" component={Register}/>
-         <Route exact path="/profile" component={Profile}/>
-         <Route exact path="/error" component={Error}/>
-         <Route component={Error}/>
-      </Switch>
-    </>  
+    return <>
+        <Switch>
+            <Route exact path="/" component={Home}/>
+            <Route exact path="/rooms/" component={Rooms}/>
+            <Route exact path="/rooms/:slug" component={SingleRoom}/>
+            <Route exact path="/login" component={Login}/>
+            <Route exact path="/logout" component={Logout}/>
+            <Route exact path="/register" component={Register}/>
+            <Route exact path="/profile" component={Profile}/>
+            <Route exact path="/error" component={Error}/>
+            <Route component={Error}/>
+        </Switch>
+    </>
 }
 
 export default App;

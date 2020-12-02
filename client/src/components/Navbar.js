@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { FaAlignRight,  FaExpeditedssl } from "react-icons/fa";
+import { FaAlignRight} from "react-icons/fa";
+import Logout from "../pages/intermediary/Logout";
 export default class Navbar extends Component {
   state = {
     isOpen: false
@@ -33,7 +34,7 @@ export default class Navbar extends Component {
               <Link to="/profile" style={{marginTop:"5px"}}>Profile</Link>
             </li>
             <li>
-              <Link to="/login" style={{marginTop:"5px"}}>Logout</Link>
+              <Logout/>
             </li>
           </ul>
         </div>

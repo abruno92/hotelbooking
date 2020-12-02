@@ -65,7 +65,6 @@ class AuthServiceImpl {
             return "";
         }
 
-        console.log(user);
         this.#currentUser = user;
     }
 
