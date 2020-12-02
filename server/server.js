@@ -32,7 +32,7 @@ app.use(parseAuthToken);
 
 app.use('/', indexRoute);
 app.use('/auth', authRoute);
-app.use('/user', userRoute);
+// app.use('/user', userRoute);
 app.use('/booking', bookingRoute);
 app.use('/room', roomRoute);
 app.use('/review', reviewRoute);

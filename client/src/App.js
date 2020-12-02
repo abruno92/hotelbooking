@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 
 
 import {Route, Switch} from 'react-router-dom';
+import React from "react";
 
 
 function App() {
