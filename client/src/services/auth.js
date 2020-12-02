@@ -45,19 +45,24 @@ class AuthServiceImpl {
             })).data;
         } catch (e) {
             console.log(e);
-            return;
+            return "";
         }
 
         if (!result.id) {
-            return;
+            return "";
         }
 
         let user;
         try {
-            user = (await ApiAxios.post('user/current')).data;
+            user = (await ApiAxios.get('user/current')).data;
         } catch (e) {
-            console.log(e);
-            return;
+            if (e.response) {
+                console.log(e.response.data);
+            } else {
+                console.log(e);
+            }
+
+            return "";
         }
 
         console.log(user);

@@ -1,13 +1,18 @@
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Redirect, useHistory} from 'react-router-dom';
 import {AuthService} from "../services/auth";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const history = useHistory();
 
-    const login = async (e) => {
+    if (AuthService.isLoggedIn()) {
+        return <Redirect to="/"/>;
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         let failure;
@@ -16,20 +21,18 @@ const Login = () => {
         } catch (e) {
             if (!e.response) {
                 console.log(e);
-                return;
             }
         }
 
-        if (!failure) {
-            // yes
+        if (failure === undefined) {
+            history.push('/');
         } else {
-            // no
-            if (e.response.status === 401) {
-                setErrorMessage(e.response.data.error);
-            } else {
-                console.log(e.response.data.errors);
-            }
+            setErrorMessage("Invalid email and/or password.");
         }
+    };
+
+    const handleCreate = () => {
+        history.push('/register');
     };
 
     return (
@@ -37,8 +40,6 @@ const Login = () => {
             <div className="wrapper">
                 <div className="form-wrapper">
                     <form>
-                        {/*<GoogleBtn/>*/}
-                        {/*<LoginButton/>*/}
                         <h1>Login</h1>
                         <div className="email">
                             <label htmlFor="email">Email</label>
@@ -66,19 +67,15 @@ const Login = () => {
                                 required
                             />
                         </div>
-                        <span>{errorMessage}</span>
+                        <span dangerouslySetInnerHTML={{__html: errorMessage}} style={{color: 'red'}}/>
                         <div className="login">
-                            <button type="submit" onClick={login}>Submit</button>
+                            <button type="submit" onClick={handleSubmit}>Submit</button>
                         </div>
                         <small>Don't have an account?</small>
-                        <div className="createAccount">
-                            {/*<button>*/}
-                            <Link to='/register' style={{textDecoration: "none", color: "black"}}>
-                                <button>Create an Account</button>
-                            </Link>
-                            {/*</button>*/}
-                        </div>
                     </form>
+                    <div className="createAccount">
+                        <button type="button" onClick={handleCreate}>Create an Account</button>
+                    </div>
                 </div>
             </div>
         </>
