@@ -40,7 +40,7 @@ router.get('/',
 
 // read for a user
 router.get('/forUser',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.userAny),
     async (req, res) => {
         let bookings;
         try {
