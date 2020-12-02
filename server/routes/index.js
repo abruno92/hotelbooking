@@ -23,20 +23,6 @@ router.get('/reply/:id',
     readHandler(reviewDb),
 );
 
-router.get('/user/:id',
-    authGuard(config.db.privileges.userAny),
-    // 'id' URL param
-    parseObjectId().custom(isCurrentUser),
-    // validate above attribute
-    inputValidator,
-    // handle read
-    readHandler(userDb, user => {
-        // remove passwordHash field
-        delete user.passwordHash;
-        return user;
-    })
-);
-
 router.get('/user/current',
     authGuard(config.db.privileges.userAny),
     // add current user id to req.params
@@ -44,6 +30,21 @@ router.get('/user/current',
         req.params.id = req.user._id;
         next()
     },
+    // handle read
+    readHandler(userDb, user => {
+        // remove passwordHash field
+        delete user.passwordHash;
+        return user;
+    })
+
+);
+
+router.get('/user/:id',
+    authGuard(config.db.privileges.userAny),
+    // 'id' URL param
+    parseObjectId().custom(isCurrentUser),
+    // validate above attribute
+    inputValidator,
     // handle read
     readHandler(userDb, user => {
         // remove passwordHash field
