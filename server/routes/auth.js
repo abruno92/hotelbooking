@@ -130,9 +130,9 @@ router.get('/refresh',
         // current unix time in seconds
         const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
 
-        if (payload.exp - nowUnixSeconds > 60) {
+        if (payload.exp - nowUnixSeconds > config.jwt.refreshThresholdSeconds) {
             // token is more than 60 seconds away from expiring
-            return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
+            return res.status(409).json({error: `token is more than ${(config.jwt.refreshThresholdSeconds)} seconds away from expiry`});
         }
 
         // generates a new token

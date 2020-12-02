@@ -13,6 +13,7 @@ config.locale = "da-DK";
 config.jwt.expirySeconds = 60 * 10;
 config.jwt.cookieName = "AuthToken";
 config.jwt.secret = jwtSecret;
+config.jwt.refreshThresholdSeconds = 3 * 60;
 
 config.db.privileges.customer = "customer";
 config.db.privileges.manager = "manager";
