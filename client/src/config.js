@@ -1,4 +1,4 @@
-import apiUrl from 'apiUrl'
+import apiUrl from './apiUrl'
 
 const config = {};
 
