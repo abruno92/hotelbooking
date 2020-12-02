@@ -58,6 +58,16 @@ router.post('/login',
  * to the RESTful createHandler.
  */
 router.post('/register',
+    // 'privilegeLevel' body attribute
+    parseName('privilegeLevel', true)
+        .custom(value => {
+            const contains = [config.db.privileges.customer, config.db.privileges.manager].contains(value);
+            if (contains) {
+                return true;
+            } else {
+                return new Error("must be one of");
+            }
+        }),
     // 'firstName' body attribute
     parseName('firstName'),
     // 'lastName' body attribute
@@ -88,7 +98,9 @@ router.post('/register',
     inputValidator,
     // fill the rest of the database fields
     (req, res, next) => {
-        req.body.privilegeLevel = config.db.privileges.userLow;
+        if (!req.body.privilegeLevel) {
+            req.body.privilegeLevel = config.db.privileges.customer;
+        }
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
@@ -101,35 +113,35 @@ router.post('/register',
 router.get('/refresh',
     authGuard(config.db.privileges.userAny),
     (req, res) => {
-    const token = req.cookies[cookieName];
+        const token = req.cookies[cookieName];
 
-    let payload;
-    try {
-        // verifies the token
-        payload = jwt.verify(token, secret);
-    } catch (e) {
-        // token is expired
-        console.log(e);
-        res.status(403).json({error: "token is expired"});
-    }
+        let payload;
+        try {
+            // verifies the token
+            payload = jwt.verify(token, secret);
+        } catch (e) {
+            // token is expired
+            console.log(e);
+            res.status(403).json({error: "token is expired"});
+        }
 
-    // current unix time in seconds
-    const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
+        // current unix time in seconds
+        const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
 
-    if (payload.exp - nowUnixSeconds > 60) {
-        // token is more than 60 seconds away from expiring
-        return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
-    }
+        if (payload.exp - nowUnixSeconds > 60) {
+            // token is more than 60 seconds away from expiring
+            return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
+        }
 
-    // generates a new token
-    const newToken = jwt.sign({username: payload.username}, secret, {
-        algorithm: 'HS256',
-        expiresIn: expirySeconds
+        // generates a new token
+        const newToken = jwt.sign({username: payload.username}, secret, {
+            algorithm: 'HS256',
+            expiresIn: expirySeconds
+        });
+
+        res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
+        res.json({message: "token refreshed"});
     });
-
-    res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
-    res.json({message: "token refreshed"});
-});
 
 /**
  * Logs the user out by removing the JWT cookie.

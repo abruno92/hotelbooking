@@ -7,7 +7,7 @@ const config = require("../config");
 const {authGuard, notImplemented} = require('../middleware/misc');
 const router = express.Router();
 
-router.use(authGuard(config.db.privileges.userHigh));
+router.use(authGuard(config.db.privileges.manager));
 
 router.get('/:id/picture', notImplemented);
 router.put('/:id/picture', notImplemented);

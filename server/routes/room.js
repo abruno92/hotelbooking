@@ -15,7 +15,7 @@ router.use(authGuard(config.db.privileges.userAny));
 
 // create
 router.post('/',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'number' body attribute
     parseString('number', {min: 1, max: 3}),
     // 'floor' body attribute
@@ -85,7 +85,7 @@ router.get('/all',
 
 // update
 router.patch('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
     // 'number' body attribute
@@ -105,7 +105,7 @@ router.patch('/:id',
 
 // delete
 router.delete('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
     // handle delete

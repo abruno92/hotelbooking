@@ -15,7 +15,7 @@ router.use(authGuard(config.db.privileges.userAny));
 
 // create
 router.post('/',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.customer),
     // 'userId' body attribute
     parseObjectId('userId', async (value) => await userDb.existsById(value))
         // check that the authenticated user is the one making the post request
@@ -73,7 +73,7 @@ router.get('/:id',
 
 // update
 router.patch('/:id',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.customer),
     // 'id' URL param
     parseObjectId('id', async (value) => await bookingDb.existsById(value))
         .custom(checkCurrentUser),
@@ -90,7 +90,7 @@ router.patch('/:id',
 
 // delete
 router.delete('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
     // handle delete

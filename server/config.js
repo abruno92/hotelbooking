@@ -14,8 +14,8 @@ config.jwt.expirySeconds = 60 * 10;
 config.jwt.cookieName = "AuthToken";
 config.jwt.secret = jwtSecret;
 
-config.db.privileges.userLow = "0";
-config.db.privileges.userHigh = "1";
+config.db.privileges.customer = "customer";
+config.db.privileges.manager = "manager";
 config.db.privileges.userAny = "-1";
 
 config.db.connectionString = process.env.DB_CONNECTIONSTRING || "mongodb://localhost:3002/hotel";
