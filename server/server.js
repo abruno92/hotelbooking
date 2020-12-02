@@ -28,7 +28,6 @@ app.use(cors({
     // origin: whitelist,
     origin: function (origin, callback) {
         console.log(`origin: ${origin}`);
-        console.log(`whitelist:`);
         if(!origin) return callback(null, true);
         if ([whitelist].indexOf(origin) === -1) {
             callback(null, false);
