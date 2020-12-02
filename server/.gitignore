@@ -1,2 +1,3 @@
 node_modules
 jwtSecret.js
+corsWhitelist.js
