@@ -44,7 +44,7 @@ router.post('/login',
 
             // todo maybe store JWT in session/localStorage instead of cookies
             res.cookie(config.jwt.cookieName, token, {maxAge: expirySeconds * 1000});
-            res.json({message: "login successful"});
+            res.json({message: "login successful", id: user._id});
         } else {
             // no matching user was found
             // set HTTP status to 401 "Unauthorised"
