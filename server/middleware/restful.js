@@ -50,9 +50,11 @@ function createHandler(db, ...documentAttributes) {
  * If req.params.id is not supplied, the function retrieves
  * all items of that database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
+ * @param {function} transformFn - Function used to transform the database item/s before
+ * it is sent as response
  * @returns {function(Request, Response): Promise} - Handler
  */
-function readHandler(db) {
+function readHandler(db, transformFn = undefined) {
     return async (req, res) => {
         const id = req.params.id;
 
@@ -72,6 +74,10 @@ function readHandler(db) {
 
         if (!result) {
             return res.sendStatus(404);
+        }
+
+        if (transformFn) {
+            result = transformFn(result);
         }
 
         res.json(result);
