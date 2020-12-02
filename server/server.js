@@ -16,6 +16,7 @@ const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
 const replyRoute = require('./routes/reply');
 const fs = require("fs");
+const {whitelist} = require("./corsWhitelist");
 const {port} = require("./config");
 const {parseAuthToken} = require("./middleware/misc");
 
@@ -24,7 +25,18 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: whitelist,
+    // origin: function (origin, callback) {
+    //     console.log(`origin: ${origin}`);
+    //     console.log(`whitelist:`);
+    //     console.log(corsWhitelist);
+    //     if(!origin) return callback(null, true);
+    //     if (corsWhitelist.indexOf(origin) === -1) {
+    //         callback(null, false);
+    //     } else {
+    //         callback(null, true);
+    //     }
+    // },
     credentials: true,
 }));
 app.use(cookieParser());
