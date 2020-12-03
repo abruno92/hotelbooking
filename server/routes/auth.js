@@ -61,7 +61,7 @@ router.post('/register',
     // 'privilegeLevel' body attribute
     parseName('privilegeLevel', true)
         .custom(value => {
-            const contains = [config.db.privileges.customer, config.db.privileges.manager].contains(value);
+            const contains = [config.db.privileges.customer, config.db.privileges.manager].includes(value);
             if (contains) {
                 return true;
             } else {
