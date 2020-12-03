@@ -34,8 +34,6 @@ class Register extends React.Component {
     async handleSubmit(e) {
         e.preventDefault();
 
-        // this.updateErrors([]);
-
         try {
             await ApiAxios.post('auth/register', this.state.account);
         } catch (e) {
@@ -53,22 +51,15 @@ class Register extends React.Component {
             return error ? error.msg : "";
         });
 
-        console.log(errors);
         for (const error of errors) {
-            console.log("error:");
-            console.log(error);
             if (error.location !== 'body') continue;
-            console.log("updating");
             stateErrors = stateErrors.set(error.param, error.msg);
         }
 
-        console.log(stateErrors.toString());
         this.setState({
             account: this.state.account,
             errors: stateErrors
         });
-
-        // this.forceUpdate();
     }
 
     render() {
