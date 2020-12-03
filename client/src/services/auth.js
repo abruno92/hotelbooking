@@ -2,6 +2,7 @@ import ApiAxios from "../utils/ApiAxios";
 import config from "../config";
 import {BehaviorSubject} from "rxjs";
 import {map} from "rxjs/operators";
+import sleep from "../utils/time";
 
 /**
  * A Service responsible for managing the authenticated user
@@ -44,37 +45,48 @@ class AuthServiceImpl {
 
     /**
      * Attempts to authenticate the user using provided credentials.
-     * @param email - Provided email
-     * @param password - Provided password
+     * @param {object} credentials - Provided email and password
      * @returns {undefined | string} Error message in case of presentable errors, undefined otherwise.
      */
-    async login(email, password) {
+    async login(credentials) {
         let result;
         try {
-            result = (await ApiAxios.post('auth/login', {
-                email: email,
-                password: password
-            })).data;
+            result = (await ApiAxios.post('auth/login', credentials)).data;
+            await sleep(300);
         } catch (e) {
-            console.log(e);
-            return "";
+            if (e.response) {
+                if (e.response.status === 400 || e.response.status === 401) {
+                    throw e;
+                } else {
+                    console.log(e.response.data);
+                }
+            } else {
+                console.log(e);
+            }
+
+            return;
         }
 
         if (!result.id) {
-            return "";
+            return;
         }
 
         let user;
         try {
             user = (await ApiAxios.get('user/current')).data;
+            await sleep(300);
         } catch (e) {
             if (e.response) {
-                console.log(e.response.data);
+                if (e.response.status === 400 || e.response.status === 401) {
+                    throw e;
+                } else {
+                    console.log(e.response.data);
+                }
             } else {
                 console.log(e);
             }
 
-            return "";
+            return;
         }
 
         this.#_currentUser$.next(user);
@@ -88,6 +100,7 @@ class AuthServiceImpl {
     async register(account) {
         try {
             await ApiAxios.post('auth/register', account);
+            await sleep(300);
         } catch (e) {
             if (e.response.status === 400) {
                 throw e;
@@ -96,7 +109,7 @@ class AuthServiceImpl {
             }
         }
 
-        return this.login(account.email, account.password);
+        return this.login(account);
     }
 
     /**
@@ -105,6 +118,7 @@ class AuthServiceImpl {
     async refresh() {
         try {
             const user = (await ApiAxios.get('user/current')).data;
+            await sleep(300);
             this.#_currentUser$.next(user);
         } catch (e) {
             if (e.response) {
@@ -126,6 +140,7 @@ class AuthServiceImpl {
     async logout() {
         try {
             await ApiAxios.post('auth/logout');
+            await sleep(300);
 
             this.#_currentUser$.next(undefined);
         } catch (e) {

@@ -1,77 +1,113 @@
-import React, {useState} from 'react';
-import {useHistory} from 'react-router-dom';
+import React from 'react';
 import {AuthService} from "../services/auth";
+import {Map} from 'immutable';
+import {withRouter} from "react-router";
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const history = useHistory();
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            credentials: Map({
+                email: "",
+                password: "",
+            }),
+            errors: Map({
+                email: "",
+                password: "",
+                default: "",
+            })
+        }
 
-    const handleSubmit = async (e) => {
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.updateErrors = this.updateErrors.bind(this);
+    }
+
+    async handleSubmit(e) {
         e.preventDefault();
 
-        let failure;
         try {
-            failure = await AuthService.login(email, password);
+            await AuthService.login(this.state.credentials.toObject());
         } catch (e) {
-            if (!e.response) {
+            if (e.response.data.errors) {
+                this.updateErrors(e.response.data.errors);
+            } else if (e.response.data.error) {
+                this.updateErrors([{msg: e.response.data.error, param: "default"}])
+            } else {
                 console.log(e);
             }
         }
+    }
 
-        if (failure === undefined) {
-            history.push('/');
-        } else {
-            setErrorMessage("Invalid email and/or password.");
-        }
+    handleChange(e) {
+        this.setState({
+            credentials: this.state.credentials.set(e.target.name, e.target.value),
+            errors: this.state.errors,
+        });
     };
 
-    return (
-        <>
+    updateErrors(errors) {
+        console.log(errors);
+        let stateErrors = this.state.errors.map((v, k) => {
+            const error = errors.find(error => error.param === k);
+            return error ? error.msg : "";
+        });
+
+        this.setState({
+            credentials: this.state.credentials,
+            errors: stateErrors,
+        });
+    }
+
+    //todo observable to disable buttons while page is loading something
+    render() {
+        return (
             <div className="wrapper">
                 <div className="form-wrapper">
-                    <form>
+                    <form onSubmit={this.handleSubmit}>
                         <h1>Login</h1>
                         <div className="email">
-                            <label htmlFor="email">Email</label>
+                            <label htmlFor="email">
+                                <span>Email <p style={{color: 'red'}}>{this.state.errors.get('email')}</p>
+                                </span>
+                            </label>
                             <input
                                 type="email"
-                                className="email"
+                                name="email"
                                 placeholder="Email"
                                 id="email"
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                }}
+                                onChange={this.handleChange}
                                 required
                             />
                         </div>
                         <div className="password">
-                            <label htmlFor="password">Password</label>
+                            <label htmlFor="password">
+                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('password')}</p>
+                                </span>
+                            </label>
                             <input
                                 type="password"
-                                className="password"
+                                name="password"
                                 placeholder="Password"
                                 id="password"
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                }}
+                                onChange={this.handleChange}
                                 required
                             />
                         </div>
-                        <span dangerouslySetInnerHTML={{__html: errorMessage}} style={{color: 'red'}}/>
+                        <p style={{color: 'red'}}>{this.state.errors.get('default')}</p>
                         <div className="login">
-                            <button type="submit" onClick={handleSubmit}>Submit</button>
+                            <button type="submit">Submit</button>
                         </div>
                         <small>Don't have an account?</small>
                     </form>
                     <div className="createAccount">
-                        <button type="button" onClick={() => history.push('/register')}>Create an Account</button>
+                        <button type="button" onClick={() => this.props.history.push('/register')}>Create an Account
+                        </button>
                     </div>
                 </div>
             </div>
-        </>
-    );
+        );
+    }
 }
 
-export default Login; 
+export default withRouter(Login);
