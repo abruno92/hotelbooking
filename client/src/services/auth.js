@@ -89,8 +89,11 @@ class AuthServiceImpl {
         try {
             await ApiAxios.post('auth/register', account);
         } catch (e) {
-            console.log(e);
-            return "";
+            if (e.response.status === 400) {
+                throw e;
+            } else {
+                console.log(e);
+            }
         }
 
         return this.login(account.email, account.password);

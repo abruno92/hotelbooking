@@ -1,8 +1,8 @@
 import React from "react";
-import ApiAxios from "../utils/ApiAxios";
 import {withRouter} from "react-router";
 import {Map} from 'immutable';
 import config from "../config";
+import {AuthService} from "../services/auth";
 
 class Register extends React.Component {
     constructor(props) {
@@ -35,7 +35,7 @@ class Register extends React.Component {
         e.preventDefault();
 
         try {
-            await ApiAxios.post('auth/register', this.state.account);
+            await AuthService.register(this.state.account.toObject());
         } catch (e) {
             this.updateErrors(e.response.data.errors);
         }
@@ -50,11 +50,6 @@ class Register extends React.Component {
             const error = errors.find(error => error.param === k);
             return error ? error.msg : "";
         });
-
-        for (const error of errors) {
-            if (error.location !== 'body') continue;
-            stateErrors = stateErrors.set(error.param, error.msg);
-        }
 
         this.setState({
             account: this.state.account,
