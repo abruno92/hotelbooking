@@ -9,7 +9,7 @@ const {authGuard} = require("../middleware/misc");
 const {createHandler} = require("../middleware/restful");
 const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
-const {parseEmail, parsePassword, parseName, inputValidator, fieldsMatch} = require("../middleware/inputParsing");
+const {parseEmail, parsePassword, parseString, parseName, inputValidator} = require("../middleware/inputParsing");
 
 const {expirySeconds, secret, cookieName} = config.jwt;
 
@@ -59,7 +59,7 @@ router.post('/login',
  */
 router.post('/register',
     // 'privilegeLevel' body attribute
-    parseName('privilegeLevel', true)
+    parseString('privilegeLevel', {min: 1, max: 50}, true)
         .custom(value => {
             const privileges = [config.db.privileges.customer, config.db.privileges.manager];
             const contains = privileges.includes(value);
@@ -87,16 +87,13 @@ router.post('/register',
                 });
             });
         })
-        //todo possible bug
         .withMessage("must not be already in use"),
     // 'password' body attribute
     parsePassword(),
     // 'confirmPassword' body attribute
-    parsePassword('confirmPassword'),
-    // match 'password' field against 'confirmPassword'
-    fieldsMatch('password', 'confirmPassword'),
-    // match 'confirmPassword' field against 'password'
-    fieldsMatch('confirmPassword', 'password'),
+    parsePassword('confirmPassword')
+        .custom((input, {req}) => input === req.body['password'])
+        .withMessage(`must match the Password field`),
     // validate above attributes
     inputValidator,
     // fill the rest of the database fields
@@ -107,7 +104,7 @@ router.post('/register',
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
-    createHandler(userDb , user => {
+    createHandler(userDb, user => {
         // remove passwordHash field
         delete user.passwordHash;
         return user;

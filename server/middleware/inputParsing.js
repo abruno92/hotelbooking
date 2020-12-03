@@ -4,7 +4,7 @@
  */
 const {locale} = require("../config");
 const {validationResult} = require("express-validator");
-const {ValidationChain, check, body} = require('express-validator');
+const {ValidationChain, check} = require('express-validator');
 const {ObjectId} = require("mongodb");
 
 const encodableHtmlChars = {
@@ -192,20 +192,6 @@ function parseName(field = 'password', optional = false) {
 }
 
 /**
- * Function that returns a {@link ValidationChain} used to
- * ensure both 'first' and 'second' attributes in the given request object
- * are matching.
- * @param {string} first - First attribute to be compared
- * @param {string} second - Second attribute to be compared
- * @returns {function} - the current Validation chain instance
- */
-function fieldsMatch(first, second) {
-    return body(first)
-        .custom((input, {req}) => input === req.body[second])
-        .withMessage(`must match the '${second}' field`)
-}
-
-/**
  * Function that takes a string and
  * replaces HTML sensitive characters
  * with their encoded versions, as can be seen in {@link encodableHtmlChars}.
@@ -261,6 +247,5 @@ module.exports = {
     parseEmail,
     parsePassword,
     parseName,
-    fieldsMatch,
     isCurrentUser
 }
