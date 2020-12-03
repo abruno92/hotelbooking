@@ -61,11 +61,12 @@ router.post('/register',
     // 'privilegeLevel' body attribute
     parseName('privilegeLevel', true)
         .custom(value => {
-            const contains = [config.db.privileges.customer, config.db.privileges.manager].includes(value);
+            const privileges = [config.db.privileges.customer, config.db.privileges.manager];
+            const contains = privileges.includes(value);
             if (contains) {
                 return true;
             } else {
-                return new Error("must be one of");
+                return new Error(`must be one of ${privileges.map(p => `'${p}'`).join(", ")}`);
             }
         }),
     // 'firstName' body attribute
