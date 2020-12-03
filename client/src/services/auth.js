@@ -1,17 +1,29 @@
 import ApiAxios from "../utils/ApiAxios";
 import config from "../config";
+import {BehaviorSubject} from "rxjs";
+import {map} from "rxjs/operators";
 
-
-
+/**
+ * A Service responsible for managing the authenticated user
+ * of the app.
+ */
 class AuthServiceImpl {
-    #currentUser;
+    #_currentUser$;
+    loggedIn$;
+
+    constructor() {
+        // Observable that emits values over time
+        this.#_currentUser$ = new BehaviorSubject(undefined);
+        // Observable that maps the above observable from a User object to a boolean
+        this.loggedIn$ = this.#_currentUser$.pipe(map(u => u !== undefined));
+    }
 
     /**
      * Checks if there is a user currently logged in.
      * @returns {boolean}
      */
     isLoggedIn() {
-        return this.#currentUser !== undefined;
+        return this.#_currentUser$.getValue() !== undefined;
     }
 
     /**
@@ -19,7 +31,7 @@ class AuthServiceImpl {
      * @returns {boolean}
      */
     isCustomer() {
-        return this.isLoggedIn() && this.#currentUser.privilegeLevel === config.users.customer;
+        return this.isLoggedIn() && this.#_currentUser$.getValue().privilegeLevel === config.users.customer;
     }
 
     /**
@@ -27,7 +39,7 @@ class AuthServiceImpl {
      * @returns {boolean}
      */
     isManager() {
-        return this.isCustomer() && this.#currentUser.privilegeLevel === config.user.manager;
+        return this.isCustomer() && this.#_currentUser$.getValue().privilegeLevel === config.user.manager;
     }
 
     /**
@@ -65,21 +77,48 @@ class AuthServiceImpl {
             return "";
         }
 
-        this.#currentUser = user;
+        this.#_currentUser$.next(user);
     }
 
+    /**
+     * Attempts to refresh the user that bears the JWT cookie.
+     */
+    async refresh() {
+        try {
+            const user = (await ApiAxios.get('user/current')).data;
+            this.#_currentUser$.next(user);
+        } catch (e) {
+            if (e.response) {
+                if (e.response.status === 401 || e.response.status === 403) {
+                    // Token is either expired or not present
+                    this.#_currentUser$.next(undefined);
+                } else {
+                    console.log(e.response.data);
+                }
+            } else {
+                console.log(e);
+            }
+        }
+    }
+
+    /**
+     * Logs the user out.
+     */
     async logout() {
         try {
-            await ApiAxios.post('auth/login');
+            await ApiAxios.post('auth/logout');
         } catch (e) {
             console.log(e);
         }
 
-        this.#currentUser = undefined;
+        this.#_currentUser$.next(undefined);
     }
 
+    /**
+     * Returns the user.
+     */
     getUser() {
-        return this.#currentUser;
+        return this.#_currentUser$.getValue();
     }
 }
 
