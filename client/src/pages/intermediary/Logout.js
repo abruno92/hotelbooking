@@ -1,7 +1,7 @@
 import {Link} from "react-router-dom";
 import React, {Component} from "react";
-import ApiAxios from "../../utils/ApiAxios";
 import {withRouter} from "react-router";
+import {AuthService} from "../../services/auth";
 
 class Logout extends Component {
     constructor(props) {
@@ -15,7 +15,6 @@ class Logout extends Component {
 
     async handleClick(e) {
         e.preventDefault();
-        console.log("loading:" + this.state.loading);
         if (this.state.loading) return;
 
         this.setState({
@@ -23,16 +22,12 @@ class Logout extends Component {
         });
 
         try {
-            await ApiAxios.get('auth/logout');
-        } catch (e) {
-            console.log(e.response.data);
-        }
+            await AuthService.logout();
+        } catch (ignored) {}
 
-        console.log('setting state')
         this.setState({
             loading: false,
         });
-        console.log('pushing history')
         this.props.history.push('/login');
     }
 

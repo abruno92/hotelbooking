@@ -27,10 +27,10 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        const subscriptions = new Subscription();
+        this.subscriptions = new Subscription();
 
         // Subscribe to the loggedIn observable
-        subscriptions.add(AuthService.loggedIn$.subscribe(loggedIn => {
+        this.subscriptions.add(AuthService.loggedIn$.subscribe(loggedIn => {
             this.setState({
                 authenticated: loggedIn,
             });
@@ -38,22 +38,17 @@ class App extends React.Component {
         }));
 
         // Subscribe to a observable that repeats every refreshRateMillis milliseconds
-        subscriptions.add(timer(0, config.users.refreshRateMillis)
+        this.subscriptions.add(timer(0, config.users.refreshRateMillis)
             .subscribe(async () => {
                 // Try to refresh the JWT cookie
                 await AuthService.refresh();
                 console.log("Refreshed Login Token")
             })
         );
-
-        this.setState({
-            authenticated: this.state.authenticated,
-            subscriptions,
-        })
     }
 
     componentWillUnmount() {
-        this.state.subscriptions.unsubscribe();
+        this.subscriptions.unsubscribe();
     }
 
     render() {

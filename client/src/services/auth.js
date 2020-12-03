@@ -107,11 +107,18 @@ class AuthServiceImpl {
     async logout() {
         try {
             await ApiAxios.post('auth/logout');
+
+            this.#_currentUser$.next(undefined);
         } catch (e) {
+            if (e.response) {
+                if (e.response.status === 401) {
+                    this.#_currentUser$.next(undefined);
+                    return;
+                }
+            }
+
             console.log(e);
         }
-
-        this.#_currentUser$.next(undefined);
     }
 
     /**

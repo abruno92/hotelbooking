@@ -148,7 +148,7 @@ router.get('/refresh',
 /**
  * Logs the user out by removing the JWT cookie.
  */
-router.get('/logout',
+router.post('/logout',
     authGuard(config.db.privileges.userAny),
     (_, res) => {
         res.cookie(cookieName, '', {expires: new Date(0)});
