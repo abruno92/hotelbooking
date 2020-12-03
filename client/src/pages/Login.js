@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Redirect, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import {AuthService} from "../services/auth";
 
 const Login = () => {
@@ -7,10 +7,6 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const history = useHistory();
-
-    if (AuthService.isLoggedIn()) {
-        return <Redirect to="/"/>;
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,10 +25,6 @@ const Login = () => {
         } else {
             setErrorMessage("Invalid email and/or password.");
         }
-    };
-
-    const handleCreate = () => {
-        history.push('/register');
     };
 
     return (
@@ -74,7 +66,7 @@ const Login = () => {
                         <small>Don't have an account?</small>
                     </form>
                     <div className="createAccount">
-                        <button type="button" onClick={handleCreate}>Create an Account</button>
+                        <button type="button" onClick={() => history.push('/register')}>Create an Account</button>
                     </div>
                 </div>
             </div>

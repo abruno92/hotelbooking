@@ -81,6 +81,22 @@ class AuthServiceImpl {
     }
 
     /**
+     * Attempts to create an account using provided details.
+     * @param account - Details of the account
+     * @returns {undefined | string} Error message in case of presentable errors, undefined otherwise.
+     */
+    async register(account) {
+        try {
+            await ApiAxios.post('auth/register', account);
+        } catch (e) {
+            console.log(e);
+            return "";
+        }
+
+        return this.login(account.email, account.password);
+    }
+
+    /**
      * Attempts to refresh the user that bears the JWT cookie.
      */
     async refresh() {
