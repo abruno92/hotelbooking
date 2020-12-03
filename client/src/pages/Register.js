@@ -42,7 +42,10 @@ class Register extends React.Component {
     }
 
     handleChange(e) {
-        this.setState({account: this.state.account.set(e.target.name, e.target.value)});
+        this.setState({
+            account: this.state.account.set(e.target.name, e.target.value),
+            errors: this.state.errors,
+        });
     };
 
     updateErrors(errors) {
@@ -53,7 +56,7 @@ class Register extends React.Component {
 
         this.setState({
             account: this.state.account,
-            errors: stateErrors
+            errors: stateErrors,
         });
     }
 
@@ -61,11 +64,11 @@ class Register extends React.Component {
         return (
             <div className="wrapper">
                 <div className="form-wrapper">
-                    <form>
+                    <form onSubmit={this.handleSubmit}>
                         <h1>Sign Up</h1>
                         <div className="firstname">
-                            <label htmlFor="firstName">First Name
-                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('firstName')}</p>
+                            <label htmlFor="firstName">
+                                <span>First Name <p style={{color: 'red'}}>{this.state.errors.get('firstName')}</p>
                                 </span>
                             </label>
                             <input
@@ -78,8 +81,8 @@ class Register extends React.Component {
                             />
                         </div>
                         <div className="lastname">
-                            <label htmlFor="lastname">Last Name
-                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('lastName')}</p>
+                            <label htmlFor="lastname">
+                                <span>Last Name <p style={{color: 'red'}}>{this.state.errors.get('lastName')}</p>
                                 </span>
                             </label>
                             <input
@@ -92,8 +95,8 @@ class Register extends React.Component {
                             />
                         </div>
                         <div className="email">
-                            <label htmlFor="email">Email
-                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('email')}</p>
+                            <label htmlFor="email">
+                                <span>Email <p style={{color: 'red'}}>{this.state.errors.get('email')}</p>
                                 </span>
                             </label>
                             <input
@@ -106,7 +109,7 @@ class Register extends React.Component {
                             />
                         </div>
                         <div className="password">
-                            <label htmlFor="password">Password
+                            <label htmlFor="password">
                                 <span>Password <p style={{color: 'red'}}>{this.state.errors.get('password')}</p>
                                 </span>
                             </label>
@@ -145,7 +148,7 @@ class Register extends React.Component {
                             <label htmlFor="manager">Manager</label>
                         </div>
                         <div className="login">
-                            <button type="submit" onClick={this.handleSubmit}>Register</button>
+                            <button type="submit">Register</button>
                         </div>
                         <small>Already have an account?</small>
                     </form>

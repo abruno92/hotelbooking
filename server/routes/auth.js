@@ -48,7 +48,7 @@ router.post('/login',
         } else {
             // no matching user was found
             // set HTTP status to 401 "Unauthorised"
-            res.status(401).json({error: 'wrong email or password'});
+            res.status(401).json({error: 'Incorrect email or password'});
         }
     });
 
