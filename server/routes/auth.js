@@ -106,7 +106,11 @@ router.post('/register',
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
-    createHandler(userDb, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
+    createHandler(userDb , user => {
+        // remove passwordHash field
+        delete user.passwordHash;
+        return user;
+    }, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
 
 /**
  * Refreshes the JWT token if it is less than 60 seconds
