@@ -2,6 +2,8 @@ import React from 'react';
 import {AuthService} from "../services/auth";
 import {Map} from 'immutable';
 import {withRouter} from "react-router";
+import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
+import {auditTime, tap} from "rxjs/operators";
 
 class Login extends React.Component {
     constructor(props) {
@@ -18,14 +20,14 @@ class Login extends React.Component {
             })
         }
 
+        this.loading$ = new BehaviorSubject(false);
+
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.updateErrors = this.updateErrors.bind(this);
     }
 
-    async handleSubmit(e) {
-        e.preventDefault();
-
+    async handleSubmit() {
         try {
             await AuthService.login(this.state.credentials.toObject());
         } catch (e) {
@@ -37,6 +39,8 @@ class Login extends React.Component {
                 console.log(e);
             }
         }
+
+        this.loading$.next(false);
     }
 
     handleChange(e) {
@@ -47,7 +51,6 @@ class Login extends React.Component {
     };
 
     updateErrors(errors) {
-        console.log(errors);
         let stateErrors = this.state.errors.map((v, k) => {
             const error = errors.find(error => error.param === k);
             return error ? error.msg : "";
@@ -59,12 +62,32 @@ class Login extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.subscriptions = new Subscription();
+
+        const submit$ = fromEvent(
+            document.getElementById("loginForm"),
+            'submit'
+        ).pipe(
+            tap(_ => this.loading$.next(true)),
+            tap(submit => submit.preventDefault()),
+            auditTime(200),
+        );
+
+        this.subscriptions.add(submit$.subscribe(async submit => await this.handleSubmit(submit)));
+        this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.unsubscribe();
+    }
+
     //todo observable to disable buttons while page is loading something
     render() {
         return (
             <div className="wrapper">
                 <div className="form-wrapper">
-                    <form onSubmit={this.handleSubmit}>
+                    <form id="loginForm">
                         <h1>Login</h1>
                         <div className="email">
                             <label htmlFor="email">
@@ -96,12 +119,15 @@ class Login extends React.Component {
                         </div>
                         <p style={{color: 'red'}}>{this.state.errors.get('default')}</p>
                         <div className="login">
-                            <button type="submit">Submit</button>
+                            <button type="submit"
+                                    disabled={this.loading$.getValue()}>{this.loading$.getValue() ? "Loading..." : "Submit"}</button>
                         </div>
                         <small>Don't have an account?</small>
                     </form>
                     <div className="createAccount">
-                        <button type="button" onClick={() => this.props.history.push('/register')}>Create an Account
+                        <button type="button" onClick={() => {
+                            if (!this.loading$.getValue()) this.props.history.push('/register');
+                        }}>Create an Account
                         </button>
                     </div>
                 </div>

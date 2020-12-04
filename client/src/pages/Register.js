@@ -3,6 +3,8 @@ import {withRouter} from "react-router";
 import {Map} from 'immutable';
 import config from "../config";
 import {AuthService} from "../services/auth";
+import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
+import {auditTime, tap} from "rxjs/operators";
 
 class Register extends React.Component {
     constructor(props) {
@@ -26,19 +28,21 @@ class Register extends React.Component {
             }),
         }
 
+        this.loading$ = new BehaviorSubject(false);
+
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.updateErrors = this.updateErrors.bind(this);
     }
 
-    async handleSubmit(e) {
-        e.preventDefault();
-
+    async handleSubmit() {
         try {
             await AuthService.register(this.state.account.toObject());
         } catch (e) {
             this.updateErrors(e.response.data.errors);
         }
+
+        this.loading$.next(false);
     }
 
     handleChange(e) {
@@ -60,11 +64,31 @@ class Register extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.subscriptions = new Subscription();
+
+        const submit$ = fromEvent(
+            document.getElementById("registerForm"),
+            'submit'
+        ).pipe(
+            tap(_ => this.loading$.next(true)),
+            tap(submit => submit.preventDefault()),
+            auditTime(200),
+        );
+
+        this.subscriptions.add(submit$.subscribe(async submit => await this.handleSubmit(submit)));
+        this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.unsubscribe();
+    }
+
     render() {
         return (
             <div className="wrapper">
                 <div className="form-wrapper">
-                    <form onSubmit={this.handleSubmit}>
+                    <form id="registerForm">
                         <h1>Sign Up</h1>
                         <div className="firstname">
                             <label htmlFor="firstName">
@@ -148,12 +172,16 @@ class Register extends React.Component {
                             <label htmlFor="manager">Manager</label>
                         </div>
                         <div className="login">
-                            <button type="submit">Register</button>
+                            <button type="submit"
+                                    disabled={this.loading$.getValue()}>{this.loading$.getValue() ? "Loading..." : "Submit"}</button>
                         </div>
                         <small>Already have an account?</small>
                     </form>
                     <div className="createAccount">
-                        <button type="button" onClick={() => this.props.history.push('/login')}>Go to Login</button>
+                        <button type="button" onClick={() => {
+                            if (!this.loading$.getValue()) this.props.history.push('/login');
+                        }}>Go to Login
+                        </button>
                     </div>
                 </div>
             </div>
