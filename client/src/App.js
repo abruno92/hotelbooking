@@ -56,7 +56,7 @@ class App extends React.Component {
             <Switch>
                 <AuthRoute exact path="/" component={Home} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/rooms/" component={Rooms} canAccess={this.state.authenticated} mustAuth/>
-                <AuthRoute exact path="/rooms/:slug" component={SingleRoom} canAccess={this.state.authenticated}
+                <AuthRoute exact path="/rooms/:id" component={SingleRoom} canAccess={this.state.authenticated}
                            mustAuth/>
                 <AuthRoute exact path="/login" component={Login} canAccess={!this.state.authenticated}/>
                 <AuthRoute exact path="/logout" component={Logout} canAccess={this.state.authenticated} mustAuth/>
