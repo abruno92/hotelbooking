@@ -5,7 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const {authGuard, notImplemented} = require("../middleware/misc");
-const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
+const {parseDecimal, parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {roomDb} = require("../db/database");
 const {axiosJwtCookie} = require("../utils");
@@ -16,20 +16,25 @@ router.use(authGuard(config.db.privileges.userAny));
 // create
 router.post('/',
     authGuard(config.db.privileges.manager),
-    // 'number' body attribute
-    parseString('number', {min: 1, max: 3}),
-    // 'floor' body attribute
-    parseString('floor', {min: 1, max: 3}),
-    // 'side' body attribute
-    parseString('side', {min: 1, max: 3}),
+    // 'name' body attribute
+    parseString('name', {min:5, max: 40}),
+    // 'price' body attribute
+    parseDecimal('price'),
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}),
+    // 'category' body attribute
+    parseString('description', {min: 1, max: 1000}),
     // 'pictureUrl' body attribute
     parseUrl('pictureUrl'),
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
+    createHandler(roomDb, "name", "price", "description", "category", "pictureUrl"));
+
+// read all
+router.get('/all',
+    // handle read all
+    readHandler(roomDb));
 
 // read
 router.get('/:id',
@@ -78,22 +83,17 @@ router.get('/',
         res.json(availableRooms);
     });
 
-// read all
-router.get('/all',
-    // handle read all
-    readHandler(roomDb));
-
 // update
 router.patch('/:id',
     authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
-    // 'number' body attribute
-    parseString('number', {min: 1, max: 3}, true),
-    // 'floor' body attribute
-    parseString('floor', {min: 1, max: 3}, true),
-    // 'side' body attribute
-    parseString('side', {min: 1, max: 3}, true),
+    // 'name' body attribute
+    parseString('name', {min:5, max: 40}, true),
+    // 'price' body attribute
+    parseDecimal('price', true),
+    // 'category' body attribute
+    parseString('description', {min: 1, max: 1000}, true),
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}, true),
     // 'pictureUrl' body attribute
@@ -101,7 +101,7 @@ router.patch('/:id',
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
+    updateHandler(roomDb, "name", "price", "description", "category", "pictureUrl"));
 
 // delete
 router.delete('/:id',
