@@ -5,7 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const {authGuard} = require("../middleware/misc");
-const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
+const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser, isAfter} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
 const {axiosJwtCookie} = require("../utils");
@@ -27,7 +27,7 @@ router.post('/',
     // 'startDate' body attribute
     parseDate('startDate'),
     // 'endDate' body attribute
-    parseDate('endDate'),
+    parseDate('endDate').custom(isAfter('startDate')),
     // validate above attributes
     inputValidator,
     // handle create

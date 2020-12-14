@@ -42,7 +42,6 @@ class Rooms extends React.Component {
                     </Banner>
                 </Hero>
                 <RoomsList rooms={this.state.rooms}/>
-                {/*<RoomContainer/>*/}
                 <Footer/>
             </>
         );

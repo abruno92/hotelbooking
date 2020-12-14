@@ -20,7 +20,6 @@ export default class FeaturedRooms extends Component {
 
         this.subscriptions.add(RoomService.featuredRoomList$.subscribe(featuredRooms => {
             this.setState({featuredRooms});
-            console.log(featuredRooms);
         }));
 
         RoomService.refreshList();

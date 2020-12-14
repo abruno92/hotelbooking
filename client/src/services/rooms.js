@@ -33,7 +33,8 @@ class RoomServiceImpl {
         this.roomList$.next(result);
     }
 
-    getRoom(id) {
+    async getRoom(id) {
+        await this.refreshList();
         return this.roomList$.getValue().find(room => room._id === id);
     }
 }

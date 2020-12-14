@@ -120,8 +120,16 @@ function parseDecimal(field, optional = false) {
 function parseDate(field, optional = false) {
     return parseField(field, optional)
         // Validation
-        // check if length matches
-        .isDate().withMessage("must be a valid date").bail()
+        // check if format matches
+        .custom(value => {
+            const date = Date.parse(value);
+            if (date !== date) { // NaN !== NaN
+                throw new Error("must be a valid date");
+            } else {
+                return true;
+            }
+        }).bail()
+        // .isDate().withMessage("must be a valid date").bail()
         // Sanitization
         .toDate()
 }
@@ -232,10 +240,25 @@ function isCurrentUser(id, {req}) {
     if (id.equals(ObjectId(req.user._id))) {
         return true;
     } else {
-        return new Error("must be the id of the user making the request");
+        throw new Error("must be the id of the user making the request");
     }
 }
 
+/**
+ * Checks if the  Date is after the provided Date.
+ * @param otherDateAttr - Provided Date attribute to check against
+ * @returns {function(Error|boolean)} True if the Date is after the provided Date, throws Error otherwise
+ */
+function isAfter(otherDateAttr) {
+    return (thisDate, {req}) => {
+        const otherDate = req.body[otherDateAttr];
+        if (Date.parse(thisDate) < Date.parse(otherDate)) {
+            throw new Error(`must be after ${otherDateAttr}`);
+        } else {
+            return true;
+        }
+    };
+}
 
 module.exports = {
     inputValidator,
@@ -247,5 +270,6 @@ module.exports = {
     parseEmail,
     parsePassword,
     parseName,
-    isCurrentUser
+    isCurrentUser,
+    isAfter,
 }

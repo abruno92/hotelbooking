@@ -20,9 +20,9 @@ export default class SingleRoom extends Component {
     componentDidMount() {
         this.subscriptions = new Subscription();
 
-        this.subscriptions.add(RoomService.roomList$.subscribe(rooms => {
+        this.subscriptions.add(RoomService.roomList$.subscribe(async rooms => {
             if (rooms.length > 0) {
-                const room = RoomService.getRoom(this.state.id);
+                const room = await RoomService.getRoom(this.state.id);
                 this.setState({
                     id: this.state.id,
                     room
@@ -67,9 +67,12 @@ export default class SingleRoom extends Component {
                         </article>
                         <article className="info">
                             <h3>Details</h3>
-                            <h6>price : £{this.state.room.price}</h6>
+                            <h6>Price: £{this.state.room.price}</h6>
                         </article>
                     </div>
+                    <Link to={`/book/${this.state.id}`} className="btn-primary">
+                        Book this room
+                    </Link>
                 </section>
                 <Footer/>
             </>
