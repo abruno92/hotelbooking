@@ -34,7 +34,7 @@ class RoomServiceImpl {
     }
 
     getRoom(id) {
-        return this.roomList$.getValue().filter(room => room._id === id)[0];
+        return this.roomList$.getValue().find(room => room._id === id);
     }
 }
 
