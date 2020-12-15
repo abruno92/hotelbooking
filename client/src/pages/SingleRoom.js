@@ -7,6 +7,7 @@ import StyledHero from '../components/StyledHero';
 import Banner from '../components/Banner';
 import {RoomService} from "../services/room";
 import {Subscription} from "rxjs";
+import UserContainer from "../components/UserContainer";
 
 export default class SingleRoom extends Component {
     constructor(props) {
@@ -70,12 +71,14 @@ export default class SingleRoom extends Component {
                             <h6>Price: £{this.state.room.price}</h6>
                         </article>
                     </div>
-                    <Link to={`/book/${this.state.id}`} className="btn-primary">
-                        Book this room
-                    </Link>
-                    <Link to={`/review/${this.state.id}`} className="btn-primary">
-                        Write a Review
-                    </Link>
+                    <UserContainer userType='customer'>
+                        <Link to={`/book/${this.state.id}`} className="btn-primary">
+                            Book this room
+                        </Link>
+                        <Link to={`/review/${this.state.id}`} className="btn-primary">
+                            Write a Review
+                        </Link>
+                    </UserContainer>
                 </section>
                 <Footer/>
             </>
