@@ -51,7 +51,6 @@ class Rooms extends React.Component {
             return this.loading$.next(false);
         }
 
-        await BookingService.refreshList();
         this.isDone$.next(true);
 
         setTimeout(() => this.props.history.push(`/rooms/${this.state.id}`), 1000);

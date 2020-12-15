@@ -39,6 +39,8 @@ class BookingServiceImpl {
                 console.log(e);
             }
         }
+
+        await BookingService.refreshList();
     }
 }
 
