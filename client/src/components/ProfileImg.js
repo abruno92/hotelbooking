@@ -24,8 +24,8 @@ export default class ProfileImage extends Component {
         return (
                 <div className="container">
                     <img src={profileImg || defaultPic} alt="hi" className="image"/>
-                    <div class="overlay">
-                        <label class="custom-file-upload">
+                    <div className="overlay">
+                        <label className="custom-file-upload">
                             <div className="icon">
                                 <input type="file" name="image-upload" id="input" accept="image/*" onChange={this.imageHandler}/>
                                 <FaCamera style={{color:"#88BDBC"}}/>
