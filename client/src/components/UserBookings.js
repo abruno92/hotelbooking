@@ -18,11 +18,13 @@ const UserBookings = ({bookings}) => {
                 </thead>
                 <tbody>
                 {bookings.map(booking =>
-                    <tr key={booking.id}>
-                        <td>{booking.name}</td>
-                        <td>{new Date(booking.startDate).toUTCString()}</td>
-                        <td>{new Date(booking.endDate).toUTCString()}</td>
-                    </tr>)}
+                    !booking
+                        ? null
+                        : <tr key={booking.id}>
+                            <td>{booking.name}</td>
+                            <td>{new Date(booking.startDate).toUTCString()}</td>
+                            <td>{new Date(booking.endDate).toUTCString()}</td>
+                        </tr>)}
                 </tbody>
             </table>
         </>

@@ -8,8 +8,10 @@ import {map} from 'rxjs/operators';
  * as well as their respective reviews and replies.
  */
 class RoomServiceImpl {
-    // Observable that emits a list of rooms
+    // Observable that emits a list of available rooms
     roomList$;
+    // Observable that emits a list of all rooms
+    allRoomList$;
     // Observable that emits a list of featured rooms
     featuredRoomList$;
     // Observable that emits whether or not a retrieval of rooms is currently pending
@@ -17,25 +19,36 @@ class RoomServiceImpl {
 
     constructor() {
         this.roomList$ = new BehaviorSubject([]);
+        this.allRoomList$ = new BehaviorSubject([]);
         this.featuredRoomList$ = this.roomList$.pipe(map(rooms => getFeaturedRooms(rooms)));
         this.fetchPending$ = new BehaviorSubject(true);
     }
 
     async refreshList() {
-        let result;
+        let availableRooms;
         try {
-            result = (await ApiAxios.get('room')).data;
+            availableRooms = (await ApiAxios.get('room')).data;
         } catch (e) {
             console.log(e.response.status);
             return "";
         }
 
-        this.roomList$.next(result);
+        this.roomList$.next(availableRooms);
+
+        let allRooms;
+        try {
+            allRooms = (await ApiAxios.get('room/all')).data;
+        } catch (e) {
+            console.log(e.response.status);
+            return "";
+        }
+
+        this.allRoomList$.next(allRooms);
     }
 
     async getRoom(id) {
         await this.refreshList();
-        return this.roomList$.getValue().find(room => room._id === id);
+        return this.allRoomList$.getValue().find(room => room._id === id);
     }
 }
 

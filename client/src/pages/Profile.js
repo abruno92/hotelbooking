@@ -9,6 +9,7 @@ import {AuthService} from "../services/auth";
 import {BookingService} from "../services/booking";
 import UserBookings from "../components/UserBookings";
 import {RoomService} from "../services/room";
+import UserContainer from "../components/UserContainer";
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -58,9 +59,11 @@ export default class Profile extends React.Component {
                 <div className="services" style={{backgroundColor: "white"}}>
                     <Bio user={this.state.user}/>
                 </div>
-                <div className='services' style={{backgroundColor: "white"}}>
-                    <UserBookings bookings={this.state.bookings}/>
-                </div>
+                <UserContainer userType='customer'>
+                    <div className='services' style={{backgroundColor: "white"}}>
+                        <UserBookings bookings={this.state.bookings}/>
+                    </div>
+                </UserContainer>
                 <Footer/>
             </>
         )
