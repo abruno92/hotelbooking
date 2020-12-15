@@ -31,7 +31,7 @@ const BookingList = ({bookings, onDelete}) => {
                         ? null
                         : <tr key={booking.id}>
                             <td>{booking.roomName}</td>
-                            <td>{booking.userName}</td>
+                            <td dangerouslySetInnerHTML={{__html: booking.username}}/>
                             <td>{booking.startDate}</td>
                             <td>{booking.endDate}</td>
                             <td><Button id={booking.id} className='btn-danger'

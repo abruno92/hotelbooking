@@ -100,7 +100,6 @@ export default class ReplyCreate extends React.Component {
                 });
             }
         }));
-        console.log(this.state.review);
     }
 
     componentWillUnmount() {

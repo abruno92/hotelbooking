@@ -1,7 +1,6 @@
 import React from 'react';
 
 const UserBookings = ({bookings}) => {
-    console.log(bookings);
     return (
         <>
             <div className="section-title">

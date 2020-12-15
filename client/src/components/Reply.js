@@ -7,8 +7,8 @@ const Reply = memo(({reply}) => {
         <article className="room">
             <div className="img-container">
                 <div className="price-top">
-                    <h6>{userName}</h6>
-                    <h6>{content}</h6>
+                    <h6 dangerouslySetInnerHTML={{__html: userName}}/>
+                    <h6 dangerouslySetInnerHTML={{__html: content}}/>
                 </div>
             </div>
         </article>

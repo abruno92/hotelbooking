@@ -15,9 +15,9 @@ const Review = memo(({review}) => {
             <div className="img-container">
                 <img src={defaultImg} alt="single room"/>
                 <div className="price-top">
-                    <h6>{userName}</h6>
+                    <h6 dangerouslySetInnerHTML={{__html: userName}}/>
                     <h6>{room.name}</h6>
-                    <h6>{content}</h6>
+                    <h6 dangerouslySetInnerHTML={{__html: content}}/>
                 </div>
             </div>
             {review.reply ? <Reply reply={review.reply}/> : <ReplyButton onClick={() => {
