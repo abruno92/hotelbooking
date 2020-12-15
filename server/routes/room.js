@@ -17,7 +17,7 @@ router.use(authGuard(config.db.privileges.userAny));
 router.post('/',
     authGuard(config.db.privileges.manager),
     // 'name' body attribute
-    parseString('name', {min:5, max: 40}),
+    parseString('name', {min: 5, max: 40}),
     // 'price' body attribute
     parseDecimal('price'),
     // 'category' body attribute
@@ -63,7 +63,7 @@ router.get('/',
 
         // filter only bookings that are past their end date
         const currentDate = new Date();
-        const currentlyBookedRooms = allBookings.filter(booking => booking.endDate <= currentDate)
+        const bookedRoomIds = allBookings.filter(booking => Date.parse(booking.endDate) <= currentDate.getTime())
             .map(booking => booking.roomId);
 
         // get all rooms
@@ -78,7 +78,7 @@ router.get('/',
         }
 
         //filter only rooms that are not present in currently booked rooms
-        const availableRooms = allRooms.filter(room => !currentlyBookedRooms.some(booking => booking.roomId.equals(room._id)))
+        const availableRooms = allRooms.filter(room => !bookedRoomIds.some(bookedRoomId => bookedRoomId === room._id))
 
         res.json(availableRooms);
     });
@@ -89,7 +89,7 @@ router.patch('/:id',
     // 'id' URL param
     parseObjectId(),
     // 'name' body attribute
-    parseString('name', {min:5, max: 40}, true),
+    parseString('name', {min: 5, max: 40}, true),
     // 'price' body attribute
     parseDecimal('price', true),
     // 'category' body attribute
