@@ -35,7 +35,7 @@ export default class FeaturedRooms extends Component {
                 <Title title="featured rooms"/>
                 <div className="featured-rooms-center">
                     {this.state.featuredRooms.map(room => {
-                        if (!room) return <></>;
+                        if (!room) return undefined;
                         return <Room key={room._id} room={room}/>
                     })}
                 </div>

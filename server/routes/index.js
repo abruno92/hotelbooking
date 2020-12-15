@@ -4,8 +4,7 @@
  */
 const express = require("express");
 const config = require("../config");
-const {userDb} = require("../db/database");
-const {isCurrentUser} = require("../middleware/inputParsing");
+const {userDb} = require("../db/database")
 const {reviewDb} = require("../db/database");
 const {readHandler} = require("../middleware/restful");
 const {authGuard} = require("../middleware/misc");
@@ -36,13 +35,12 @@ router.get('/user/current',
         delete user.passwordHash;
         return user;
     })
-
 );
 
 router.get('/user/:id',
     authGuard(config.db.privileges.userAny),
     // 'id' URL param
-    parseObjectId().custom(isCurrentUser),
+    parseObjectId(),//.custom(isCurrentUser),
     // validate above attribute
     inputValidator,
     // handle read
