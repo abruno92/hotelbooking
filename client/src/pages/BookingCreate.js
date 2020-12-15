@@ -14,7 +14,7 @@ import {AuthService} from "../services/auth";
 import {auditTime, tap} from "rxjs/operators";
 import {BookingService} from "../services/booking";
 
-class Rooms extends React.Component {
+class BookingCreate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -163,4 +163,4 @@ class Rooms extends React.Component {
     }
 }
 
-export default Rooms;
+export default BookingCreate;

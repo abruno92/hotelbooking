@@ -13,7 +13,7 @@ import AuthRoute from "./components/AuthRoute";
 import {AuthService} from "./services/auth";
 import {Subscription, timer} from "rxjs";
 import config from "./config";
-import BookPage from "./pages/BookPage";
+import BookPage from "./pages/BookingCreate";
 
 /**
  * The main React Component of the app.
