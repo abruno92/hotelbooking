@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {Link} from "react-router-dom";
 import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
-import {RoomService} from "../services/rooms";
+import {RoomService} from "../services/room";
 import StyledHero from "../components/StyledHero";
 import DatePicker from 'react-datepicker';
 import {Map} from 'immutable';

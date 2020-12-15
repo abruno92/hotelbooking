@@ -11,7 +11,7 @@ const UserBookings = ({bookings}) => {
             <table style={{width: "100%"}}>
                 <thead>
                 <tr>
-                    <th><h6> Name</h6></th>
+                    <th><h6>Name</h6></th>
                     <th><h6>Start Date</h6></th>
                     <th><h6>End Date</h6></th>
                 </tr>

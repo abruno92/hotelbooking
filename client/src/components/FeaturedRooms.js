@@ -3,7 +3,7 @@ import {RoomContext} from '../Context';
 import Room from './Room';
 import Title from './Title';
 import {Subscription} from "rxjs";
-import {RoomService} from "../services/rooms";
+import {RoomService} from "../services/room";
 
 export default class FeaturedRooms extends Component {
     static contextType = RoomContext;

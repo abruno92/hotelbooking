@@ -8,7 +8,7 @@ import {Subscription} from "rxjs";
 import {AuthService} from "../services/auth";
 import {BookingService} from "../services/booking";
 import UserBookings from "../components/UserBookings";
-import {RoomService} from "../services/rooms";
+import {RoomService} from "../services/room";
 
 export default class Profile extends React.Component {
     constructor(props) {

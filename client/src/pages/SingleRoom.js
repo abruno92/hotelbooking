@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import StyledHero from '../components/StyledHero';
 import Banner from '../components/Banner';
-import {RoomService} from "../services/rooms";
+import {RoomService} from "../services/room";
 import {Subscription} from "rxjs";
 
 export default class SingleRoom extends Component {

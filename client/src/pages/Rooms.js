@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import {Link} from "react-router-dom";
 import RoomsList from "../components/RoomList";
 import {Subscription} from "rxjs";
-import {RoomService} from "../services/rooms";
+import {RoomService} from "../services/room";
 
 class Rooms extends React.Component {
     constructor(props) {
