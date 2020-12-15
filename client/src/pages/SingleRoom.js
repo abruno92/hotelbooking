@@ -73,6 +73,9 @@ export default class SingleRoom extends Component {
                     <Link to={`/book/${this.state.id}`} className="btn-primary">
                         Book this room
                     </Link>
+                    <Link to={`/review/${this.state.id}`} className="btn-primary">
+                        Write a Review
+                    </Link>
                 </section>
                 <Footer/>
             </>

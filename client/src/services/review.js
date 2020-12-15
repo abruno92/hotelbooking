@@ -1,6 +1,7 @@
 import ApiAxios from "../utils/ApiAxios";
 import {BehaviorSubject} from "rxjs";
 import {RoomService} from "./room";
+import sleep from "../utils/time";
 
 /**
  * A Service responsible for managing the rooms of the app,
@@ -66,6 +67,21 @@ class ReviewServiceImpl {
         console.log(reviews);
 
         this.reviewList$.next(reviews);
+    }
+
+    async create(review) {
+        try {
+            await ApiAxios.post('review', review);
+            await sleep(300);
+        } catch (e) {
+            if (e.response.status === 400) {
+                throw e;
+            } else {
+                console.log(e);
+            }
+        }
+
+        await ReviewService.refreshList();
     }
 }
 

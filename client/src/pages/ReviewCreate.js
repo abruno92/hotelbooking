@@ -8,47 +8,46 @@ import {Link} from "react-router-dom";
 import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
 import {RoomService} from "../services/room";
 import StyledHero from "../components/StyledHero";
-import DatePicker from 'react-datepicker';
 import {Map} from 'immutable';
 import {AuthService} from "../services/auth";
 import {auditTime, tap} from "rxjs/operators";
-import {BookingService} from "../services/booking";
 import Button from "react-bootstrap/Button";
+import {ReviewService} from "../services/review";
 
-export default class BookingCreate extends React.Component {
+export default class ReviewCreate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             id: this.props.match.params.roomId,
             room: {},
-            booking: Map({
+            review: Map({
                 userId: AuthService.getUser()._id,
                 roomId: this.props.match.params.roomId,
-                price: 0,
-                startDate: undefined,
-                endDate: undefined,
+                content: "",
             }),
             errors: Map({
-                startDate: "",
-                endDate: "",
+                content: "",
             }),
         };
 
         this.loading$ = new BehaviorSubject(false);
         this.isDone$ = new BehaviorSubject(false);
 
-        this.handleBook = this.handleBook.bind(this);
-        this.handleStartDateChange = this.handleStartDateChange.bind(this);
-        this.handleEndDateChange = this.handleEndDateChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.updateErrors = this.updateErrors.bind(this);
     }
 
-    async handleBook() {
+    async handleSubmit() {
         try {
-            await BookingService.create(this.state.booking.toObject());
+            await ReviewService.create(this.state.review.toObject());
         } catch (e) {
-            console.log(e.response.data.errors);
-            this.updateErrors(e.response.data.errors);
+            if (e.response) {
+                console.log(e.response.data.errors);
+                this.updateErrors(e.response.data.errors);
+            } else {
+                console.log(e);
+            }
             return this.loading$.next(false);
         }
 
@@ -57,20 +56,9 @@ export default class BookingCreate extends React.Component {
         setTimeout(() => this.props.history.push(`/rooms/${this.state.id}`), 1000);
     }
 
-    handleStartDateChange(date) {
+    handleChange(e) {
         this.setState({
-            id: this.state.id,
-            room: this.state.room,
-            booking: this.state.booking.set('startDate', date),
-            errors: this.state.errors,
-        });
-    }
-
-    handleEndDateChange(date) {
-        this.setState({
-            id: this.state.id,
-            room: this.state.room,
-            booking: this.state.booking.set('endDate', date),
+            review: this.state.review.set(e.target.name, e.target.value),
             errors: this.state.errors,
         });
     }
@@ -84,7 +72,7 @@ export default class BookingCreate extends React.Component {
         this.setState({
             id: this.state.id,
             room: this.state.room,
-            booking: this.state.booking,
+            review: this.state.review,
             errors: stateErrors,
         });
     }
@@ -92,8 +80,8 @@ export default class BookingCreate extends React.Component {
     componentDidMount() {
         this.subscriptions = new Subscription();
 
-        const finalizeBooking$ = fromEvent(
-            document.getElementById("bookingButton"),
+        const submitReview$ = fromEvent(
+            document.getElementById("submitReviewButton"),
             'click'
         ).pipe(
             tap(_ => this.loading$.next(true)),
@@ -101,7 +89,7 @@ export default class BookingCreate extends React.Component {
             auditTime(200),
         )
 
-        this.subscriptions.add(finalizeBooking$.subscribe(async () => await this.handleBook()));
+        this.subscriptions.add(submitReview$.subscribe(async () => await this.handleSubmit()));
         this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
         this.subscriptions.add(RoomService.roomList$.subscribe(async rooms => {
             if (rooms.length > 0) {
@@ -109,7 +97,7 @@ export default class BookingCreate extends React.Component {
                 this.setState({
                     id: this.state.id,
                     room,
-                    booking: this.state.booking.set('price', room.price),
+                    review: this.state.review,
                     errors: this.state.errors,
                 });
             }
@@ -125,7 +113,7 @@ export default class BookingCreate extends React.Component {
             <>
                 <Navbar/>
                 <StyledHero img={defaultBcg}>
-                    <Banner title={`Booking for ${this.state.room.name}`}>
+                    <Banner title={`Review for ${this.state.room.name}`}>
                         <Link to={`/rooms/${this.props.match.params.roomId}`} className="btn-primary">
                             return to room page
                         </Link>
@@ -137,23 +125,19 @@ export default class BookingCreate extends React.Component {
                             <p>{this.state.room.description}</p>
                         </article>
                         <article className="info">
-                            <h6>Price: £{this.state.booking.get('price')}</h6>
+                            <h6>Price: £{this.state.room.price}</h6>
                         </article>
                         <article className="info">
-                            <span><h6>Start date:
-                                <DatePicker selected={this.state.booking.get('startDate')}
-                                            onChange={this.handleStartDateChange}/>
-                                <p style={{color: 'red'}}>{this.state.errors.get('startDate')}</p>
+                            <span><h6>Your Review: <p style={{color: 'red'}}>{this.state.errors.get('content')}</p>
                             </h6></span>
-                            <span><h6>End date:
-                                <DatePicker selected={this.state.booking.get('endDate')}
-                                            onChange={this.handleEndDateChange}/>
-                                <p style={{color: 'red'}}>{this.state.errors.get('endDate')}</p>
-                            </h6></span>
+                            <textarea name='content'
+                                      id='content'
+                                      placeholder='Review'
+                                      onChange={this.handleChange}/>
                         </article>
                     </div>
-                    <Button id="bookingButton" to='/' className="btn-primary"
-                            disabled={this.isDone$.getValue() || this.loading$.getValue()}>{this.isDone$.getValue() ? "Booking successful!" : this.loading$.getValue() ? "Loading..." : "Finalize Booking"}
+                    <Button id="submitReviewButton" to='/' className="btn-primary"
+                            disabled={this.isDone$.getValue() || this.loading$.getValue()}>{this.isDone$.getValue() ? "Review Submitted!" : this.loading$.getValue() ? "Loading..." : "Submit Review"}
                     </Button>
                 </section>
                 <Footer/>

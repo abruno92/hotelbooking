@@ -13,7 +13,8 @@ import AuthRoute from "./components/AuthRoute";
 import {AuthService} from "./services/auth";
 import {Subscription, timer} from "rxjs";
 import config from "./config";
-import BookPage from "./pages/BookingCreate";
+import BookingCreate from "./pages/BookingCreate";
+import ReviewCreate from "./pages/ReviewCreate";
 
 /**
  * The main React Component of the app.
@@ -59,8 +60,9 @@ class App extends React.Component {
                 <AuthRoute exact path="/rooms/" component={Rooms} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/rooms/:id" component={SingleRoom} canAccess={this.state.authenticated}
                            mustAuth/>
-                <AuthRoute exact path="/book/:roomId" component={BookPage} canAccess={this.state.authenticated}
+                <AuthRoute exact path="/book/:roomId" component={BookingCreate} canAccess={this.state.authenticated}
                            mustAuth/>
+                <AuthRoute exact path="/review/:roomId" component={ReviewCreate} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/login" component={Login} canAccess={!this.state.authenticated}/>
                 <AuthRoute exact path="/logout" component={Logout} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/register" component={Register} canAccess={!this.state.authenticated}/>
