@@ -44,7 +44,7 @@ router.get('/forUser',
     async (req, res) => {
         let bookings;
         try {
-            bookings = (await axiosJwtCookie(req).get(`/review`)).data;
+            bookings = (await axiosJwtCookie(req).get(`/booking`)).data;
         } catch (e) {
             if (!e.response) {
                 console.log(e);
