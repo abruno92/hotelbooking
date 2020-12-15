@@ -71,6 +71,26 @@ class ReviewServiceImpl {
 
         await ReviewService.refreshList();
     }
+
+    async createReply(reviewId, reply) {
+        try {
+            await ApiAxios.post(`review/${reviewId}/reply`, reply);
+            await sleep(300);
+        } catch (e) {
+            if (e.response.status === 400) {
+                throw e;
+            } else {
+                console.log(e);
+            }
+        }
+
+        await ReviewService.refreshList();
+    }
+
+    async getReview(id) {
+        // await this.refreshList();
+        return this.reviewList$.getValue().find(review => review._id === id);
+    }
 }
 
 export const ReviewService = new ReviewServiceImpl();
