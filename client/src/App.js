@@ -15,6 +15,7 @@ import {Subscription, timer} from "rxjs";
 import config from "./config";
 import BookingCreate from "./pages/BookingCreate";
 import ReviewCreate from "./pages/ReviewCreate";
+import Bookings from "./pages/Bookings";
 
 /**
  * The main React Component of the app.
@@ -58,11 +59,13 @@ class App extends React.Component {
             <Switch>
                 <AuthRoute exact path="/" component={Home} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/rooms/" component={Rooms} canAccess={this.state.authenticated} mustAuth/>
+                <AuthRoute exact path="/bookings/" component={Bookings} canAccess={this.state.authenticated && AuthService.isManager()} mustAuth/>
                 <AuthRoute exact path="/rooms/:id" component={SingleRoom} canAccess={this.state.authenticated}
                            mustAuth/>
-                <AuthRoute exact path="/book/:roomId" component={BookingCreate} canAccess={this.state.authenticated}
+                <AuthRoute exact path="/book/:roomId" component={BookingCreate} canAccess={this.state.authenticated && AuthService.isCustomer()}
                            mustAuth/>
-                <AuthRoute exact path="/review/:roomId" component={ReviewCreate} canAccess={this.state.authenticated} mustAuth/>
+                <AuthRoute exact path="/review/:roomId" component={ReviewCreate} canAccess={this.state.authenticated && AuthService.isCustomer()} mustAuth/>
+                {/*<AuthRoute exact path="/reply/:reviewId" component={ReplyCreate} canAccess={this.state.authenticated && AuthService.isManager()} mustAuth/>*/}
                 <AuthRoute exact path="/login" component={Login} canAccess={!this.state.authenticated}/>
                 <AuthRoute exact path="/logout" component={Logout} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/register" component={Register} canAccess={!this.state.authenticated}/>

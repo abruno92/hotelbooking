@@ -7,8 +7,9 @@ import {Link} from "react-router-dom";
 import RoomsList from "../components/RoomList";
 import {Subscription} from "rxjs";
 import {RoomService} from "../services/room";
+import {AuthService} from "../services/auth";
 
-class Rooms extends React.Component {
+export default class Rooms extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -19,7 +20,8 @@ class Rooms extends React.Component {
     componentDidMount() {
         this.subscriptions = new Subscription();
 
-        this.subscriptions.add(RoomService.roomList$.subscribe(rooms => {
+        const roomListName = AuthService.isManager() ? 'allRoomList$' : 'roomList$';
+        this.subscriptions.add(RoomService[roomListName].subscribe(rooms => {
             this.setState({rooms});
         }));
 
@@ -47,5 +49,3 @@ class Rooms extends React.Component {
         );
     }
 }
-
-export default Rooms;

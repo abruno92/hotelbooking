@@ -91,7 +91,7 @@ export default class ReviewCreate extends React.Component {
 
         this.subscriptions.add(submitReview$.subscribe(async () => await this.handleSubmit()));
         this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
-        this.subscriptions.add(RoomService.roomList$.subscribe(async rooms => {
+        this.subscriptions.add(RoomService.allRoomList$.subscribe(async rooms => {
             if (rooms.length > 0) {
                 const room = await RoomService.getRoom(this.state.id);
                 this.setState({

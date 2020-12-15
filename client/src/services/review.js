@@ -2,6 +2,7 @@ import ApiAxios from "../utils/ApiAxios";
 import {BehaviorSubject} from "rxjs";
 import {RoomService} from "./room";
 import sleep from "../utils/time";
+import {UserService} from "./user";
 
 /**
  * A Service responsible for managing the rooms of the app,
@@ -25,22 +26,10 @@ class ReviewServiceImpl {
         }
 
         reviews = await Promise.all(reviews.map(async review => {
-            review.userName = "";
-            try {
-                const reviewUser = (await ApiAxios.get(`/user/${review.userId}`)).data;
-                review.userName = `${reviewUser.firstName} ${reviewUser.lastName}`;
-            } catch (e) {
-                if (!(e.response.status === 404)) {
-                    console.log(e);
-                }
-            }
+            review.userName = await UserService.getNameForUser(review.userId);
 
             const room = await RoomService.getRoom(review.roomId);
-            if (room) {
-                review.room = room;
-            } else {
-                review.room = {name: ""};
-            }
+            review.room = room || {name: ""};
 
             try {
                 review.reply = (await ApiAxios.get(`review/${review._id}/reply`)).data;
@@ -64,7 +53,6 @@ class ReviewServiceImpl {
 
             return review;
         }));
-        console.log(reviews);
 
         this.reviewList$.next(reviews);
     }

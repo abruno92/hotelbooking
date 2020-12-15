@@ -40,7 +40,7 @@ class AuthServiceImpl {
      * @returns {boolean}
      */
     isManager() {
-        return this.isCustomer() && this.#_currentUser$.getValue().privilegeLevel === config.user.manager;
+        return this.isLoggedIn() && this.#_currentUser$.getValue().privilegeLevel === config.users.manager;
     }
 
     /**
