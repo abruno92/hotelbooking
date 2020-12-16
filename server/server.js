@@ -48,9 +48,11 @@ app.use('/room', roomRoute);
 app.use('/review', reviewRoute);
 app.use('/review/:reviewId/reply', replyRoute);
 
-https.createServer({
-    key: fs.readFileSync('encryption/hotelbooking_key.pem'),
-    cert: fs.readFileSync('encryption/hotelbooking_cert.pem')
-}, app).listen(port, () => {
-    console.log(`Listening on port ${port}`);
-})
+app.listen(port);
+
+// https.createServer({
+//     key: fs.readFileSync('encryption/hotelbooking_key.pem'),
+//     cert: fs.readFileSync('encryption/hotelbooking_cert.pem')
+// }, app).listen(port, () => {
+//     console.log(`Listening on port ${port}`);
+// })

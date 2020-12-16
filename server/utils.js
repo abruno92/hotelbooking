@@ -12,7 +12,7 @@ const {port, jwt} = require("./config");
  */
 function axiosJwtCookie(req) {
     return create({
-        baseURL: `https://localhost:${port}/`,
+        baseURL: `http://localhost:${port}/`,
         headers: {
             Cookie: `${jwt.cookieName}=${req.cookies[jwt.cookieName]}`
         }
