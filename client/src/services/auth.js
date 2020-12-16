@@ -116,22 +116,30 @@ class AuthServiceImpl {
      * Attempts to refresh the user that bears the JWT cookie.
      */
     async refresh() {
+        let message;
         try {
-            const user = (await ApiAxios.get('user/current')).data;
-            await sleep(300);
-            this.#_currentUser$.next(user);
+            message = (await ApiAxios.get('auth/refresh')).data.message;
         } catch (e) {
             if (e.response) {
-                if (e.response.status === 401 || e.response.status === 403) {
-                    // Token is either expired or not present
-                    this.#_currentUser$.next(undefined);
-                } else {
-                    console.log(e.response.data);
+                if (e.response.status === 401 || e.response.status === 403 || e.response.status === 409) {
+                    // Token is either expired, not present or does not need to be refreshed
+                    message = e.response.data.error;
                 }
             } else {
                 console.log(e);
             }
         }
+
+        let user = undefined;
+        try {
+            user = (await ApiAxios.get('user/current')).data;
+        } catch (e) {
+            console.log(e);
+        }
+
+        this.#_currentUser$.next(user);
+
+        return message;
     }
 
     /**
