@@ -1,6 +1,6 @@
 import React from 'react'
 import Bio from '../components/Bio';
-import ProfileUploader from '../components/ProfileImg';
+import ProfilePicture from '../components/ProfilePicture';
 import Hero from '../components/Hero';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -53,7 +53,7 @@ export default class Profile extends React.Component {
                 <Navbar/>
                 <Hero hero="profileHero">
                     <div className="body">
-                        <ProfileUploader/>
+                        <ProfilePicture userId={this.state.user._id}/>
                     </div>
                 </Hero>
                 <div className="services" style={{backgroundColor: "white"}}>

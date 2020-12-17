@@ -7,7 +7,7 @@ class Review {
     floor;
     side;
     category;
-    pictureUrl;
+    pictureFile;
 }
 
 module.exports = Review;

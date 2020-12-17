@@ -24,12 +24,12 @@ router.post('/',
     parseString('category', {min: 1, max: 20}),
     // 'category' body attribute
     parseString('description', {min: 1, max: 1000}),
-    // 'pictureUrl' body attribute
-    parseUrl('pictureUrl'),
+    // 'pictureFile' body attribute
+    parseUrl('pictureFile'),
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(roomDb, "name", "price", "description", "category", "pictureUrl"));
+    createHandler(roomDb, "name", "price", "description", "category", "pictureFile"));
 
 // read all
 router.get('/all',
@@ -96,12 +96,12 @@ router.patch('/:id',
     parseString('description', {min: 1, max: 1000}, true),
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}, true),
-    // 'pictureUrl' body attribute
-    parseUrl('pictureUrl', true),
+    // 'pictureFile' body attribute
+    parseUrl('pictureFile', true),
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(roomDb, "name", "price", "description", "category", "pictureUrl"));
+    updateHandler(roomDb, "name", "price", "description", "category", "pictureFile"));
 
 // delete
 router.delete('/:id',
