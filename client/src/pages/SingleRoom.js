@@ -23,7 +23,7 @@ export default class SingleRoom extends Component {
 
         this.subscriptions.add(RoomService.roomList$.subscribe(async rooms => {
             if (rooms.length > 0) {
-                const room = await RoomService.getRoom(this.state.id);
+                const room = RoomService.getRoomSync(this.state.id);
                 this.setState({
                     id: this.state.id,
                     room

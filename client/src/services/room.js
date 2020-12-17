@@ -48,6 +48,10 @@ class RoomServiceImpl {
 
     async getRoom(id) {
         await this.refreshList();
+        return this.getRoomSync(id);
+    }
+
+    getRoomSync(id) {
         return this.allRoomList$.getValue().find(room => room._id === id);
     }
 }
