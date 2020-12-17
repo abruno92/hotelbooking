@@ -1,3 +1,5 @@
+const path = require('path');
+
 const {jwtSecret} = require("./jwtSecret");
 
 const config = {};
@@ -9,6 +11,8 @@ config.db.privileges = {};
 
 config.port = process.env.PORT || 3001;
 config.locale = "da-DK";
+config.projectRoot = __dirname;
+config.userAvatarDir = path.join(config.projectRoot, 'public', 'upload', 'avatars');
 
 config.jwt.expirySeconds = 60 * 10;
 config.jwt.cookieName = "AuthToken";

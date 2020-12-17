@@ -19,11 +19,14 @@ const fs = require("fs");
 const {whitelist} = require("./corsWhitelist");
 const {port} = require("./config");
 const {parseAuthToken} = require("./middleware/misc");
+const fileUpload = require('express-fileupload');
 
 const app = express();
 
 app.use(logger('dev'));
+app.use(fileUpload({createParentPath: true}));
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use(cors({
     // origin: whitelist,
     origin: function (origin, callback) {
@@ -42,7 +45,7 @@ app.use(parseAuthToken);
 
 app.use('/', indexRoute);
 app.use('/auth', authRoute);
-// app.use('/user', userRoute);
+app.use('/user', userRoute);
 app.use('/booking', bookingRoute);
 app.use('/room', roomRoute);
 app.use('/review', reviewRoute);
