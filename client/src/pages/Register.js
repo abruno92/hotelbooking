@@ -165,16 +165,6 @@ class Register extends React.Component {
                                 required
                             />
                         </div>
-                        <div>
-                            <p>Account Type</p>
-                            <input type="radio" id="customer" name="privilegeLevel" onChange={this.handleChange}
-                                   value="customer"
-                                   defaultChecked/>
-                            <label htmlFor="customer">Customer</label>
-                            <input type="radio" id="manager" name="privilegeLevel" onChange={this.handleChange}
-                                   value="manager"/>
-                            <label htmlFor="manager">Manager</label>
-                        </div>
                         <div className="login">
                             <button type="submit"
                                     disabled={this.loading$.getValue()}>{this.loading$.getValue() ? "Loading..." : "Submit"}</button>

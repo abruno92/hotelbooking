@@ -45,6 +45,7 @@ class App extends React.Component {
         this.subscriptions.add(timer(0, config.users.refreshRateMillis)
             .subscribe(async () => {
                 // Try to refresh the JWT cookie
+                // todo fix refresh() not actually refreshing the token
                 const result = await AuthService.refresh();
                 console.log("token status: ", result);
             })

@@ -98,6 +98,7 @@ class AuthServiceImpl {
      * @returns {undefined | string} Error message in case of presentable errors, undefined otherwise.
      */
     async register(account) {
+        account.privilegeLevel = config.users.customer;
         try {
             await ApiAxios.post('auth/register', account);
             await sleep(300);
