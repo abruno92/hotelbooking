@@ -1,6 +1,7 @@
 /**
  * This file contains the configuration of an Express.js router
- * for the '/auth' route.
+ * for the '/' route.
+ * Mostly used for miscellaneous endpoints.
  */
 const express = require("express");
 const config = require("../config");

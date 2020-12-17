@@ -24,7 +24,7 @@ router.use('/',
 
 // create
 router.post('/',
-    authGuard(db.privileges.userHigh),
+    authGuard(db.privileges.manager),
     // 'userId' body attribute
     parseObjectId('userId', async (value) => await userDb.existsById(value))
         // check that the authenticated user is the one making the post request
@@ -89,7 +89,7 @@ router.get('/*',
 
 // update
 router.patch(['/', '/:id'],
-    authGuard(db.privileges.userHigh),
+    authGuard(db.privileges.manager),
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param
@@ -105,7 +105,7 @@ router.patch(['/', '/:id'],
 
 // delete
 router.delete(['/', '/:id'],
-    authGuard(db.privileges.userHigh),
+    authGuard(db.privileges.manager),
     // retrieve the reply id using review id and add it to req.params
     retrieveId,
     // 'id' URL param

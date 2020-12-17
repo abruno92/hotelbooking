@@ -1,79 +1,139 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
-import Axios from 'axios';
-import GoogleBtn from "../components/GoogleAuthentication/googleLogin";
-import LoginButton from "../components/GoogleAuthentication/Auth0LoginBtn";
+import React from 'react';
+import {AuthService} from "../services/auth";
+import {Map} from 'immutable';
+import {withRouter} from "react-router";
+import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
+import {auditTime, tap} from "rxjs/operators";
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            credentials: Map({
+                email: "",
+                password: "",
+            }),
+            errors: Map({
+                email: "",
+                password: "",
+                default: "",
+            })
+        }
 
-    const login = (e) => {
-        e.preventDefault();
-        Axios.post('https://localhost:3001/auth/login', {
-            email: email, 
-            password: password
-        }).then((response) => {
-            console.log(response.data.message);
+        this.loading$ = new BehaviorSubject(false);
 
-        }).catch(reason => {
-            if (reason.response.status === 401) {
-                setErrorMessage(reason.response.data.error);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.updateErrors = this.updateErrors.bind(this);
+    }
+
+    async handleSubmit() {
+        try {
+            await AuthService.login(this.state.credentials.toObject());
+        } catch (e) {
+            if (e.response.data.errors) {
+                this.updateErrors(e.response.data.errors);
+            } else if (e.response.data.error) {
+                this.updateErrors([{msg: e.response.data.error, param: "default"}])
+            } else {
+                console.log(e);
             }
-            console.log(reason.response.data.errors);
-        })
+        }
+
+        this.loading$.next(false);
+    }
+
+    handleChange(e) {
+        this.setState({
+            credentials: this.state.credentials.set(e.target.name, e.target.value),
+            errors: this.state.errors,
+        });
     };
 
-    return (
-        <>
-        <div className="wrapper">
-            <div className="form-wrapper">
-                <form>
-                {/*<GoogleBtn/>*/}
-                {/*<LoginButton/>*/}
-                <h1>Login</h1>
-                <div className="email">
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="email"
-                        className="email" 
-                        placeholder="Email"
-                        id="email" 
-                        onChange={(e)=>{
-                            setEmail(e.target.value);
-                        }}
-                        required
-                    />
+    updateErrors(errors) {
+        let stateErrors = this.state.errors.map((v, k) => {
+            const error = errors.find(error => error.param === k);
+            return error ? error.msg : "";
+        });
+
+        this.setState({
+            credentials: this.state.credentials,
+            errors: stateErrors,
+        });
+    }
+
+    componentDidMount() {
+        this.subscriptions = new Subscription();
+
+        const submit$ = fromEvent(
+            document.getElementById("loginForm"),
+            'submit'
+        ).pipe(
+            tap(_ => this.loading$.next(true)),
+            tap(submit => submit.preventDefault()),
+            auditTime(200),
+        );
+
+        this.subscriptions.add(submit$.subscribe(async submit => await this.handleSubmit(submit)));
+        this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.unsubscribe();
+    }
+
+    //todo observable to disable buttons while page is loading something
+    render() {
+        return (
+            <div className="wrapper">
+                <div className="form-wrapper">
+                    <form id="loginForm">
+                        <h1>Login</h1>
+                        <div className="email">
+                            <label htmlFor="email">
+                                <span>Email <p style={{color: 'red'}}>{this.state.errors.get('email')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                id="email"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="password">
+                            <label htmlFor="password">
+                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('password')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                id="password"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <p style={{color: 'red'}}>{this.state.errors.get('default')}</p>
+                        <div className="login">
+                            <button type="submit"
+                                    disabled={this.loading$.getValue()}>{this.loading$.getValue() ? "Loading..." : "Submit"}</button>
+                        </div>
+                        <small>Don't have an account?</small>
+                    </form>
+                    <div className="createAccount">
+                        <button type="button" onClick={() => {
+                            if (!this.loading$.getValue()) this.props.history.push('/register');
+                        }}>Create an Account
+                        </button>
+                    </div>
                 </div>
-                <div className="password">
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        type="password"
-                        className="password" 
-                        placeholder="Password"
-                        id="password"
-                        onChange = {(e)=>{
-                            setPassword(e.target.value);
-                        }}
-                        required
-                    />
-                </div>
-                    <span>{errorMessage}</span>
-                <div className="login">
-                    <button type="submit" onClick={login}>Submit</button>
-                </div> 
-                <small>Don't have an account?</small>
-                <div className="createAccount">
-                    <button>
-                        <Link to='/register' style={{textDecoration: "none", color:"black"}}>Create an Account</Link>
-                    </button>
-                </div>
-                </form>
             </div>
-        </div>
-        </>
-    );
+        );
+    }
 }
 
-export default Login; 
+export default withRouter(Login);

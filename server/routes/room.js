@@ -5,7 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const {authGuard, notImplemented} = require("../middleware/misc");
-const {parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
+const {parseDecimal, parseObjectId, parseString, parseUrl, inputValidator} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {roomDb} = require("../db/database");
 const {axiosJwtCookie} = require("../utils");
@@ -15,21 +15,26 @@ router.use(authGuard(config.db.privileges.userAny));
 
 // create
 router.post('/',
-    authGuard(config.db.privileges.userHigh),
-    // 'number' body attribute
-    parseString('number', {min: 1, max: 3}),
-    // 'floor' body attribute
-    parseString('floor', {min: 1, max: 3}),
-    // 'side' body attribute
-    parseString('side', {min: 1, max: 3}),
+    authGuard(config.db.privileges.manager),
+    // 'name' body attribute
+    parseString('name', {min: 5, max: 40}),
+    // 'price' body attribute
+    parseDecimal('price'),
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}),
-    // 'pictureUrl' body attribute
-    parseUrl('pictureUrl'),
+    // 'category' body attribute
+    parseString('description', {min: 1, max: 1000}),
+    // 'pictureFile' body attribute
+    parseUrl('pictureFile'),
     // validate above attributes
     inputValidator,
     // handle create
-    createHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
+    createHandler(roomDb, "name", "price", "description", "category", "pictureFile"));
+
+// read all
+router.get('/all',
+    // handle read all
+    readHandler(roomDb));
 
 // read
 router.get('/:id',
@@ -58,7 +63,7 @@ router.get('/',
 
         // filter only bookings that are past their end date
         const currentDate = new Date();
-        const currentlyBookedRooms = allBookings.filter(booking => booking.endDate <= currentDate)
+        const bookedRoomIds = allBookings.filter(booking => Date.parse(booking.endDate) <= currentDate.getTime())
             .map(booking => booking.roomId);
 
         // get all rooms
@@ -73,39 +78,34 @@ router.get('/',
         }
 
         //filter only rooms that are not present in currently booked rooms
-        const availableRooms = allRooms.filter(room => !currentlyBookedRooms.some(booking => booking.roomId.equals(room._id)))
+        const availableRooms = allRooms.filter(room => !bookedRoomIds.some(bookedRoomId => bookedRoomId === room._id))
 
         res.json(availableRooms);
     });
 
-// read all
-router.get('/all',
-    // handle read all
-    readHandler(roomDb));
-
 // update
 router.patch('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
-    // 'number' body attribute
-    parseString('number', {min: 1, max: 3}, true),
-    // 'floor' body attribute
-    parseString('floor', {min: 1, max: 3}, true),
-    // 'side' body attribute
-    parseString('side', {min: 1, max: 3}, true),
+    // 'name' body attribute
+    parseString('name', {min: 5, max: 40}, true),
+    // 'price' body attribute
+    parseDecimal('price', true),
+    // 'category' body attribute
+    parseString('description', {min: 1, max: 1000}, true),
     // 'category' body attribute
     parseString('category', {min: 1, max: 20}, true),
-    // 'pictureUrl' body attribute
-    parseUrl('pictureUrl', true),
+    // 'pictureFile' body attribute
+    parseUrl('pictureFile', true),
     // validate above attributes
     inputValidator,
     // handle update
-    updateHandler(roomDb, "number", "floor", "side", "category", "pictureUrl"));
+    updateHandler(roomDb, "name", "price", "description", "category", "pictureFile"));
 
 // delete
 router.delete('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
     // handle delete

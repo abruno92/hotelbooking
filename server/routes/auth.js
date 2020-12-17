@@ -9,7 +9,7 @@ const {authGuard} = require("../middleware/misc");
 const {createHandler} = require("../middleware/restful");
 const {userDb} = require("../db/database");
 const {getHashedPassword} = require("../auth");
-const {parseEmail, parsePassword, parseName, inputValidator, fieldsMatch} = require("../middleware/inputParsing");
+const {parseEmail, parsePassword, parseString, parseName, inputValidator} = require("../middleware/inputParsing");
 
 const {expirySeconds, secret, cookieName} = config.jwt;
 
@@ -44,11 +44,11 @@ router.post('/login',
 
             // todo maybe store JWT in session/localStorage instead of cookies
             res.cookie(config.jwt.cookieName, token, {maxAge: expirySeconds * 1000});
-            res.json({message: "login successful"});
+            res.json({message: "login successful", id: user._id});
         } else {
             // no matching user was found
             // set HTTP status to 401 "Unauthorised"
-            res.status(401).json({error: 'wrong email or password'});
+            res.status(401).json({error: 'Incorrect email or password'});
         }
     });
 
@@ -58,6 +58,17 @@ router.post('/login',
  * to the RESTful createHandler.
  */
 router.post('/register',
+    // 'privilegeLevel' body attribute
+    parseString('privilegeLevel', {min: 1, max: 50}, true)
+        .custom(value => {
+            const privileges = [config.db.privileges.customer, config.db.privileges.manager];
+            const contains = privileges.includes(value);
+            if (contains) {
+                return true;
+            } else {
+                return new Error(`must be one of ${privileges.map(p => `'${p}'`).join(", ")}`);
+            }
+        }),
     // 'firstName' body attribute
     parseName('firstName'),
     // 'lastName' body attribute
@@ -75,24 +86,29 @@ router.post('/register',
                     }
                 });
             });
-        }).withMessage("must not be already in use"),
+        })
+        .withMessage("must not be already in use"),
     // 'password' body attribute
     parsePassword(),
     // 'confirmPassword' body attribute
-    parsePassword('confirmPassword'),
-    // match 'password' field against 'confirmPassword'
-    fieldsMatch('password', 'confirmPassword'),
-    // match 'confirmPassword' field against 'password'
-    fieldsMatch('confirmPassword', 'password'),
+    parsePassword('confirmPassword')
+        .custom((input, {req}) => input === req.body['password'])
+        .withMessage(`must match the Password field`),
     // validate above attributes
     inputValidator,
     // fill the rest of the database fields
     (req, res, next) => {
-        req.body.privilegeLevel = config.db.privileges.userLow;
+        if (!req.body.privilegeLevel) {
+            req.body.privilegeLevel = config.db.privileges.customer;
+        }
         req.body.passwordHash = getHashedPassword(req.body.password);
         next();
     },
-    createHandler(userDb, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
+    createHandler(userDb, user => {
+        // remove passwordHash field
+        delete user.passwordHash;
+        return user;
+    }, "privilegeLevel", "firstName", "lastName", "email", "passwordHash"));
 
 /**
  * Refreshes the JWT token if it is less than 60 seconds
@@ -101,40 +117,40 @@ router.post('/register',
 router.get('/refresh',
     authGuard(config.db.privileges.userAny),
     (req, res) => {
-    const token = req.cookies[cookieName];
+        const token = req.cookies[cookieName];
 
-    let payload;
-    try {
-        // verifies the token
-        payload = jwt.verify(token, secret);
-    } catch (e) {
-        // token is expired
-        console.log(e);
-        res.status(403).json({error: "token is expired"});
-    }
+        let payload;
+        try {
+            // verifies the token
+            payload = jwt.verify(token, secret);
+        } catch (e) {
+            // token is expired
+            console.log(e);
+            res.status(403).json({error: "token is expired"});
+        }
 
-    // current unix time in seconds
-    const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
+        // current unix time in seconds
+        const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
 
-    if (payload.exp - nowUnixSeconds > 60) {
-        // token is more than 60 seconds away from expiring
-        return res.status(409).json({error: "token is more than 60 seconds away from expiry"});
-    }
+        if (payload.exp - nowUnixSeconds > config.jwt.refreshThresholdSeconds) {
+            // token is more than 60 seconds away from expiring
+            return res.status(409).json({error: `token is more than ${(config.jwt.refreshThresholdSeconds)} seconds away from expiry`});
+        }
 
-    // generates a new token
-    const newToken = jwt.sign({username: payload.username}, secret, {
-        algorithm: 'HS256',
-        expiresIn: expirySeconds
+        // generates a new token
+        const newToken = jwt.sign({username: payload.username}, secret, {
+            algorithm: 'HS256',
+            expiresIn: expirySeconds
+        });
+
+        res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
+        res.json({message: "token refreshed"});
     });
-
-    res.cookie(cookieName, newToken, {maxAge: expirySeconds * 1000});
-    res.json({message: "token refreshed"});
-});
 
 /**
  * Logs the user out by removing the JWT cookie.
  */
-router.get('/logout',
+router.post('/logout',
     authGuard(config.db.privileges.userAny),
     (_, res) => {
         res.cookie(cookieName, '', {expires: new Date(0)});

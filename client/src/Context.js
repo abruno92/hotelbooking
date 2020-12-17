@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import items from './data';
 
 const RoomContext = React.createContext();
@@ -38,7 +38,7 @@ export default class RoomProvider extends Component {
 
     getRoom = slug => {
         let tempRooms = [...this.state.rooms];
-        const room = tempRooms.find(room => room.slug === slug);
+        const room = tempRooms.find(room => room._id === slug);
         return room;
       };
 

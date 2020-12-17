@@ -5,7 +5,7 @@
 const express = require("express");
 const config = require("../config");
 const {authGuard} = require("../middleware/misc");
-const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser} = require("../middleware/inputParsing");
+const {parseObjectId, parseDecimal, parseDate, inputValidator, isCurrentUser, isAfter} = require("../middleware/inputParsing");
 const {createHandler, readHandler, updateHandler, deleteHandler} = require("../middleware/restful");
 const {bookingDb, userDb, roomDb} = require("../db/database");
 const {axiosJwtCookie} = require("../utils");
@@ -15,7 +15,7 @@ router.use(authGuard(config.db.privileges.userAny));
 
 // create
 router.post('/',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.customer),
     // 'userId' body attribute
     parseObjectId('userId', async (value) => await userDb.existsById(value))
         // check that the authenticated user is the one making the post request
@@ -27,7 +27,7 @@ router.post('/',
     // 'startDate' body attribute
     parseDate('startDate'),
     // 'endDate' body attribute
-    parseDate('endDate'),
+    parseDate('endDate').custom(isAfter('startDate')),
     // validate above attributes
     inputValidator,
     // handle create
@@ -40,11 +40,11 @@ router.get('/',
 
 // read for a user
 router.get('/forUser',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.userAny),
     async (req, res) => {
         let bookings;
         try {
-            bookings = (await axiosJwtCookie(req).get(`/review`)).data;
+            bookings = (await axiosJwtCookie(req).get(`/booking`)).data;
         } catch (e) {
             if (!e.response) {
                 console.log(e);
@@ -73,7 +73,7 @@ router.get('/:id',
 
 // update
 router.patch('/:id',
-    authGuard(config.db.privileges.userLow),
+    authGuard(config.db.privileges.customer),
     // 'id' URL param
     parseObjectId('id', async (value) => await bookingDb.existsById(value))
         .custom(checkCurrentUser),
@@ -90,7 +90,7 @@ router.patch('/:id',
 
 // delete
 router.delete('/:id',
-    authGuard(config.db.privileges.userHigh),
+    authGuard(config.db.privileges.manager),
     // 'id' URL param
     parseObjectId(),
     // handle delete

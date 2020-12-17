@@ -7,12 +7,19 @@
  * Function that returns a handler for a POST request
  * related to inserting items in a database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
- * @param {...string} documentAttributes - Attributes to be part of the new item to be inserted
+ * @param {string|function} transformFn - Function that transforms the item before responding or one of the document attributes
+ * @param {string[]} documentAttributes - Attributes to be part of the new item to be inserted. First argument
+ * in the varargs
  * @returns {function(Request, Response): Promise} - Handler
  */
-function createHandler(db, ...documentAttributes) {
+function createHandler(db, ...[transformFn, ...documentAttributes]) {
     return async (req, res) => {
         const newItem = {};
+
+        if (typeof transformFn === "string") {
+            documentAttributes.unshift(transformFn);
+            transformFn = null;
+        }
 
         // loop through the provided list of document attributes and add their respective values
         // from the request body to the newItem object
@@ -40,6 +47,10 @@ function createHandler(db, ...documentAttributes) {
             return res.status(500).json({error: message});
         }
 
+        if (transformFn) {
+            retrievedItem = transformFn(retrievedItem);
+        }
+
         res.status(201).json(retrievedItem);
     };
 }
@@ -50,9 +61,11 @@ function createHandler(db, ...documentAttributes) {
  * If req.params.id is not supplied, the function retrieves
  * all items of that database.
  * @param {MongoDatabase} db - {@link MongoDatabase} instance to be used
+ * @param {function} transformFn - Function used to transform the database item/s before
+ * it is sent as response
  * @returns {function(Request, Response): Promise} - Handler
  */
-function readHandler(db) {
+function readHandler(db, transformFn = undefined) {
     return async (req, res) => {
         const id = req.params.id;
 
@@ -72,6 +85,10 @@ function readHandler(db) {
 
         if (!result) {
             return res.sendStatus(404);
+        }
+
+        if (transformFn) {
+            result = transformFn(result);
         }
 
         res.json(result);

@@ -16,14 +16,30 @@ const roomRoute = require('./routes/room');
 const reviewRoute = require('./routes/review');
 const replyRoute = require('./routes/reply');
 const fs = require("fs");
+const {whitelist} = require("./corsWhitelist");
 const {port} = require("./config");
 const {parseAuthToken} = require("./middleware/misc");
+const fileUpload = require('express-fileupload');
 
 const app = express();
 
 app.use(logger('dev'));
+app.use(fileUpload({createParentPath: true}));
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({extended: true}));
+app.use(cors({
+    // origin: whitelist,
+    origin: function (origin, callback) {
+        console.log(`origin: ${origin}`);
+        if(!origin) return callback(null, true);
+        if ([whitelist].indexOf(origin) === -1) {
+            callback(null, false);
+        } else {
+            callback(null, true);
+        }
+    },
+    credentials: true,
+}));
 app.use(cookieParser());
 app.use(parseAuthToken);
 

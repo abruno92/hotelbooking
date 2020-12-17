@@ -1,23 +1,23 @@
 import React from "react";
 import Room from "./Room";
 
-const RoomsList = ({ rooms }) => {
-  if (rooms.length === 0) {
+const RoomList = ({rooms}) => {
+    if (rooms.length === 0) {
+        return (
+            <div className="empty-search">
+                <h3>No Rooms available</h3>
+            </div>
+        );
+    }
     return (
-      <div className="empty-search">
-        <h3>unfortunately no rooms matched your search parameters</h3>
-      </div>
+        <section className="roomslist">
+            <div className="roomslist-center">
+                {rooms.map(room => {
+                    return <Room key={room._id} room={room}/>;
+                })}
+            </div>
+        </section>
     );
-  }
-  return (
-    <section className="roomslist">
-      <div className="roomslist-center">
-        {rooms.map(item => {
-          return <Room key={item.id} room={item} />;
-        })}
-      </div>
-    </section>
-  );
 };
 
-export default RoomsList;
+export default RoomList;

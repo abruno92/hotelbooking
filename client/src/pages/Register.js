@@ -1,125 +1,192 @@
-import React, {useState} from "react";
-import {Link} from 'react-router-dom';
-import Axios from "axios";
+import React from "react";
+import {withRouter} from "react-router";
+import {Map} from 'immutable';
+import config from "../config";
+import {AuthService} from "../services/auth";
+import {BehaviorSubject, fromEvent, Subscription} from "rxjs";
+import {auditTime, tap} from "rxjs/operators";
 
-const Register = () => {
-    const [firstNameReg, setFirstNameReg] = useState('');
-    const [lastNameReg, setLastNameReg] = useState('');
-    const [emailReg, setEmailReg] = useState('');
-    const [passwordReg, setPasswordReg] = useState('');
-    const [confirmPasswordReg, setConfirmPasswordReg] = useState('');
-    // const firstNameErr
-    //todo show errors for each field if something goes wrong
+class Register extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            account: Map({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                privilegeLevel: config.users.customer,
+            }),
+            errors: Map({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                privilegeLevel: "",
+            }),
+        }
 
-    const register = async (e) => {
-        e.preventDefault();
-        // try {
-        //     await Axios.post('https://localhost:3001/auth/register', {
-        //         firstName: firstNameReg,
-        //         lastName: lastNameReg,
-        //         email: emailReg,
-        //         password: passwordReg,
-        //         confirmPassword: confirmPasswordReg
-        //     });
-        // } catch (e) {
-        //     console.log(e.response.data.errors);
-        // }
-        Axios.post('https://localhost:3001/auth/register', {
-            firstName: firstNameReg,
-            lastName: lastNameReg,
-            email: emailReg,
-            password: passwordReg,
-            confirmPassword: confirmPasswordReg
-        }).then((response) => {
-            console.log(response.data);
-        }).catch(reason => {
-            console.log(reason.response.data.errors);
+        this.loading$ = new BehaviorSubject(false);
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.updateErrors = this.updateErrors.bind(this);
+    }
+
+    async handleSubmit() {
+        try {
+            await AuthService.register(this.state.account.toObject());
+        } catch (e) {
+            this.updateErrors(e.response.data.errors);
+        }
+
+        this.loading$.next(false);
+    }
+
+    handleChange(e) {
+        this.setState({
+            account: this.state.account.set(e.target.name, e.target.value),
+            errors: this.state.errors,
         });
     };
 
-    return (
-        <div className="wrapper">
-            <div className="form-wrapper">
-                <form>
-                <h1>Sign Up</h1>
-                <div className="firstname">
-                    <label htmlFor="firstName">First Name</label>
-                    <span>{}</span>
-                    <input
-                        type="text" 
-                        name="firstname" 
-                        placeholder="First Name"
-                        id="firstName"
-                        onChange={(e)=>{
-                            setFirstNameReg(e.target.value);
-                        }}
-                        required
-                    />
-                </div>
-                <div className="lastname">
-                    <label htmlFor="lastname">Last Name</label>
-                    <input 
-                        type="text" 
-                        name="lastname" 
-                        placeholder="Last Name"
-                        id="lastname" 
-                        onChange={(e)=> {
-                            setLastNameReg(e.target.value);
-                        }}
-                        required
-                    />
-                </div>    
-                <div className="email">
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="text" 
-                        name="email" 
-                        placeholder="Email"
-                        id="email" 
-                        onChange={(e)=> {
-                            setEmailReg(e.target.value);
-                        }}
-                        required
-                    />
-                </div>
-                <div className="password">
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        type="text" 
-                        name="password" 
-                        placeholder="Password"
-                        id="password"
-                        onChange={(e)=>{
-                            setPasswordReg(e.target.value);
-                        }}
-                        required
-                    />
-                </div>
-                    <div className="password">
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            type="text"
-                            name="confirmPassword"
-                            placeholder="Confirm Password"
-                            id="confirmPassword"
-                            onChange={(e)=>{
-                                setConfirmPasswordReg(e.target.value);
-                            }}
-                            required
-                        />
+    updateErrors(errors) {
+        let stateErrors = this.state.errors.map((v, k) => {
+            const error = errors.find(error => error.param === k);
+            return error ? error.msg : "";
+        });
+
+        this.setState({
+            account: this.state.account,
+            errors: stateErrors,
+        });
+    }
+
+    componentDidMount() {
+        this.subscriptions = new Subscription();
+
+        const submit$ = fromEvent(
+            document.getElementById("registerForm"),
+            'submit'
+        ).pipe(
+            tap(_ => this.loading$.next(true)),
+            tap(submit => submit.preventDefault()),
+            auditTime(200),
+        );
+
+        this.subscriptions.add(submit$.subscribe(async submit => await this.handleSubmit(submit)));
+        this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.unsubscribe();
+    }
+
+    render() {
+        return (
+            <div className="wrapper">
+                <div className="form-wrapper">
+                    <form id="registerForm">
+                        <h1>Sign Up</h1>
+                        <div className="firstname">
+                            <label htmlFor="firstName">
+                                <span>First Name <p style={{color: 'red'}}>{this.state.errors.get('firstName')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="firstName"
+                                placeholder="First Name"
+                                id="firstName"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="lastname">
+                            <label htmlFor="lastname">
+                                <span>Last Name <p style={{color: 'red'}}>{this.state.errors.get('lastName')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="lastName"
+                                placeholder="Last Name"
+                                id="lastname"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="email">
+                            <label htmlFor="email">
+                                <span>Email <p style={{color: 'red'}}>{this.state.errors.get('email')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="email"
+                                placeholder="Email"
+                                id="email"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="password">
+                            <label htmlFor="password">
+                                <span>Password <p style={{color: 'red'}}>{this.state.errors.get('password')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                id="password"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="password">
+                            <label htmlFor="confirmPassword">
+                                <span>Confirm Password <p
+                                    style={{color: 'red'}}>{this.state.errors.get('confirmPassword')}</p>
+                                </span>
+                            </label>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Confirm Password"
+                                id="confirmPassword"
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <p>Account Type</p>
+                            <input type="radio" id="customer" name="privilegeLevel" onChange={this.handleChange}
+                                   value="customer"
+                                   defaultChecked/>
+                            <label htmlFor="customer">Customer</label>
+                            <input type="radio" id="manager" name="privilegeLevel" onChange={this.handleChange}
+                                   value="manager"/>
+                            <label htmlFor="manager">Manager</label>
+                        </div>
+                        <div className="login">
+                            <button type="submit"
+                                    disabled={this.loading$.getValue()}>{this.loading$.getValue() ? "Loading..." : "Submit"}</button>
+                        </div>
+                        <small>Already have an account?</small>
+                    </form>
+                    <div className="createAccount">
+                        <button type="button" onClick={() => {
+                            if (!this.loading$.getValue()) this.props.history.push('/login');
+                        }}>Go to Login
+                        </button>
                     </div>
-                <div className="login">
-                    <button type="submit" onClick={register}>Submit</button>
-                </div> 
-                <small>Already have an account?</small>
-                <div className="createAccount">
-                    <button>
-                        <Link to='/login' style={{textDecoration: "none", color:"black"}}>Login</Link>
-                    </button>
                 </div>
-                </form>
             </div>
-        </div>
-    );
+        );
+    }
 }
-export default Register; 
+
+export default withRouter(Register);

@@ -1,26 +1,45 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {RoomContext} from '../Context';
-import Spinner from './Loading';
 import Room from './Room';
 import Title from './Title';
+import {Subscription} from "rxjs";
+import {RoomService} from "../services/room";
 
 export default class FeaturedRooms extends Component {
     static contextType = RoomContext;
-  
-    render() {
-      let { loading, featuredRooms: rooms } = this.context;
-  
-      rooms = rooms.map(room => {
-        return <Room key={room.id} room={room} />;
-      });
-      
-      return (
-        <section className="featured-rooms">
-          <Title title="featured rooms" />
-          <div className="featured-rooms-center">
-            {loading ? <Spinner /> : rooms}
-          </div>
-        </section>
-      );
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            featuredRooms: [],
+        }
     }
-  }
+
+    componentDidMount() {
+        this.subscriptions = new Subscription();
+
+        this.subscriptions.add(RoomService.featuredRoomList$.subscribe(featuredRooms => {
+            this.setState({featuredRooms});
+        }));
+
+        RoomService.refreshList();
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.unsubscribe();
+    }
+
+    render() {
+        return (
+            <section className="featured-rooms">
+                <Title title="featured rooms"/>
+                <div className="featured-rooms-center">
+                    {this.state.featuredRooms.map(room => {
+                        if (!room) return undefined;
+                        return <Room key={room._id} room={room}/>
+                    })}
+                </div>
+            </section>
+        );
+    }
+}
