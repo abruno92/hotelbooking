@@ -49,7 +49,6 @@ router.get('/:id',
 router.get('/',
     // handle read not booked
     async (req, res) => {
-
         // get all bookings
         let allBookings;
         try {
@@ -57,7 +56,12 @@ router.get('/',
         } catch (e) {
             if (!e.response) {
                 console.log(e);
-                return res.sendStatus(500);
+                return res.status(500).send({
+                    error: "unable to retrieve all bookings",
+                });
+            } else {
+                console.log(e.response.data);
+                return res.status(500).send(e.response);
             }
         }
 
@@ -73,7 +77,11 @@ router.get('/',
         } catch (e) {
             if (!e.response) {
                 console.log(e);
-                return res.sendStatus(500);
+                return res.status(500).send({
+                    error: "unable to retrieve all rooms",
+                });
+            } else {
+                console.log(e.response.data);
             }
         }
 
