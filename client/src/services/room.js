@@ -29,7 +29,11 @@ class RoomServiceImpl {
         try {
             availableRooms = (await ApiAxios.get('room')).data;
         } catch (e) {
-            console.log(e.response.status);
+            if (e.response) {
+                console.log(e.response.data);
+            } else {
+                console.log(e);
+            }
             return "";
         }
 
@@ -39,7 +43,11 @@ class RoomServiceImpl {
         try {
             allRooms = (await ApiAxios.get('room/all')).data;
         } catch (e) {
-            console.log(e.response.status);
+            if (e.response) {
+                console.log(e.response.data);
+            } else {
+                console.log(e);
+            }
             return "";
         }
 

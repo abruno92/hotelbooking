@@ -39,7 +39,11 @@ class Register extends React.Component {
         try {
             await AuthService.register(this.state.account.toObject());
         } catch (e) {
-            this.updateErrors(e.response.data.errors);
+            if (e.response) {
+                this.updateErrors(e.response.data.errors);
+            } else {
+                console.log(e);
+            }
         }
 
         this.loading$.next(false);

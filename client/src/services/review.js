@@ -5,8 +5,7 @@ import sleep from "../utils/time";
 import {UserService} from "./user";
 
 /**
- * A Service responsible for managing the rooms of the app,
- * as well as their respective reviews and replies.
+ * A Service responsible for managing the reviews and replies of a room.
  */
 class ReviewServiceImpl {
     // Observable that emits a list of rooms
