@@ -29,7 +29,7 @@ export default class Bookings extends React.Component {
     componentDidMount() {
         this.subscriptions = new Subscription();
 
-        this.subscriptions.add(BookingService.userBookingList$.subscribe(async bookings => {
+        this.subscriptions.add(BookingService.allBookingList$.subscribe(async bookings => {
             const userBookings = await Promise.all(bookings.map(async booking => {
                 const room = await RoomService.getRoom(booking.roomId);
                 const userName = await UserService.getNameForUser(booking.userId);

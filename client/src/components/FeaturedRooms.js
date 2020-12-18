@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import {RoomContext} from '../Context';
 import Room from './Room';
 import Title from './Title';
 import {Subscription} from "rxjs";
 import {RoomService} from "../services/room";
 
+/**
+ * React component containing a collection of featured rooms.
+ */
 export default class FeaturedRooms extends Component {
-    static contextType = RoomContext;
-
     constructor(props) {
         super(props);
         this.state = {

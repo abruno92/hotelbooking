@@ -5,7 +5,6 @@ import SingleRoom from "./pages/SingleRoom";
 import Profile from "./pages/Profile";
 import Error from "./pages/Error";
 import Login from "./pages/Login";
-import Logout from "./pages/intermediary/Logout";
 import Register from "./pages/Register";
 import {Route, Switch} from 'react-router-dom';
 import React from "react";
@@ -45,6 +44,7 @@ class App extends React.Component {
         this.subscriptions.add(timer(0, config.users.refreshRateMillis)
             .subscribe(async () => {
                 // Try to refresh the JWT cookie
+                // todo fix refresh() not actually refreshing the token
                 const result = await AuthService.refresh();
                 console.log("token status: ", result);
             })
@@ -68,7 +68,6 @@ class App extends React.Component {
                 <AuthRoute exact path="/review/:roomId" component={ReviewCreate} canAccess={this.state.authenticated && AuthService.isCustomer()} mustAuth/>
                 <AuthRoute exact path="/reply/:reviewId" component={ReplyCreate} canAccess={this.state.authenticated && AuthService.isManager()} mustAuth/>
                 <AuthRoute exact path="/login" component={Login} canAccess={!this.state.authenticated}/>
-                <AuthRoute exact path="/logout" component={Logout} canAccess={this.state.authenticated} mustAuth/>
                 <AuthRoute exact path="/register" component={Register} canAccess={!this.state.authenticated}/>
                 <AuthRoute exact path="/profile" component={Profile} canAccess={this.state.authenticated} mustAuth/>
                 <Route component={Error}/>

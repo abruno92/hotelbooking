@@ -4,6 +4,9 @@ import {FaCamera} from 'react-icons/fa';
 import './user.css'
 import {UserService} from "../services/user";
 
+/**
+ * React component that contains the profile picture of a user
+ */
 export default class ProfilePicture extends Component {
     constructor(props) {
         super(props);
@@ -16,7 +19,10 @@ export default class ProfilePicture extends Component {
     }
 
     async handleImageChange(e) {
+        // instantiate a new FileReader
         const reader = new FileReader();
+        // add a listener that sets the profile image
+        // when the reader is done reading a file
         reader.onload = () => {
             if (reader.readyState === FileReader.DONE) {
                 this.setState({
@@ -25,6 +31,7 @@ export default class ProfilePicture extends Component {
             }
         }
 
+        // read the file provided in the <input> tag
         reader.readAsDataURL(e.target.files[0])
 
         await this.updateImage();
@@ -48,6 +55,8 @@ export default class ProfilePicture extends Component {
         if (response) {
             if (response.status === 200) {
                 console.log("Profile picture changed successfully");
+            } else if (response.status === 201) {
+                console.log("Profile picture added successfully");
             }
         }
     }

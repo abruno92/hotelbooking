@@ -5,9 +5,9 @@ import ApiAxios from "../utils/ApiAxios";
  */
 class UserServiceImpl {
     /**
-     * Returns the full name of an user.
+     * Returns the concatenation of first name and last name of an user.
      * @param id Id of the user
-     * @returns {Promise<string>} Concatenated first name and last name of the user
+     * @returns {string} Full user name if user is found, or empty string otherwise
      */
     async getNameForUser(id) {
         try {
@@ -22,9 +22,9 @@ class UserServiceImpl {
     }
 
     /**
-     * Retrieves the profile picture of an user.
+     * Retrieves the profile picture of a user.
      * @param id Id of the user
-     * @returns {Promise<string>} base64 encoded image string
+     * @returns {string} base64 encoded image string
      */
     async getProfilePicture(id) {
         try {

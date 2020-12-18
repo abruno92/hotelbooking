@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * React component that contains personal information about a user.
+ * @param user User object that contains the information
+ * @returns {JSX.Element}
+ */
 const Bio = ({user}) => {
     return (
         <>

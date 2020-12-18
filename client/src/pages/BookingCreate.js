@@ -103,9 +103,9 @@ export default class BookingCreate extends React.Component {
 
         this.subscriptions.add(finalizeBooking$.subscribe(async () => await this.handleBook()));
         this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
-        this.subscriptions.add(RoomService.roomList$.subscribe(async rooms => {
+        this.subscriptions.add(RoomService.roomList$.subscribe( rooms => {
             if (rooms.length > 0) {
-                const room = await RoomService.getRoom(this.state.id);
+                const room = RoomService.getRoomSync(this.state.id);
                 this.setState({
                     id: this.state.id,
                     room,

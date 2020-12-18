@@ -66,6 +66,11 @@ router.get('/:id/picture',
         // find the filename that contains the fileId of the avatar
         const avatar = avatarList.find(avatarItem => avatarItem.includes(fileId));
 
+        if (!avatar) {
+            return res.status(404).json({
+                error: 'no profile picture found',
+            });
+        }
         // build the absolute path to the avatar
         const avatarFile = path.join(avatarDirectoryPath, avatar);
 

@@ -1,6 +1,10 @@
 import React, {memo} from "react";
 import PropTypes from "prop-types";
 
+/**
+ * React component that contains the reply to a review of a room.
+ * @type {React.NamedExoticComponent<{readonly reply?: *}>}
+ */
 const Reply = memo(({reply}) => {
     const {userName, content} = reply;
     return (

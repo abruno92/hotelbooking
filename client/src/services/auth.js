@@ -2,18 +2,18 @@ import ApiAxios from "../utils/ApiAxios";
 import config from "../config";
 import {BehaviorSubject} from "rxjs";
 import {map} from "rxjs/operators";
-import sleep from "../utils/time";
 
 /**
  * A Service responsible for managing the authenticated user
  * of the app.
  */
 class AuthServiceImpl {
+    // Observable that emits the current logged in user
     #_currentUser$;
+    // Observable that emits the current logged in state of the app
     loggedIn$;
 
     constructor() {
-        // Observable that emits values over time
         this.#_currentUser$ = new BehaviorSubject(undefined);
         // Observable that maps the above observable from a User object to a boolean
         this.loggedIn$ = this.#_currentUser$.pipe(map(u => u !== undefined));
@@ -52,7 +52,6 @@ class AuthServiceImpl {
         let result;
         try {
             result = (await ApiAxios.post('auth/login', credentials)).data;
-            await sleep(300);
         } catch (e) {
             if (e.response) {
                 if (e.response.status === 400 || e.response.status === 401) {
@@ -74,7 +73,6 @@ class AuthServiceImpl {
         let user;
         try {
             user = (await ApiAxios.get('user/current')).data;
-            await sleep(300);
         } catch (e) {
             if (e.response) {
                 if (e.response.status === 400 || e.response.status === 401) {
@@ -98,9 +96,9 @@ class AuthServiceImpl {
      * @returns {undefined | string} Error message in case of presentable errors, undefined otherwise.
      */
     async register(account) {
+        account.privilegeLevel = config.users.customer;
         try {
             await ApiAxios.post('auth/register', account);
-            await sleep(300);
         } catch (e) {
             if (e.response.status === 400) {
                 throw e;
@@ -148,7 +146,6 @@ class AuthServiceImpl {
     async logout() {
         try {
             await ApiAxios.post('auth/logout');
-            await sleep(300);
 
             this.#_currentUser$.next(undefined);
         } catch (e) {

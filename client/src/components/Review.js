@@ -4,7 +4,12 @@ import PropTypes from "prop-types";
 import Reply from "./Reply";
 import ReplyButton from "./ReplyButton";
 import {useHistory} from "react-router-dom";
+import {AuthService} from "../services/auth";
 
+/**
+ * React component that contains a review to a room.
+ * @type {React.NamedExoticComponent<{readonly review?: *}>}
+ */
 const Review = memo(({review}) => {
     const history = useHistory({});
 
@@ -20,9 +25,12 @@ const Review = memo(({review}) => {
                     <h6 dangerouslySetInnerHTML={{__html: content}}/>
                 </div>
             </div>
-            {review.reply ? <Reply reply={review.reply}/> : <ReplyButton onClick={() => {
-                history.push(`/reply/${_id}`);
-            }}/>}
+            {AuthService.isManager() && (review.reply
+                    ? <Reply reply={review.reply}/>
+                    : <ReplyButton onClick={() => {
+                        history.push(`/reply/${_id}`);
+                    }}/>
+            )}
         </article>
     );
 });

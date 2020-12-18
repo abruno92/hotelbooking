@@ -1,9 +1,12 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
 import {FaAlignRight} from "react-icons/fa";
-import Logout from "../pages/intermediary/Logout";
+import Logout from "./Logout";
 import UserContainer from "./UserContainer";
 
+/**
+ * React component that contains the navbar of a web page.
+ */
 export default class Navbar extends Component {
     state = {
         isOpen: false
