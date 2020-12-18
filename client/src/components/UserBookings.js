@@ -1,5 +1,11 @@
 import React from 'react';
 
+/**
+ * React component that presents the bookings of a single user
+ * as a table.
+ * @param bookings List of bookings to present.
+ * @returns {JSX.Element}
+ */
 const UserBookings = ({bookings}) => {
     return (
         <>

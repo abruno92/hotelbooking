@@ -56,6 +56,8 @@ export default class ReplyCreate extends React.Component {
 
     handleChange(e) {
         this.setState({
+            id: this.state.id,
+            review: this.state.review,
             reply: this.state.reply.set(e.target.name, e.target.value),
             errors: this.state.errors,
         });
@@ -91,7 +93,7 @@ export default class ReplyCreate extends React.Component {
         this.subscriptions.add(this.loading$.subscribe(_ => this.forceUpdate()));
         this.subscriptions.add(ReviewService.reviewList$.subscribe(async reviews => {
             if (reviews.length > 0) {
-                const review = await ReviewService.getReview(this.state.id);
+                const review = await ReviewService.getReviewSync(this.state.id);
                 this.setState({
                     id: this.state.id,
                     review,

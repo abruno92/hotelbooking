@@ -3,6 +3,10 @@ import {Link} from "react-router-dom";
 import defaultImg from "../images/room-1.jpg";
 import PropTypes from "prop-types";
 
+/**
+ * React component that contains a hotel room.
+ * @type {React.NamedExoticComponent<{readonly room?: *}>}
+ */
 const Room = memo(({room}) => {
     const {name, _id, price} = room;
     return (

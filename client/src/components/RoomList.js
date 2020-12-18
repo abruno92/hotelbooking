@@ -1,6 +1,10 @@
 import React from "react";
 import Room from "./Room";
 
+/**
+ * React component that contains a collection of hotel rooms.
+ * @returns {JSX.Element}
+ */
 const RoomList = ({rooms}) => {
     if (rooms.length === 0) {
         return (

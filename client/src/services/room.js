@@ -14,17 +14,19 @@ class RoomServiceImpl {
     allRoomList$;
     // Observable that emits a list of featured rooms
     featuredRoomList$;
-    // Observable that emits whether or not a retrieval of rooms is currently pending
-    fetchPending$;
 
     constructor() {
         this.roomList$ = new BehaviorSubject([]);
         this.allRoomList$ = new BehaviorSubject([]);
         this.featuredRoomList$ = this.roomList$.pipe(map(rooms => getFeaturedRooms(rooms)));
-        this.fetchPending$ = new BehaviorSubject(true);
     }
 
+    /**
+     * Attempts to refresh the lists of rooms.
+     * @returns {Promise<string>}
+     */
     async refreshList() {
+        // retrieve the rooms currently not booked
         let availableRooms;
         try {
             availableRooms = (await ApiAxios.get('room')).data;
@@ -37,8 +39,10 @@ class RoomServiceImpl {
             return "";
         }
 
+        // emit the rooms to the observable
         this.roomList$.next(availableRooms);
 
+        // retrieve all the rooms
         let allRooms;
         try {
             allRooms = (await ApiAxios.get('room/all')).data;
@@ -51,14 +55,25 @@ class RoomServiceImpl {
             return "";
         }
 
+        // emit the rooms to the observable
         this.allRoomList$.next(allRooms);
     }
 
+    /**
+     * Refreshes the list of rooms and retrieves a room.
+     * @param id Id of the room to retrieve.
+     * @returns {{}|undefined} Room object if found, undefined otherwise.
+     */
     async getRoom(id) {
         await this.refreshList();
         return this.getRoomSync(id);
     }
 
+    /**
+     * Retrieves a room locally.
+     * @param id Id of the room to retrieve.
+     * @returns {{}|undefined} Room object if found, undefined otherwise.
+     */
     getRoomSync(id) {
         return this.allRoomList$.getValue().find(room => room._id === id);
     }

@@ -1,6 +1,13 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 
+/**
+ * React component that presents the bookings of all users
+ * as a table.
+ * @param bookings List of bookings to present
+ * @param onDelete callback called when a booking is deleted
+ * @returns {JSX.Element}
+ */
 const BookingList = ({bookings, onDelete}) => {
     if (bookings.length === 0) {
         return (
@@ -34,8 +41,9 @@ const BookingList = ({bookings, onDelete}) => {
                             <td dangerouslySetInnerHTML={{__html: booking.username}}/>
                             <td>{booking.startDate}</td>
                             <td>{booking.endDate}</td>
-                            <td><Button id={booking.id} className='btn-danger'
-                                        onClick={onDelete}>Delete</Button></td>
+                            <td>
+                                <Button id={booking.id} className='btn-danger' onClick={onDelete}>Delete</Button>
+                            </td>
                         </tr>
                 )}
                 </tbody>

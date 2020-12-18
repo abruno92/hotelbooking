@@ -4,6 +4,9 @@ import {Subscription} from "rxjs";
 import {ReviewService} from "../services/review";
 import Review from "./Review";
 
+/**
+ * React component that contains a collection of reviews.
+ */
 export default class Reviews extends React.Component {
     constructor(props) {
         super(props);

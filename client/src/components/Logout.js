@@ -1,8 +1,12 @@
 import {Link} from "react-router-dom";
 import React, {Component} from "react";
 import {withRouter} from "react-router";
-import {AuthService} from "../../services/auth";
+import {AuthService} from "../services/auth";
 
+/**
+ * React component that handles logging the user out upon being clicked.
+ * It Changes the text to "Loading..." while logout is in progress.
+ */
 class Logout extends Component {
     constructor(props) {
         super(props);
@@ -23,7 +27,8 @@ class Logout extends Component {
 
         try {
             await AuthService.logout();
-        } catch (ignored) {}
+        } catch (ignored) {
+        }
 
         this.setState({
             loading: false,
@@ -35,9 +40,9 @@ class Logout extends Component {
         const loading = this.state.loading;
         return (
             <Link to="" onClick={this.handleClick} style={{marginTop: "5px"}}>
-                {loading ?
-                    <>Loading...</> :
-                    <>Logout</>
+                {loading
+                    ? <>Loading...</>
+                    : <>Logout</>
                 }
             </Link>
         )

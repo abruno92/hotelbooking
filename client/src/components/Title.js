@@ -1,5 +1,9 @@
 import React from 'react';
 
+/**
+ * React component that contains a stylised title.
+ * @returns {JSX.Element}
+ */
 const Title = ({title}) => {
     return (
         <div className="section-title">
